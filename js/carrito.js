@@ -62,7 +62,7 @@ function mostrarCarrito() {
         // Imagen
         const imagen = document.createElement("img");
         imagen.className = "imagen-carrito";
-        imagen.src = "/primer%20web/" + producto.imagen;
+        imagen.src = "/" + producto.imagen;
         imagen.alt = producto.nombre;
         imagen.loading = "eager";
 

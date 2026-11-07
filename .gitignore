@@ -1,0 +1,15 @@
+# Visual Studio
+.vs/
+**/.vs/
+
+# Archivos compilados de .NET
+bin/
+obj/
+
+# Archivos temporales
+*.user
+*.suo
+*.cache
+
+# Configuración local
+appsettings.Development.json
