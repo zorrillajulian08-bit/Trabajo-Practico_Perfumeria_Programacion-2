@@ -1,0 +1,305 @@
+/* ========================================
+   ESTILOS DE LA PÁGINA DE PERFUME
+======================================== */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    min-height: 100vh;
+    background: #faf8f4;
+    color: #29251f;
+    font-family: "Segoe UI", Arial, sans-serif;
+}
+
+/* CONTENEDOR PRINCIPAL */
+
+.pagina-producto,
+.pagina-detalle {
+    width: 100%;
+    min-height: 100vh;
+    padding: 35px 7%;
+}
+
+/* RUTA DE NAVEGACIÓN */
+
+.ruta,
+.migas {
+    margin-bottom: 35px;
+    color: #8b8175;
+    font-size: 14px;
+}
+
+.ruta a,
+.migas a {
+    color: #8b7355;
+    text-decoration: none;
+}
+
+.ruta a:hover,
+.migas a:hover {
+    text-decoration: underline;
+}
+
+/* DETALLE DEL PRODUCTO */
+
+.producto-detalle {
+    max-width: 1150px;
+    margin: 30px auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+    gap: 65px;
+}
+
+/* IMAGEN */
+
+.detalle-foto,
+.detalle-imagen {
+    width: 100%;
+    min-height: 450px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f1ede6;
+    border-radius: 18px;
+    padding: 35px;
+}
+
+#imagen-perfume,
+.detalle-imagen img {
+    max-width: 100%;
+    max-height: 430px;
+    object-fit: contain;
+    transition: transform 0.3s ease;
+    cursor: zoom-in;
+}
+
+#imagen-perfume:hover,
+.detalle-imagen img:hover {
+    transform: scale(1.04);
+}
+
+.ayuda-zoom {
+    margin-top: 15px;
+    text-align: center;
+    color: #948a7d;
+    font-size: 13px;
+}
+
+/* INFORMACIÓN */
+
+.detalle-datos,
+.detalle-info {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.detalle-marca {
+    color: #9a8060;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+}
+
+.detalle-datos h1,
+.detalle-info h1 {
+    color: #29251f;
+    font-family: Georgia, serif;
+    font-size: 42px;
+    font-weight: 500;
+    line-height: 1.2;
+}
+
+.detalle-categoria {
+    color: #8b8175;
+    font-size: 14px;
+    text-transform: capitalize;
+}
+
+.detalle-descripcion {
+    color: #71695f;
+    font-size: 16px;
+    line-height: 1.8;
+}
+
+.separador {
+    width: 100%;
+    height: 1px;
+    background: #e5ded4;
+    margin: 10px 0;
+}
+
+/* PRECIO */
+
+.detalle-precio,
+.texto-precio {
+    color: #8b7355;
+    font-size: 30px;
+    font-weight: 600;
+}
+
+/* BOTÓN VOLVER */
+
+.volver,
+.boton-volver {
+    display: inline-block;
+    width: fit-content;
+    margin-top: 20px;
+    padding: 13px 25px;
+    background: #8b7355;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    text-decoration: none;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background 0.3s ease, transform 0.3s ease;
+}
+
+.volver:hover,
+.boton-volver:hover {
+    background: #6f5b43;
+    transform: translateY(-2px);
+}
+
+/* PRODUCTO NO ENCONTRADO */
+
+.perfume-no-encontrado {
+    max-width: 600px;
+    margin: 100px auto;
+    text-align: center;
+}
+
+.perfume-no-encontrado h2 {
+    margin-bottom: 15px;
+    font-family: Georgia, serif;
+    font-size: 30px;
+}
+
+.perfume-no-encontrado p {
+    color: #71695f;
+}
+
+/* ZOOM DE IMAGEN */
+
+.zoom-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 30px;
+    background: rgba(25, 22, 18, 0.9);
+}
+/* ENCABEZADO DE LA TIENDA */
+
+.encabezado-tienda {
+    width: 100%;
+    padding: 25px 7%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #fff;
+    border-bottom: 1px solid #eee8df;
+}
+
+.encabezado-tienda .logo {
+    color: #8b7355;
+    font-family: Georgia, serif;
+    font-size: 21px;
+    font-weight: bold;
+    text-decoration: none;
+    letter-spacing: 1px;
+}
+
+.encabezado-tienda nav {
+    display: flex;
+    gap: 25px;
+}
+
+.encabezado-tienda nav a {
+    color: #51483e;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.encabezado-tienda nav a:hover {
+    color: #9a8060;
+}
+
+.enlace-carrito {
+    font-weight: 600;
+}
+
+/* PIE DE PÁGINA */
+
+.pie-tienda {
+    padding: 25px;
+    background: #eee8df;
+    color: #81786e;
+    text-align: center;
+    font-size: 13px;
+}
+
+/* BOTONES DEL DETALLE */
+
+.detalle-datos .boton-volver {
+    font-family: inherit;
+    font-size: 14px;
+}
+
+@media (max-width: 550px) {
+    .encabezado-tienda {
+        padding: 20px 5%;
+        flex-direction: column;
+        gap: 18px;
+    }
+
+    .encabezado-tienda nav {
+        gap: 18px;
+    }
+    /* BOTONES LADO A LADO */
+
+.botones-detalle {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 20px;
+}
+
+.botones-detalle .boton-volver {
+    margin-top: 0;
+    width: auto;
+    white-space: nowrap;
+    text-align: center;
+}
+
+.boton-carrito {
+    font-family: inherit;
+    cursor: pointer;
+}
+
+.boton-carrito span {
+    margin-right: 5px;
+}
+
+@media (max-width: 550px) {
+    .botones-detalle {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .botones-detalle .boton-volver {
+        width: 100%;
+    }
+
+}
+}
+

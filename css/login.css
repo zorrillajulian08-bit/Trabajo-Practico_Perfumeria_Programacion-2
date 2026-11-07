@@ -1,0 +1,336 @@
+/* FUENTES */
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Inter:wght@400;500;600&display=swap');
+
+/* CONFIGURACIÓN GENERAL */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    min-height: 100vh;
+    width: 100%;
+
+    background:
+        linear-gradient(
+            rgba(35, 27, 20, 0.35),
+            rgba(35, 27, 20, 0.45)
+        ),
+        url("../images/login.png");
+
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+}
+
+/* CONTENEDOR PRINCIPAL */
+.contenedor-login {
+    min-height: 100vh;
+    width: 100%;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    padding: 35px 20px;
+}
+
+/* PANEL DEL FORMULARIO */
+.panel-formulario {
+    width: 100%;
+    max-width: 470px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    padding: 45px;
+
+    background: rgba(250, 247, 241, 0.88);
+
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+
+    border: 1px solid rgba(255, 255, 255, 0.65);
+    border-radius: 18px;
+
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.20);
+}
+
+.contenido-login {
+    width: 100%;
+    max-width: 370px;
+}
+
+/* PANEL DE IMAGEN */
+.panel-imagen {
+    display: none;
+}
+
+/* VOLVER */
+.volver {
+    display: inline-block;
+    margin-bottom: 30px;
+
+    text-decoration: none;
+    color: #92785d;
+    font-size: 13px;
+
+    transition: 0.3s;
+}
+
+.volver:hover {
+    color: #493524;
+}
+
+/* MARCA */
+.marca {
+    text-align: center;
+    margin-bottom: 35px;
+}
+
+.marca h1 {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 36px;
+    font-weight: 600;
+
+    color: #33271d;
+    letter-spacing: 3px;
+}
+
+.marca span {
+    display: block;
+
+    color: #a98968;
+    font-size: 10px;
+    letter-spacing: 7px;
+
+    margin-top: 8px;
+}
+
+.marca::after {
+    content: "";
+    display: block;
+
+    width: 55px;
+    height: 1px;
+
+    background: #c5a77e;
+    margin: 20px auto 0;
+}
+
+/* TEXTOS */
+.subtitulo {
+    color: #a98968;
+    font-size: 11px;
+    letter-spacing: 4px;
+    margin-bottom: 10px;
+    font-weight: 600;
+}
+
+.contenido-login h2 {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 46px;
+    font-weight: 500;
+    color: #33271d;
+}
+
+.descripcion {
+    color: #796b5b;
+    font-size: 13px;
+
+    margin: 12px 0 28px;
+    line-height: 1.8;
+}
+
+/* FORMULARIO */
+#form-login,
+#form-registro {
+    display: flex;
+    flex-direction: column;
+    gap: 13px;
+}
+
+#form-login label,
+#form-registro label {
+    color: #594838;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+#form-login input:not([type="hidden"]),
+#form-registro input {
+    width: 100%;
+    padding: 16px;
+
+    border: 1px solid #d9cbbb;
+    border-radius: 7px;
+
+    background: rgba(255, 255, 255, 0.88);
+
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    color: #33271d;
+
+    outline: none;
+    transition: 0.3s;
+}
+
+#form-login input::placeholder,
+#form-registro input::placeholder {
+    color: #a99b8c;
+}
+
+#form-login input:focus,
+#form-registro input:focus {
+    border-color: #a98968;
+    background: #ffffff;
+
+    box-shadow: 0 0 0 3px rgba(169, 137, 104, 0.12);
+}
+
+/* SELECTOR CLIENTE / EMPLEADO */
+.label-rol {
+    display: block;
+    margin-bottom: 0;
+    color: #594838;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.selector-roles {
+    display: flex;
+    width: 100%;
+
+    padding: 5px;
+    gap: 5px;
+
+    background: #eee8de;
+    border: 1px solid #e3d9ca;
+    border-radius: 10px;
+}
+
+.boton-rol {
+    flex: 1;
+    height: 43px;
+
+    border: 1px solid transparent;
+    border-radius: 7px;
+
+    background: transparent;
+    color: #887b69;
+
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1.3px;
+
+    cursor: pointer;
+    transition: all 0.25s ease;
+}
+
+.boton-rol:hover {
+    color: #493524;
+    background: rgba(255, 255, 255, 0.55);
+}
+
+.boton-rol.seleccionado {
+    background: #493524;
+    color: #fffaf2;
+    box-shadow: 0 3px 9px rgba(65, 48, 30, 0.16);
+}
+
+.boton-rol:focus-visible {
+    outline: 2px solid #a98968;
+    outline-offset: 3px;
+}
+
+/* BOTÓN INGRESAR */
+.boton-login {
+    margin-top: 15px;
+    padding: 17px;
+
+    background: #493524;
+    color: #fffaf2;
+
+    border: none;
+    border-radius: 7px;
+
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 2px;
+
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.boton-login:hover {
+    background: #75583d;
+
+    box-shadow: 0 6px 18px rgba(73, 53, 36, 0.18);
+
+    transform: translateY(-2px);
+}
+
+.boton-login:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* REGISTRO */
+.registro {
+    margin-top: 27px;
+    text-align: center;
+
+    color: #796b5b;
+    font-size: 12px;
+}
+
+.registro a {
+    color: #9b744b;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.registro a:hover {
+    color: #493524;
+    text-decoration: underline;
+}
+
+/* MENSAJES */
+#mensaje-login,
+#mensaje-registro {
+    color: #a34335;
+    font-size: 12px;
+    margin-top: 5px;
+}
+
+/* ADAPTACIÓN A CELULARES */
+@media (max-width: 600px) {
+
+    .contenedor-login {
+        padding: 20px 15px;
+    }
+
+    .panel-formulario {
+        padding: 35px 25px;
+        border-radius: 14px;
+    }
+
+    .marca h1 {
+        font-size: 29px;
+    }
+
+    .contenido-login h2 {
+        font-size: 39px;
+    }
+
+    body {
+        background-attachment: scroll;
+    }
+}

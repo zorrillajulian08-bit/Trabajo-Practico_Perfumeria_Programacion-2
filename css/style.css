@@ -848,3 +848,169 @@ body .detalle-datos .detalle-precio {
         transform: perspective(600px) rotateY(360deg);
     }
 }
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Arial, sans-serif;
+}
+
+body {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #eeeae4;
+}
+
+.contenedor {
+    width: 950px;
+    min-height: 580px;
+    display: flex;
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 15px 45px rgba(0,0,0,0.12);
+}
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+body {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #e9e3d9;
+    padding: 20px;
+}
+
+/* TARJETA PRINCIPAL */
+
+.login-container {
+    width: 460px;
+    background: #ffffff;
+    padding: 45px 50px;
+    border-radius: 12px;
+    box-shadow: 0 15px 50px rgba(57, 45, 28, 0.12);
+    border-top: 5px solid #b49462;
+}
+
+/* MARCA */
+
+.marca {
+    text-align: center;
+    margin-bottom: 35px;
+}
+
+.simbolo {
+    width: 55px;
+    height: 55px;
+    border: 1px solid #b49462;
+    color: #b49462;
+    font-family: Georgia, serif;
+    font-size: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 15px;
+}
+
+.marca h1 {
+    font-size: 19px;
+    letter-spacing: 3px;
+    color: #292929;
+}
+
+.marca h1 span {
+    color: #b49462;
+}
+
+.marca p {
+    font-size: 10px;
+    letter-spacing: 4px;
+    color: #999;
+    margin-top: 8px;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Arial, sans-serif;
+}
+
+body {
+    min-height: 100vh;
+    background: #f4f4f4;
+}
+
+.pagina {
+    display: flex;
+    min-height: 100vh;
+    width: 100%;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Arial, sans-serif;
+}
+
+body {
+    min-height: 100vh;
+    background: #f4f4f4;
+}
+
+.pagina {
+    display: flex;
+    min-height: 100vh;
+    width: 100%;
+}
+
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    width: 100%;
+    min-height: 100vh;
+    background: #ffffff;
+}
+
+.pagina {
+    width: 100%;
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+}
+
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Playfair+Display:wght@500;600;700&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Montserrat', sans-serif;
+    min-height: 100vh;
+    background: #171512;
+    color: #fff;
+}
+
+.pagina {
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+}
+

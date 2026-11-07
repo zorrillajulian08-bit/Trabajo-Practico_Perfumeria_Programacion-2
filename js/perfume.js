@@ -1,4 +1,3 @@
-
 const perfumes = [
     {
         nombre: "Afnan 9PM",
@@ -34,7 +33,6 @@ const perfumes = [
     }
 ];
 
-// Obtener el nombre del perfume desde la URL
 const parametros = new URLSearchParams(window.location.search);
 const nombre = parametros.get("nombre");
 
@@ -44,20 +42,67 @@ const perfume = perfumes.find(function (p) {
 
 const detalle = document.getElementById("detalle-perfume");
 
+const CLAVE_CARRITO = "carritoMay";
+
+function obtenerCarrito() {
+    return JSON.parse(localStorage.getItem(CLAVE_CARRITO)) || [];
+}
+
+function guardarCarrito(carrito) {
+    localStorage.setItem(CLAVE_CARRITO, JSON.stringify(carrito));
+}
+
+function actualizarContador() {
+    const contador = document.getElementById("contador-carrito");
+
+    if (contador) {
+        const carrito = obtenerCarrito();
+
+        const cantidad = carrito.reduce(function (total, producto) {
+            return total + producto.cantidad;
+        }, 0);
+
+        contador.textContent = cantidad;
+    }
+}
+
+function agregarAlCarrito(perfume) {
+    const carrito = obtenerCarrito();
+
+    const productoExistente = carrito.find(function (producto) {
+        return producto.nombre === perfume.nombre;
+    });
+
+    if (productoExistente) {
+        productoExistente.cantidad++;
+    } else {
+        carrito.push({
+            nombre: perfume.nombre,
+            marca: perfume.marca,
+            precio: perfume.precio,
+            imagen: perfume.imagen,
+            cantidad: 1
+        });
+    }
+
+    guardarCarrito(carrito);
+    actualizarContador();
+}
+
 if (detalle) {
     if (perfume) {
         document.title = perfume.nombre + " | Emprendimiento May";
 
-        // Crear la sección del producto
         const seccion = document.createElement("section");
         seccion.className = "producto-detalle";
 
+        // Imagen del perfume
         const foto = document.createElement("div");
         foto.className = "detalle-foto";
 
         const imagen = document.createElement("img");
         imagen.id = "imagen-perfume";
-        imagen.src = perfume.imagen;
+       imagen.src =  perfume.imagen
         imagen.alt = perfume.nombre;
         imagen.tabIndex = 0;
         imagen.setAttribute("role", "button");
@@ -98,27 +143,44 @@ if (detalle) {
         const precio = document.createElement("p");
         precio.className = "detalle-precio";
         precio.textContent = "$" + perfume.precio.toLocaleString("es-AR");
+// Contenedor de botones
+const botones = document.createElement("div");
+botones.className = "botones-detalle";
 
-        const volver = document.createElement("a");
-        volver.className = "boton-volver";
-        volver.href = "index.html#catalogo";
-        volver.textContent = "← Volver al catálogo";
+// Botón volver al catálogo
+const volver = document.createElement("a");
+volver.className = "boton-volver";
+volver.href = "index.html#catalogo";
+volver.textContent = "← Volver al catálogo";
+
+// Botón agregar al carrito
+const botonCarrito = document.createElement("button");
+botonCarrito.className = "boton-volver boton-carrito";
+botonCarrito.type = "button";
+botonCarrito.innerHTML = '<span>🛒</span> Agregar al carrito';
+
+botonCarrito.addEventListener("click", function () {
+    agregarAlCarrito(perfume);
+    window.location.href = "../carrito.html";
+});
+
+botones.append(volver, botonCarrito);
 
         datos.append(
-            marca,
-            titulo,
-            categoria,
+             marca,
+             titulo,
+             categoria,
             descripcion,
             separador,
             textoPrecio,
             precio,
-            volver
+            botones
         );
 
         seccion.append(foto, datos);
         detalle.replaceChildren(seccion);
 
-        // Crear el visor de imagen
+        // Visor de imagen
         const zoom = document.createElement("div");
         zoom.className = "zoom-overlay";
 
@@ -138,13 +200,11 @@ if (detalle) {
         zoom.append(cerrar, imagenAmpliada, textoZoom);
         document.body.appendChild(zoom);
 
-        // Abrir el visor
         function abrirZoom() {
             zoom.classList.add("activo");
             document.body.classList.add("zoom-abierto");
         }
 
-        // Cerrar el visor
         function cerrarZoom() {
             zoom.classList.remove("activo");
             document.body.classList.remove("zoom-abierto");
@@ -191,3 +251,5 @@ if (detalle) {
         detalle.replaceChildren(mensaje);
     }
 }
+
+actualizarContador();

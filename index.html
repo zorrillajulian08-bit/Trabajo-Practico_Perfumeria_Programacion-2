@@ -1,39 +1,119 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Emprendimiento May | Perfumería</title>
-  <link rel="stylesheet" href="css/style.css">
-  <script src="js/script.js" defer></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emprendimiento May | Perfumería</title>
+    <link rel="stylesheet" href="css/index.css">
+    <script type="module" src="js/script.js"></script>
+    <script type="module" src="js/proteccion.js"></script>
 </head>
 <body>
-  <header class="encabezado">
-    <a class="logo" href="index.html">Emprendimiento <span>May</span></a>
-    <nav><a href="#inicio">Inicio</a><a href="#catalogo">Catálogo</a></nav>
-  </header>
-  <main>
-    <section class="portada" id="inicio">
-      <p class="etiqueta">EMPRENDIMIENTO MAY</p>
-      <h1>Encontrá tu próxima <span>fragancia</span></h1>
-      <p>Descubrí perfumes para cada estilo y ocasión.</p>
-      <a class="boton" href="#catalogo">Ver catálogo</a>
-    </section>
-    <section class="catalogo" id="catalogo">
-      <p class="etiqueta">NUESTRA SELECCIÓN</p><h2>Catálogo de perfumes</h2>
-      <div class="filtros">
-        <input id="buscador" type="search" placeholder="Buscar perfume o marca...">
-        <select id="categoria">
-          <option value="Todos">Todas las categorías</option>
-          <option value="Masculino">Masculino</option>
-          <option value="Femenino">Femenino</option>
-          <option value="Unisex">Unisex</option>
-        </select>
-      </div>
-      <div class="productos" id="productos"></div>
-      <p id="sin-resultados" hidden>No encontramos perfumes con esa búsqueda.</p>
-    </section>
-  </main>
-  <footer>© 2026 Emprendimiento May · Perfumería</footer>
+
+    <header class="encabezado">
+        <a href="index.html" class="logo">
+            <h1>EMPRENDIMIENTO MAY</h1>
+            <span>PERFUMERÍA</span>
+        </a>
+
+        <nav>
+            <a href="#inicio">Inicio</a>
+            <a href="#catalogo">Catálogo</a>
+            <a href="#contacto">Contacto</a>
+            <a href="#" id="cerrar-sesion" hidden>Cerrar sesión</a>
+        </nav>
+    </header>
+
+    <main>
+        <section class="portada" id="inicio">
+            <div class="portada-texto">
+                <p class="subtitulo">FRAGANCIAS QUE HABLAN POR VOS</p>
+                <h2>Elegancia en cada esencia</h2>
+                <p>
+                    Descubrí nuestra selección de perfumes
+                    para cada ocasión.
+                </p>
+                <a href="#catalogo" class="boton-principal">
+                    VER CATÁLOGO →
+                </a>
+            </div>
+
+            <div class="portada-imagenes">
+                <img src="images/SauvageDior.jpg" alt="Dior Sauvage">
+                <img src="images/GoodGirl.jpg" alt="Good Girl">
+                <img src="images/Baccarat.jpg" alt="Baccarat Rouge">
+            </div>
+        </section>
+
+        <section class="categorias">
+            <a href="#catalogo" onclick="elegirCategoria('masculino')">
+                <span>♂</span>
+                Masculinos
+            </a>
+
+            <a href="#catalogo" onclick="elegirCategoria('femenino')">
+                <span>♀</span>
+                Femeninos
+            </a>
+
+            <a href="#catalogo" onclick="elegirCategoria('unisex')">
+                <span>⚭</span>
+                Unisex
+            </a>
+
+            <a href="#catalogo" onclick="elegirCategoria('todos')">
+                <span>☆</span>
+                Todos
+            </a>
+        </section>
+
+        <section class="seccion-catalogo" id="catalogo">
+            <div class="busqueda">
+                <input
+                    type="text"
+                    id="buscador"
+                    placeholder="Buscar perfume o marca..."
+                >
+
+                <select id="categoria">
+                    <option value="todos">Todas las categorías</option>
+                    <option value="masculino">Masculinos</option>
+                    <option value="femenino">Femeninos</option>
+                    <option value="unisex">Unisex</option>
+                </select>
+            </div>
+
+            <div class="titulo-catalogo">
+                <div>
+                    <p class="subtitulo">NUESTROS PRODUCTOS</p>
+                    <h2>Perfumes destacados</h2>
+                </div>
+            </div>
+
+            <div class="productos" id="productos">
+            </div>
+        </section>
+    </main>
+
+    <footer id="contacto">
+        <div>
+            <h2>EMPRENDIMIENTO MAY</h2>
+            <p>PERFUMERÍA</p>
+            <span>El aroma que te representa.</span>
+        </div>
+
+        <div>
+            <h3>Explorá</h3>
+            <a href="#inicio">Inicio</a>
+            <a href="#catalogo">Catálogo</a>
+            <a href="#contacto">Contacto</a>
+        </div>
+
+        <div>
+            <p>Gracias por elegirnos.</p>
+            <small>© 2026 Emprendimiento May</small>
+        </div>
+    </footer>
+
 </body>
 </html>

@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Panel de empleado | Emprendimiento May</title>
+
+    <link rel="stylesheet" href="css/empleado.css">
+
+    <script type="module" src="js/empleado.js"></script>
+</head>
+
+<body>
+
+    <!-- BARRA SUPERIOR -->
+    <header class="encabezado">
+
+        <div class="marca">
+            <h1>EMPRENDIMIENTO MAY</h1>
+            <span>PERFUMERÍA</span>
+        </div>
+
+        <nav class="navegacion">
+            <a href="index.html">Ver tienda</a>
+            <button type="button" id="cerrar-sesion">Cerrar sesión</button>
+        </nav>
+
+    </header>
+
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <main class="contenedor-panel">
+
+        <!-- BIENVENIDA -->
+        <section class="bienvenida">
+
+            <p class="subtitulo">ADMINISTRACIÓN</p>
+
+            <h2>Panel de empleado</h2>
+
+            <p>
+                Desde aquí podés administrar los productos
+                de Emprendimiento May.
+            </p>
+
+        </section>
+
+
+        <!-- ESTADÍSTICAS -->
+        <section class="estadisticas">
+
+            <div class="tarjeta-estadistica">
+
+                <div class="icono-estadistica">◇</div>
+
+                <div>
+                    <p>PRODUCTOS REGISTRADOS</p>
+                    <h3 id="contador-productos">0</h3>
+                    <span>Productos en el catálogo</span>
+                </div>
+
+            </div>
+
+
+            <div class="tarjeta-estadistica tarjeta-activa">
+
+                <div class="icono-estadistica">✓</div>
+
+                <div>
+                    <p>ESTADO DEL SISTEMA</p>
+                    <h3>Panel activo</h3>
+                    <span>Administración disponible</span>
+                </div>
+
+                <span class="indicador-activo"></span>
+
+            </div>
+
+        </section>
+
+
+        <!-- FORMULARIO DE PRODUCTOS -->
+        <section class="seccion-productos">
+
+            <div class="titulo-seccion">
+                <div>
+                    <span class="etiqueta">CATÁLOGO</span>
+                    <h3>Agregar un producto</h3>
+                    <p>Completá los datos del nuevo perfume.</p>
+                </div>
+            </div>
+
+
+            <form id="form-producto">
+
+                <div class="grupo-campos">
+
+                    <!-- NOMBRE -->
+                    <div class="campo">
+
+                        <label for="nombre">Nombre del perfume</label>
+
+                        <input
+                            type="text"
+                            id="nombre"
+                            placeholder="Ej: Afnan 9PM"
+                            required
+                        >
+
+                    </div>
+
+
+                    <!-- MARCA -->
+                    <div class="campo">
+
+                        <label for="marca">Marca</label>
+
+                        <select id="marca" required>
+                            <option value="">Cargando marcas...</option>
+                        </select>
+
+                    </div>
+
+
+                    <!-- PRECIO -->
+                    <div class="campo">
+
+                        <label for="precio">Precio</label>
+
+                        <input
+                            type="number"
+                            id="precio"
+                            placeholder="Ej: 65000"
+                            min="1"
+                            step="1"
+                            required
+                        >
+
+                    </div>
+
+
+                    <!-- CATEGORÍA -->
+                    <div class="campo">
+
+                        <label for="categoria">Categoría</label>
+
+                        <select id="categoria" required>
+
+                            <option value="">Seleccionar categoría</option>
+                            <option value="Masculino">Masculino</option>
+                            <option value="Femenino">Femenino</option>
+                            <option value="Unisex">Unisex</option>
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- STOCK -->
+                    <div class="campo">
+
+                        <label for="stock">Cantidad disponible</label>
+
+                        <input
+                            type="number"
+                            id="stock"
+                            placeholder="Ej: 10"
+                            min="0"
+                            step="1"
+                            required
+                        >
+
+                    </div>
+
+
+                    <!-- IMAGEN -->
+                    <div class="campo">
+
+                        <label for="imagen">URL de la imagen</label>
+
+                        <input
+                            type="url"
+                            id="imagen"
+                            placeholder="Pegá el enlace de la imagen"
+                            required
+                        >
+
+                        <img
+                            id="vista-previa"
+                            src=""
+                            alt="Vista previa del perfume"
+                            style="display:none; width:150px; margin-top:10px; border-radius:8px;"
+                        >
+
+                    </div>
+
+                </div>
+
+
+                <!-- DESCRIPCIÓN -->
+                <div class="campo campo-descripcion">
+
+                    <label for="descripcion">Descripción</label>
+
+                    <textarea
+                        id="descripcion"
+                        placeholder="Escribí una descripción del perfume..."
+                        rows="4"
+                        required
+                    ></textarea>
+
+                </div>
+
+
+                <!-- BOTÓN AGREGAR -->
+                <button type="submit" class="boton-agregar">
+                    AGREGAR PRODUCTO →
+                </button>
+
+                <p id="mensaje-producto"></p>
+
+            </form>
+
+        </section>
+
+
+        <!-- LISTADO DE PRODUCTOS -->
+        <section class="seccion-listado">
+
+            <div class="titulo-seccion">
+
+                <div>
+                    <span class="etiqueta">INVENTARIO</span>
+                    <h3>Productos registrados</h3>
+                    <p>Administrá los perfumes de tu tienda.</p>
+                </div>
+
+            </div>
+
+
+            <div class="contenedor-tabla">
+
+                <table>
+
+                    <thead>
+                        <tr>
+                            <th>Producto</th>
+                            <th>Marca</th>
+                            <th>Precio</th>
+                            <th>Categoría</th>
+                            <th>Stock</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="lista-productos">
+
+                        <tr>
+                            <td colspan="6" class="sin-productos">
+                                Cargando productos...
+                            </td>
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+
+        <!-- ADMINISTRACIÓN DE USUARIOS -->
+        <section class="seccion-listado">
+
+            <div class="titulo-seccion">
+
+                <div>
+                    <span class="etiqueta">CLIENTES Y EMPLEADOS</span>
+                    <h3>Usuarios registrados</h3>
+                    <p>Administrá las cuentas de tu tienda.</p>
+                </div>
+
+            </div>
+
+
+            <div class="contenedor-tabla">
+
+                <table>
+
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nombre</th>
+                            <th>Email</th>
+                            <th>Rol</th>
+                            <th>Fecha de registro</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="lista-usuarios">
+
+                        <tr>
+                            <td colspan="6">
+                                Cargando usuarios...
+                            </td>
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+            <p id="mensaje-usuarios"></p>
+
+        </section>
+
+    </main>
+
+
+    <!-- MODAL DE CONFIRMACIÓN DE ELIMINACIÓN -->
+    <div id="modal-eliminar" class="modal-fondo" aria-hidden="true">
+
+        <div
+            class="modal-contenido"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="modal-titulo"
+        >
+
+            <div class="modal-icono">!</div>
+
+            <h2 id="modal-titulo">¿Eliminar producto?</h2>
+
+            <p id="modal-mensaje">
+                Esta acción no se puede deshacer.
+            </p>
+
+            <div class="modal-botones">
+
+                <button type="button" id="cancelar-eliminar">
+                    Cancelar
+                </button>
+
+                <button type="button" id="confirmar-eliminar">
+                    Sí, eliminar
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- PIE DE PÁGINA -->
+    <footer>
+
+        <p>EMPRENDIMIENTO MAY · PANEL DE ADMINISTRACIÓN</p>
+
+    </footer>
+
+
+    <!-- MODAL EDITAR USUARIO -->
+    <div
+        class="modal-editar-usuario"
+        id="modal-editar-usuario"
+        hidden
+    >
+
+        <div class="contenido-modal-usuario">
+
+            <div class="encabezado-modal-usuario">
+
+                <span class="icono-modal-usuario">✎</span>
+
+                <div>
+                    <h2>Editar usuario</h2>
+                    <p>Actualizá la información del usuario.</p>
+                </div>
+
+                <button
+                    type="button"
+                    class="cerrar-modal-usuario"
+                    id="cerrar-modal-usuario"
+                >
+                    &times;
+                </button>
+
+            </div>
+
+
+            <form id="form-editar-usuario">
+
+                <div class="campo-modal-usuario">
+
+                    <label for="nuevo-nombre-usuario">
+                        Nombre del usuario
+                    </label>
+
+                    <input
+                        type="text"
+                        id="nuevo-nombre-usuario"
+                        placeholder="Ingresá el nombre"
+                        maxlength="100"
+                        required
+                    >
+
+                </div>
+
+
+                <div id="mensaje-editar-usuario"></div>
+
+
+                <div class="acciones-modal-usuario">
+
+                    <button
+                        type="button"
+                        id="cancelar-editar-usuario"
+                    >
+                        Cancelar
+                    </button>
+
+                    <button
+                        type="submit"
+                        id="guardar-editar-usuario"
+                    >
+                        Guardar cambios
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+</body>
+
+</html>

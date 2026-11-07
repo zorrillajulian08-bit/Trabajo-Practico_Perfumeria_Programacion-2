@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Mi carrito | Emprendimiento May</title>
+
+    <link rel="stylesheet" href="css/carrito.css">
+
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <!-- JavaScript del carrito -->
+    <script src="js/carrito.js" defer></script>
+</head>
+<body>
+
+    <header class="encabezado-tienda">
+        <a href="index.html" class="logo">EMPRENDIMIENTO MAY</a>
+
+        <nav>
+            <a href="index.html">Inicio</a>
+            <a href="index.html#catalogo">Catálogo</a>
+        </nav>
+    </header>
+
+    <main class="pagina-carrito">
+
+        <div class="ruta">
+            <a href="index.html">Inicio</a>
+            <span>/</span>
+            <span>Mi carrito</span>
+        </div>
+
+        <h1>Mi carrito</h1>
+        <p class="subtitulo">Revisá los perfumes que agregaste.</p>
+
+        <div class="contenido-carrito">
+
+            <section id="productos-carrito" class="productos-carrito">
+                <!-- Los productos se cargan desde JavaScript -->
+            </section>
+
+           <aside class="resumen-carrito">
+    <h2>Resumen de compra</h2>
+
+    <div class="fila-resumen">
+        <span>Subtotal</span>
+        <span id="subtotal">$0</span>
+    </div>
+
+    <div class="fila-resumen total">
+        <span>Total</span>
+        <span id="total">$0</span>
+    </div>
+
+    <button id="confirmar-pedido" class="boton-confirmar">
+        Confirmar pedido
+    </button>
+
+    <div class="acciones-carrito">
+        <button id="vaciar-carrito" class="boton-secundario">
+            Vaciar carrito
+        </button>
+
+        <a href="index.html#catalogo" class="boton-volver">
+            Seguir comprando
+        </a>
+    </div>
+</aside>
+        </div>
+
+    </main>
+
+    <footer class="pie-tienda">
+        <p>Emprendimiento May · Perfumería</p>
+    </footer>
+
+</body>
+</html>

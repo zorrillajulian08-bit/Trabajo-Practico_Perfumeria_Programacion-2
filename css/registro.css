@@ -1,0 +1,249 @@
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    min-height: 100vh;
+    font-family: 'Segoe UI', sans-serif;
+    background: #f7f3ec;
+    color: #514536;
+}
+
+.contenedor-login {
+    display: flex;
+    width: 100%;
+    min-height: 100vh;
+}
+
+/* PANEL DEL FORMULARIO */
+
+.panel-formulario {
+    width: 50%;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 65px;
+    background: #f8f5ef;
+}
+
+.contenido-login {
+    width: 100%;
+    max-width: 430px;
+}
+
+/* VOLVER */
+
+.volver {
+    display: inline-block;
+    margin-bottom: 45px;
+    color: #a58a62;
+    text-decoration: none;
+    font-size: 13px;
+    transition: 0.3s;
+}
+
+.volver:hover {
+    color: #776044;
+}
+
+/* MARCA */
+
+.marca {
+    margin-bottom: 38px;
+}
+
+.marca h1 {
+    font-family: Georgia, serif;
+    font-size: 23px;
+    font-weight: 400;
+    letter-spacing: 3px;
+    color: #514536;
+}
+
+.marca span {
+    display: block;
+    margin-top: 9px;
+    font-size: 10px;
+    letter-spacing: 5px;
+    color: #a58a62;
+}
+
+/* TÍTULOS */
+
+.subtitulo {
+    color: #a58a62;
+    font-size: 11px;
+    letter-spacing: 3px;
+    margin-bottom: 14px;
+}
+
+.contenido-login h2 {
+    font-family: Georgia, serif;
+    font-size: 42px;
+    font-weight: 400;
+    margin-bottom: 14px;
+    color: #514536;
+}
+
+.descripcion {
+    color: #918575;
+    font-size: 14px;
+    line-height: 1.7;
+    margin-bottom: 38px;
+}
+
+/* FORMULARIO */
+
+#form-registro {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+#form-registro label {
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 11px;
+    color: #625543;
+}
+
+#form-registro input {
+    width: 100%;
+    height: 53px;
+    padding: 0 17px;
+    margin-bottom: 27px;
+    border: 1px solid #ded4c4;
+    border-radius: 6px;
+    background: #fffdf9;
+    color: #514536;
+    font-size: 14px;
+    outline: none;
+    transition: all 0.3s ease;
+}
+
+#form-registro input:focus {
+    border-color: #a58a62;
+    box-shadow: 0 0 0 4px rgba(165, 138, 98, 0.10);
+}
+
+#form-registro input::placeholder {
+    color: #b5aa9a;
+}
+
+/* BOTÓN */
+
+.boton-login {
+    width: 100%;
+    height: 55px;
+    margin-top: 5px;
+    background: #a58a62;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 13px;
+    letter-spacing: 2px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.boton-login:hover {
+    background: #806744;
+    transform: translateY(-2px);
+}
+
+/* MENSAJE */
+
+#mensaje-registro {
+    margin-top: 17px;
+    font-size: 13px;
+    text-align: center;
+}
+
+/* LOGIN */
+
+.registro {
+    margin-top: 32px;
+    text-align: center;
+    font-size: 13px;
+    color: #918575;
+}
+
+.registro a {
+    color: #a58a62;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.registro a:hover {
+    text-decoration: underline;
+}
+
+/* IMAGEN */
+
+.panel-imagen {
+    width: 50%;
+    min-height: 100vh;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    padding: 75px;
+    background:
+        linear-gradient(
+            rgba(35, 27, 20, 0.20),
+            rgba(35, 27, 20, 0.55)
+        ),
+        url("../images/Baccarat.jpg");
+    background-size: cover;
+    background-position: center;
+}
+
+.frase {
+    text-align: center;
+    color: white;
+    max-width: 450px;
+}
+
+.frase h2 {
+    font-family: Georgia, serif;
+    font-size: 42px;
+    font-weight: 400;
+    margin-bottom: 18px;
+}
+
+.frase p {
+    font-size: 14px;
+    color: #eee5d9;
+    letter-spacing: 1px;
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 950px) {
+    .panel-formulario {
+        width: 100%;
+        padding: 45px 30px;
+    }
+
+    .panel-imagen {
+        display: none;
+    }
+
+    .contenido-login {
+        max-width: 450px;
+    }
+}
+
+@media (max-width: 480px) {
+    .contenido-login h2 {
+        font-size: 34px;
+    }
+
+    .panel-formulario {
+        padding: 35px 22px;
+    }
+}

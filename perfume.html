@@ -1,18 +1,45 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Detalle del perfume | Emprendimiento May</title>
-  <link rel="stylesheet" href="css/style.css">
-  <script src="js/perfume.js" defer></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Perfumería | Emprendimiento May</title>
+
+    <link rel="stylesheet" href="css/perfume.css">
+    <script src="js/perfume.js" defer></script>
 </head>
 <body>
-  <header class="encabezado">
-    <a class="logo" href="index.html">Emprendimiento <span>May</span></a>
-    <nav><a href="index.html#inicio">Inicio</a><a href="index.html#catalogo">Catálogo</a></nav>
-  </header>
-  <main class="pagina-detalle"><div id="detalle-perfume"></div></main>
-  <footer>© 2026 Emprendimiento May · Perfumería</footer>
+
+    <header class="encabezado-tienda">
+        <a href="index.html" class="logo">EMPRENDIMIENTO MAY</a>
+
+        <nav>
+            <a href="index.html">Inicio</a>
+            <a href="index.html#catalogo">Catálogo</a>
+            <a href="primer web/carrito.html" class="enlace-carrito">
+                Carrito (<span id="contador-carrito">0</span>)
+            </a>
+        </nav>
+    </header>
+
+    <main class="pagina-producto">
+        <div class="ruta">
+            <a href="index.html">Inicio</a>
+            <span>/</span>
+            <a href="index.html#catalogo">Perfumes</a>
+            <span>/</span>
+            <span>Detalle</span>
+        </div>
+
+        <div id="detalle-perfume">
+            <p>Cargando producto...</p>
+        </div>
+    </main>
+
+    <footer class="pie-tienda">
+        <p>Emprendimiento May · Perfumería</p>
+    </footer>
+
 </body>
 </html>
