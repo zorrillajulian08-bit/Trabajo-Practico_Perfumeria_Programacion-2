@@ -92,7 +92,7 @@ if (formulario) {
             // Redireccionar según el rol
             if (rolReal === "empleado") {
 
-                window.location.href = "/primer%20web/empleado.html";
+                window.location.href = "empleado.html";
 
             } else if (rolReal === "cliente") {
 

@@ -32,12 +32,13 @@ namespace perfumeriamay.interfaces
 
         public Task<Venta?> GetVentasByIdAsync(int id);
 
-       public Task<bool> CreateVentaAsync(CreateVentaDTO venta);
+        public Task<bool> CreateVentaAsync(CreateVentaDTO venta);
 
-       public Task<bool> DeleteVentaAsync(int id);
+        public Task<bool> DeleteVentaAsync(int id);
 
         public Task<List<Usuario>> GetUsuariosAsync();
 
+        public Task<bool> AddUsuarioAsync(CreateUsuarioDTO usuario);
         public Task<Usuario?> GetUsuarioByIdAsync(int id);
 
         public Task<bool> UpdateUsuarioAsync(int id, UpdateUsuariosDTO usuario);

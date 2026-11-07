@@ -23,7 +23,7 @@ namespace perfumeriamay.Implementations
 
             if (!usuarioExiste)
                 return false;
-           
+
 
             var nuevoPedido = new Pedido
             {
@@ -252,7 +252,7 @@ namespace perfumeriamay.Implementations
 
         public async Task<List<Producto>> GetAllAsync()
         {
-            return await _context.Productos.ToListAsync(); 
+            return await _context.Productos.ToListAsync();
         }
 
         public async Task<Pedido?> GetByIdAsync(int id)
@@ -314,7 +314,7 @@ namespace perfumeriamay.Implementations
             return true;
         }
 
-        public async Task<bool> UpdatePerfume(int id,UpdateProductoDTO producto)
+        public async Task<bool> UpdatePerfume(int id, UpdateProductoDTO producto)
         {
             var productoExistente = await _context.Productos
          .FirstOrDefaultAsync(p => p.ProductoId == id);
@@ -406,5 +406,21 @@ namespace perfumeriamay.Implementations
 
             return true;
         }
+        public async Task<bool> AddUsuarioAsync(CreateUsuarioDTO usuario)
+        {
+            var nuevoUsuario = new Usuario
+            {
+                FirebaseUid = usuario.FirebaseUid,
+                Nombre = usuario.Nombre,
+                Email = usuario.Email,
+                Rol = "Cliente",
+                FechaRegistro = DateTime.Now
+            };
+
+            await _context.Usuarios.AddAsync(nuevoUsuario);
+
+            return await _context.SaveChangesAsync() > 0;
+        }
+
     }
 }

@@ -1,3 +1,4 @@
+
 import { auth } from "./firebase.js";
 
 import {
@@ -503,7 +504,98 @@ async function cargarUsuarios() {
                 editarUsuario(usuario);
             });
 
-            acciones.appendChild(botonEditar);
+
+            // SELECTOR DE ROL
+
+            const selectorRol = document.createElement("select");
+
+            selectorRol.className = "selector-rol";
+
+            const opcionCliente = document.createElement("option");
+            opcionCliente.value = "Cliente";
+            opcionCliente.textContent = "Cliente";
+
+            const opcionEmpleado = document.createElement("option");
+            opcionEmpleado.value = "Empleado";
+            opcionEmpleado.textContent = "Empleado";
+
+            selectorRol.append(opcionCliente, opcionEmpleado);
+
+            const rolActual = (usuario.rol || "").toLowerCase();
+
+            selectorRol.value =
+                rolActual === "empleado" ? "Empleado" : "Cliente";
+
+
+            // BOTÓN GUARDAR ROL
+
+            const botonGuardarRol = document.createElement("button");
+
+            botonGuardarRol.type = "button";
+            botonGuardarRol.textContent = "Guardar rol";
+            botonGuardarRol.className = "boton-editar";
+
+            botonGuardarRol.addEventListener("click", async () => {
+
+                const nuevoRol = selectorRol.value;
+                const rolAnterior = usuario.rol;
+
+                if (nuevoRol === rolAnterior) {
+
+                    mensajeUsuarios.textContent =
+                        "El usuario ya tiene ese rol.";
+
+                    return;
+                }
+
+                botonGuardarRol.disabled = true;
+                botonGuardarRol.textContent = "Guardando...";
+
+                mensajeUsuarios.textContent = "";
+
+                try {
+
+                    await solicitarAPI(
+                        `${API}/usuarios/${usuario.usuarioId}`,
+                        {
+                            method: "PUT",
+
+                            headers: {
+                                "Content-Type": "application/json"
+                            },
+
+                            body: JSON.stringify({
+                                nombre: usuario.nombre,
+                                email: usuario.email,
+                                rol: nuevoRol
+                            })
+                        }
+                    );
+
+                    mensajeUsuarios.textContent =
+                        `¡El rol de ${usuario.nombre} se actualizó correctamente!`;
+
+                    await cargarUsuarios();
+
+                } catch (error) {
+
+                    console.error("Error al cambiar el rol:", error);
+
+                    mensajeUsuarios.textContent =
+                        error.message || "No se pudo actualizar el rol.";
+
+                    botonGuardarRol.disabled = false;
+                    botonGuardarRol.textContent = "Guardar rol";
+
+                }
+
+            });
+
+            acciones.append(
+                botonEditar,
+                selectorRol,
+                botonGuardarRol
+            );
 
             fila.append(
                 id,
@@ -752,20 +844,20 @@ function datosValidos(producto) {
 
     const marca = marcasGuardadas.get(producto.marcaId);
 
+    const productoOriginal = productoEditandoId !== null
+        ? productosGuardados.get(productoEditandoId)
+        : null;
 
-const productoOriginal = productoEditandoId !== null
-    ? productosGuardados.get(productoEditandoId)
-    : null;
+    const conservaMarcaActual =
+        productoOriginal &&
+        productoOriginal.marcaId === producto.marcaId;
 
-const conservaMarcaActual =
-    productoOriginal &&
-    productoOriginal.marcaId === producto.marcaId;
+    if (!marca || (!marca.activa && !conservaMarcaActual)) {
 
-if (!marca || (!marca.activa && !conservaMarcaActual)) {
-    mensaje.textContent = "Seleccioná una marca activa.";
-    return false;
-}
-    
+        mensaje.textContent = "Seleccioná una marca activa.";
+
+        return false;
+    }
 
     try {
 
@@ -896,12 +988,9 @@ function editarProducto(id) {
 
     inputNombre.value = producto.nombre || "";
 
-    // Seleccionar la marca correspondiente.
-
     inputMarca.value = producto.marcaId;
 
-    // Si la marca está inactiva, agregarla temporalmente
-    // para que se pueda conservar al editar el producto.
+    // Si la marca está inactiva, agregarla temporalmente.
 
     if (!inputMarca.value && producto.marcaId) {
 

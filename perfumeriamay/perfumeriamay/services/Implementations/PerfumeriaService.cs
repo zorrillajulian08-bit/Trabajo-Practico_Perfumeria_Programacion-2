@@ -31,7 +31,7 @@ namespace perfumeriamay.services.Implementations
                 return false;
             }
 
-            return await _repository.UpdatePerfume(id,producto);
+            return await _repository.UpdatePerfume(id, producto);
         }
 
         public async Task<bool> AgregarperfumeAsync(CreateProductoDTO producto)
@@ -197,7 +197,7 @@ namespace perfumeriamay.services.Implementations
             if (venta == null)
                 return false;
 
-    
+
 
             return await _repository.CreateVentaAsync(venta);
         }
@@ -234,7 +234,7 @@ namespace perfumeriamay.services.Implementations
 
             if (string.IsNullOrWhiteSpace(usuario.Email))
                 return false;
-            
+
             if (usuario.Rol == null)
                 return false;
 
@@ -251,6 +251,46 @@ namespace perfumeriamay.services.Implementations
                 return false;
 
             return await _repository.DeleteUsuarioAsync(id);
+        }
+        public async Task<bool> AgregarUsuarioAsync(CreateUsuarioDTO usuario)
+        {
+            // Validar que el objeto exista
+            if (usuario == null)
+                return false;
+
+            // Validar FirebaseUid
+            if (string.IsNullOrWhiteSpace(usuario.FirebaseUid))
+                return false;
+
+            // Validar Nombre
+            if (string.IsNullOrWhiteSpace(usuario.Nombre))
+                return false;
+
+            if (usuario.Nombre.Length > 100)
+                return false;
+
+            // Validar Email
+            if (string.IsNullOrWhiteSpace(usuario.Email))
+                return false;
+
+            if (usuario.Email.Length > 150)
+                return false;
+
+            if (!System.Text.RegularExpressions.Regex.IsMatch(
+                usuario.Email,
+                @"^[^@\s]+@[^@\s]+\.[^@\s]+$"))
+                return false;
+
+            // Validar longitud del UID
+            if (usuario.FirebaseUid.Length > 128)
+                return false;
+
+            // Asignar siempre el rol Cliente
+            usuario.FirebaseUid = usuario.FirebaseUid.Trim();
+            usuario.Nombre = usuario.Nombre.Trim();
+            usuario.Email = usuario.Email.Trim();
+
+            return await _repository.AddUsuarioAsync(usuario);
         }
     }
 }

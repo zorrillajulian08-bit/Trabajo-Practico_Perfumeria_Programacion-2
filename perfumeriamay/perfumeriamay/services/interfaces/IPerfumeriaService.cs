@@ -39,6 +39,8 @@ namespace perfumeriamay.services.interfaces
 
         public Task<Usuario?> ObtenerUsuarioPorIdAsync(int id);
 
+        public Task<bool> AgregarUsuarioAsync(CreateUsuarioDTO usuario);
+
         public Task<bool> ActualizarUsuarioAsync(int id, UpdateUsuariosDTO usuario);
 
         public Task<bool> EliminarUsuarioAsync(int id);

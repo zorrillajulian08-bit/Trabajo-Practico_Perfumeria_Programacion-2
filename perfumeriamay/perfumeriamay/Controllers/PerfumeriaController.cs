@@ -155,6 +155,19 @@ namespace perfumeriamay.Controllers
 
             return Ok("Venta registrada correctamente.");
         }
+        [HttpPost("usuarios")]
+        public async Task<IActionResult> AgregarUsuario(CreateUsuarioDTO usuario)
+        {
+            if (usuario == null)
+                return BadRequest("Los datos del usuario son obligatorios.");
+
+            var resultado = await _service.AgregarUsuarioAsync(usuario);
+
+            if (!resultado)
+                return BadRequest("No se pudo registrar el usuario.");
+
+            return Ok("Usuario registrado correctamente.");
+        }
 
 
         // =========================
