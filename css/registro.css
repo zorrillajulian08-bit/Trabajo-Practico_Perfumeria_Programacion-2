@@ -1,99 +1,166 @@
 
+/* =========================================
+   EMPRENDIMIENTO MAY - REGISTRO
+========================================= */
+
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap');
+
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
+:root {
+    --fondo: #f7f4ef;
+    --beige: #e8dfd2;
+    --marron: #77634f;
+    --marron-oscuro: #514333;
+    --texto: #39332d;
+    --blanco: #fffefa;
+}
+
 body {
     min-height: 100vh;
-    font-family: 'Segoe UI', sans-serif;
-    background: #f7f3ec;
-    color: #514536;
-}
+    font-family: 'Inter', sans-serif;
 
-.contenedor-login {
-    display: flex;
-    width: 100%;
-    min-height: 100vh;
-}
+    background:
+        linear-gradient(
+            rgba(35, 29, 23, 0.38),
+            rgba(35, 29, 23, 0.38)
+        ),
+        url("../images/login.png");
 
-/* PANEL DEL FORMULARIO */
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
 
-.panel-formulario {
-    width: 50%;
-    min-height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 65px;
-    background: #f8f5ef;
+
+    padding: 35px 20px;
 }
 
-.contenido-login {
+/* CONTENEDOR */
+
+.contenedor-registro {
     width: 100%;
-    max-width: 430px;
+    max-width: 490px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* PANEL */
+
+.panel-formulario {
+    width: 100%;
+
+    background: rgba(247, 244, 239, 0.91);
+
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+
+    border: 1px solid rgba(255, 255, 255, 0.55);
+
+    border-radius: 18px;
+
+    box-shadow: 0 15px 45px rgba(0, 0, 0, 0.22);
+
+    padding: 35px 42px;
+}
+
+/* CONTENIDO */
+
+.contenido-registro {
+    width: 100%;
 }
 
 /* VOLVER */
 
 .volver {
     display: inline-block;
-    margin-bottom: 45px;
-    color: #a58a62;
+
     text-decoration: none;
-    font-size: 13px;
+    color: var(--marron);
+
+    font-size: 12px;
+    font-weight: 500;
+
+    margin-bottom: 20px;
+
     transition: 0.3s;
 }
 
 .volver:hover {
-    color: #776044;
+    color: var(--marron-oscuro);
+    transform: translateX(-3px);
 }
 
 /* MARCA */
 
 .marca {
-    margin-bottom: 38px;
+    text-align: center;
+    margin-bottom: 18px;
 }
 
 .marca h1 {
-    font-family: Georgia, serif;
-    font-size: 23px;
-    font-weight: 400;
+    font-family: 'Cormorant Garamond', serif;
+
+    font-size: 29px;
+    font-weight: 600;
+
     letter-spacing: 3px;
-    color: #514536;
+    color: var(--marron-oscuro);
 }
 
 .marca span {
     display: block;
-    margin-top: 9px;
+
     font-size: 10px;
     letter-spacing: 5px;
-    color: #a58a62;
+
+    color: var(--marron);
+    margin-top: 3px;
 }
 
-/* TÍTULOS */
+/* TEXTOS */
 
 .subtitulo {
-    color: #a58a62;
-    font-size: 11px;
+    text-align: center;
+
+    color: var(--marron);
+    font-size: 10px;
+
     letter-spacing: 3px;
-    margin-bottom: 14px;
+    font-weight: 600;
+
+    margin-top: 20px;
+    margin-bottom: 5px;
 }
 
-.contenido-login h2 {
-    font-family: Georgia, serif;
-    font-size: 42px;
-    font-weight: 400;
-    margin-bottom: 14px;
-    color: #514536;
+.contenido-registro h2 {
+    text-align: center;
+
+    font-family: 'Cormorant Garamond', serif;
+
+    font-size: 35px;
+    font-weight: 600;
+
+    color: var(--texto);
 }
 
 .descripcion {
-    color: #918575;
-    font-size: 14px;
-    line-height: 1.7;
-    margin-bottom: 38px;
+    text-align: center;
+
+    color: #777067;
+    font-size: 12px;
+
+    margin-top: 5px;
+    margin-bottom: 25px;
 }
 
 /* FORMULARIO */
@@ -101,149 +168,144 @@ body {
 #form-registro {
     display: flex;
     flex-direction: column;
-    width: 100%;
+    gap: 13px;
 }
 
-#form-registro label {
-    font-size: 13px;
+.grupo-input {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.grupo-input label {
+    color: var(--marron-oscuro);
+
+    font-size: 11px;
     font-weight: 600;
-    margin-bottom: 11px;
-    color: #625543;
 }
 
-#form-registro input {
+.grupo-input input {
     width: 100%;
-    height: 53px;
-    padding: 0 17px;
-    margin-bottom: 27px;
-    border: 1px solid #ded4c4;
-    border-radius: 6px;
-    background: #fffdf9;
-    color: #514536;
-    font-size: 14px;
+    height: 43px;
+
+    padding: 0 14px;
+
+    border: 1px solid #d9cfc1;
+    border-radius: 7px;
+
+    background: rgba(255, 254, 250, 0.85);
+
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+
+    color: var(--texto);
+
     outline: none;
-    transition: all 0.3s ease;
+    transition: 0.3s;
 }
 
-#form-registro input:focus {
-    border-color: #a58a62;
-    box-shadow: 0 0 0 4px rgba(165, 138, 98, 0.10);
+.grupo-input input::placeholder {
+    color: #aaa095;
 }
 
-#form-registro input::placeholder {
-    color: #b5aa9a;
+.grupo-input input:focus {
+    border-color: var(--marron);
+
+    box-shadow: 0 0 0 3px rgba(119, 99, 79, 0.10);
 }
 
 /* BOTÓN */
 
-.boton-login {
+.boton-registro {
     width: 100%;
-    height: 55px;
-    margin-top: 5px;
-    background: #a58a62;
-    color: white;
+    height: 46px;
+
+    margin-top: 8px;
+
     border: none;
-    border-radius: 6px;
-    font-size: 13px;
-    letter-spacing: 2px;
+    border-radius: 7px;
+
+    background: var(--marron-oscuro);
+    color: var(--blanco);
+
+    font-family: 'Inter', sans-serif;
+
+    font-size: 11px;
     font-weight: 600;
+    letter-spacing: 2px;
+
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: 0.3s;
 }
 
-.boton-login:hover {
-    background: #806744;
+.boton-registro:hover {
+    background: #77634f;
+
     transform: translateY(-2px);
+
+    box-shadow: 0 5px 15px rgba(81, 67, 51, 0.20);
 }
 
-/* MENSAJE */
+/* MENSAJES */
 
-#mensaje-registro {
-    margin-top: 17px;
-    font-size: 13px;
+.mensaje {
     text-align: center;
+
+    font-size: 12px;
+    margin-top: 3px;
+}
+
+.mensaje.error {
+    color: #b23b32;
+}
+
+.mensaje.exito {
+    color: #47734d;
 }
 
 /* LOGIN */
 
 .registro {
-    margin-top: 32px;
     text-align: center;
-    font-size: 13px;
-    color: #918575;
+
+    margin-top: 22px;
+
+    font-size: 11px;
+    color: #777067;
 }
 
 .registro a {
-    color: #a58a62;
+    color: var(--marron-oscuro);
+
     font-weight: 600;
     text-decoration: none;
+
+    margin-left: 3px;
 }
 
 .registro a:hover {
     text-decoration: underline;
 }
 
-/* IMAGEN */
-
-.panel-imagen {
-    width: 50%;
-    min-height: 100vh;
-    display: flex;
-    align-items: flex-end;
-    justify-content: center;
-    padding: 75px;
-    background:
-        linear-gradient(
-            rgba(35, 27, 20, 0.20),
-            rgba(35, 27, 20, 0.55)
-        ),
-        url("../images/Baccarat.jpg");
-    background-size: cover;
-    background-position: center;
-}
-
-.frase {
-    text-align: center;
-    color: white;
-    max-width: 450px;
-}
-
-.frase h2 {
-    font-family: Georgia, serif;
-    font-size: 42px;
-    font-weight: 400;
-    margin-bottom: 18px;
-}
-
-.frase p {
-    font-size: 14px;
-    color: #eee5d9;
-    letter-spacing: 1px;
-}
-
 /* RESPONSIVE */
 
-@media (max-width: 950px) {
-    .panel-formulario {
-        width: 100%;
-        padding: 45px 30px;
-    }
+@media (max-width: 500px) {
 
-    .panel-imagen {
-        display: none;
-    }
-
-    .contenido-login {
-        max-width: 450px;
-    }
-}
-
-@media (max-width: 480px) {
-    .contenido-login h2 {
-        font-size: 34px;
+    body {
+        padding: 20px 14px;
+        background-attachment: scroll;
     }
 
     .panel-formulario {
-        padding: 35px 22px;
+        padding: 28px 23px;
     }
+
+    .marca h1 {
+        font-size: 25px;
+    }
+
+    .contenido-registro h2 {
+        font-size: 31px;
+    }
+
 }

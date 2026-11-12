@@ -1,3 +1,4 @@
+
 const perfumes = [
     {
         nombre: "Afnan 9PM",
@@ -44,6 +45,10 @@ const detalle = document.getElementById("detalle-perfume");
 
 const CLAVE_CARRITO = "carritoMay";
 
+// ========================================
+// FUNCIONES DEL CARRITO
+// ========================================
+
 function obtenerCarrito() {
     return JSON.parse(localStorage.getItem(CLAVE_CARRITO)) || [];
 }
@@ -89,20 +94,27 @@ function agregarAlCarrito(perfume) {
     actualizarContador();
 }
 
+// ========================================
+// MOSTRAR DETALLE DEL PERFUME
+// ========================================
+
 if (detalle) {
+
     if (perfume) {
+
         document.title = perfume.nombre + " | Emprendimiento May";
 
         const seccion = document.createElement("section");
         seccion.className = "producto-detalle";
 
-        // Imagen del perfume
+        // IMAGEN
+
         const foto = document.createElement("div");
         foto.className = "detalle-foto";
 
         const imagen = document.createElement("img");
         imagen.id = "imagen-perfume";
-       imagen.src =  perfume.imagen
+        imagen.src = perfume.imagen;
         imagen.alt = perfume.nombre;
         imagen.tabIndex = 0;
         imagen.setAttribute("role", "button");
@@ -114,7 +126,8 @@ if (detalle) {
 
         foto.append(imagen, ayuda);
 
-        // Información del producto
+        // INFORMACIÓN
+
         const datos = document.createElement("div");
         datos.className = "detalle-datos";
 
@@ -143,33 +156,37 @@ if (detalle) {
         const precio = document.createElement("p");
         precio.className = "detalle-precio";
         precio.textContent = "$" + perfume.precio.toLocaleString("es-AR");
-// Contenedor de botones
-const botones = document.createElement("div");
-botones.className = "botones-detalle";
 
-// Botón volver al catálogo
-const volver = document.createElement("a");
-volver.className = "boton-volver";
-volver.href = "index.html#catalogo";
-volver.textContent = "← Volver al catálogo";
+        // BOTONES
 
-// Botón agregar al carrito
-const botonCarrito = document.createElement("button");
-botonCarrito.className = "boton-volver boton-carrito";
-botonCarrito.type = "button";
-botonCarrito.innerHTML = '<span>🛒</span> Agregar al carrito';
+        const botones = document.createElement("div");
+        botones.className = "botones-detalle";
 
-botonCarrito.addEventListener("click", function () {
-    agregarAlCarrito(perfume);
-    window.location.href = "../carrito.html";
-});
+        const volver = document.createElement("a");
+        volver.className = "boton-volver";
+        volver.href = "index.html#catalogo";
+        volver.textContent = "← Volver al catálogo";
 
-botones.append(volver, botonCarrito);
+        const botonCarrito = document.createElement("button");
+        botonCarrito.className = "boton-volver boton-carrito";
+        botonCarrito.type = "button";
+        botonCarrito.innerHTML = '<span>🛒</span> Agregar al carrito';
+
+        botonCarrito.addEventListener("click", function () {
+            agregarAlCarrito(perfume);
+
+            // Ambos archivos están en la carpeta raíz.
+            window.location.href = "carrito.html";
+        });
+
+        botones.append(volver, botonCarrito);
+
+        // UNIR ELEMENTOS
 
         datos.append(
-             marca,
-             titulo,
-             categoria,
+            marca,
+            titulo,
+            categoria,
             descripcion,
             separador,
             textoPrecio,
@@ -180,7 +197,10 @@ botones.append(volver, botonCarrito);
         seccion.append(foto, datos);
         detalle.replaceChildren(seccion);
 
-        // Visor de imagen
+        // ========================================
+        // VISOR DE IMAGEN AMPLIADA
+        // ========================================
+
         const zoom = document.createElement("div");
         zoom.className = "zoom-overlay";
 
@@ -234,6 +254,7 @@ botones.append(volver, botonCarrito);
         });
 
     } else {
+
         document.title = "Perfume no encontrado | Emprendimiento May";
 
         const mensaje = document.createElement("div");

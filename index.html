@@ -1,118 +1,211 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Emprendimiento May | Perfumería</title>
+
     <link rel="stylesheet" href="css/index.css">
+
     <script type="module" src="js/script.js"></script>
     <script type="module" src="js/proteccion.js"></script>
 </head>
+
 <body>
 
+    <!-- ENCABEZADO -->
     <header class="encabezado">
         <a href="index.html" class="logo">
-            <h1>EMPRENDIMIENTO MAY</h1>
-            <span>PERFUMERÍA</span>
+            <span>EMPRENDIMIENTO MAY</span>
+            <small>PERFUMERÍA</small>
         </a>
 
         <nav>
             <a href="#inicio">Inicio</a>
             <a href="#catalogo">Catálogo</a>
             <a href="#contacto">Contacto</a>
-            <a href="#" id="cerrar-sesion" hidden>Cerrar sesión</a>
+
+            <a href="carrito.html" class="enlace-carrito">
+                Carrito
+                <span id="contador-carrito">0</span>
+            </a>
+
+            <button id="cerrar-sesion" class="boton-cerrar-sesion" type="button">
+                Cerrar sesión
+            </button>
         </nav>
     </header>
 
+
+    <!-- PORTADA PRINCIPAL -->
     <main>
+
         <section class="portada" id="inicio">
-            <div class="portada-texto">
-                <p class="subtitulo">FRAGANCIAS QUE HABLAN POR VOS</p>
-                <h2>Elegancia en cada esencia</h2>
-                <p>
-                    Descubrí nuestra selección de perfumes
-                    para cada ocasión.
-                </p>
-                <a href="#catalogo" class="boton-principal">
-                    VER CATÁLOGO →
-                </a>
-            </div>
 
-            <div class="portada-imagenes">
-                <img src="images/SauvageDior.jpg" alt="Dior Sauvage">
-                <img src="images/GoodGirl.jpg" alt="Good Girl">
-                <img src="images/Baccarat.jpg" alt="Baccarat Rouge">
-            </div>
+    <div class="portada-contenido">
+        <p class="portada-etiqueta">
+            EMPRENDIMIENTO MAY · PERFUMERÍA
+        </p>
+
+        <h1>
+            Una fragancia.
+            <br>
+            <span>Una identidad.</span>
+        </h1>
+
+        <p class="portada-descripcion">
+            Descubrí una selección de fragancias elegidas
+            para acompañar tu estilo y dejar una impresión única.
+        </p>
+
+        <a href="#catalogo" class="boton-explorar">
+            EXPLORAR FRAGANCIAS
+            <span>→</span>
+        </a>
+    </div>
+
+    <div class="portada-numero">01 / 04</div>
+
+</section>
+
+
+        <!-- PRESENTACIÓN -->
+        <section class="introduccion">
+            <p class="texto-superior">EL ARTE DE ELEGIR</p>
+
+            <h2>
+                Encontrá una fragancia
+                <span>que hable por vos.</span>
+            </h2>
+
+            <p>
+                Explorá nuestra colección y descubrí aromas para cada
+                personalidad, momento y ocasión.
+            </p>
         </section>
 
+
+        <!-- CATEGORÍAS -->
         <section class="categorias">
-            <a href="#catalogo" onclick="elegirCategoria('masculino')">
-                <span>♂</span>
-                Masculinos
-            </a>
 
-            <a href="#catalogo" onclick="elegirCategoria('femenino')">
-                <span>♀</span>
-                Femeninos
-            </a>
+            <button class="categoria-item" type="button"
+                onclick="elegirCategoria('Masculino')">
+                <span class="categoria-numero">01</span>
+                <span class="categoria-nombre">Masculinos</span>
+                <span class="categoria-flecha">↗</span>
+            </button>
 
-            <a href="#catalogo" onclick="elegirCategoria('unisex')">
-                <span>⚭</span>
-                Unisex
-            </a>
+            <button class="categoria-item" type="button"
+                onclick="elegirCategoria('Femenino')">
+                <span class="categoria-numero">02</span>
+                <span class="categoria-nombre">Femeninos</span>
+                <span class="categoria-flecha">↗</span>
+            </button>
 
-            <a href="#catalogo" onclick="elegirCategoria('todos')">
-                <span>☆</span>
-                Todos
-            </a>
+            <button class="categoria-item" type="button"
+                onclick="elegirCategoria('Unisex')">
+                <span class="categoria-numero">03</span>
+                <span class="categoria-nombre">Unisex</span>
+                <span class="categoria-flecha">↗</span>
+            </button>
+
         </section>
 
+
+        <!-- CATÁLOGO -->
         <section class="seccion-catalogo" id="catalogo">
-            <div class="busqueda">
-                <input
-                    type="text"
-                    id="buscador"
-                    placeholder="Buscar perfume o marca..."
-                >
+
+            <div class="catalogo-encabezado">
+                <div>
+                    <p class="texto-superior">NUESTRA COLECCIÓN</p>
+                    <h2>Descubrí nuestras fragancias</h2>
+                </div>
+
+                <p class="catalogo-subtitulo">
+                    Encontrá tu próximo aroma favorito.
+                </p>
+            </div>
+
+
+            <!-- BUSCADOR Y FILTROS -->
+            <div class="herramientas-catalogo">
+
+                <div class="busqueda">
+                    <span class="icono-busqueda">⌕</span>
+
+                    <input
+                        type="text"
+                        id="buscador"
+                        placeholder="Buscar por nombre o marca..."
+                        autocomplete="off"
+                    >
+                </div>
 
                 <select id="categoria">
-                    <option value="todos">Todas las categorías</option>
-                    <option value="masculino">Masculinos</option>
-                    <option value="femenino">Femeninos</option>
-                    <option value="unisex">Unisex</option>
+                    <option value="Todas">Todas las categorías</option>
+                    <option value="Masculino">Masculino</option>
+                    <option value="Femenino">Femenino</option>
+                    <option value="Unisex">Unisex</option>
                 </select>
+
             </div>
 
-            <div class="titulo-catalogo">
-                <div>
-                    <p class="subtitulo">NUESTROS PRODUCTOS</p>
-                    <h2>Perfumes destacados</h2>
-                </div>
-            </div>
 
+            <!-- LOS PRODUCTOS SE CARGAN DESDE script.js -->
             <div class="productos" id="productos">
+                <p class="cargando-productos">Cargando fragancias...</p>
             </div>
+
         </section>
+
+
+        <!-- BENEFICIOS -->
+        <section class="beneficios">
+
+            <div class="beneficio">
+                <span class="beneficio-numero">01</span>
+                <h3>Fragancias seleccionadas</h3>
+                <p>Una colección pensada para distintos estilos.</p>
+            </div>
+
+            <div class="beneficio">
+                <span class="beneficio-numero">02</span>
+                <h3>Atención personalizada</h3>
+                <p>Te ayudamos a encontrar tu próxima fragancia.</p>
+            </div>
+
+            <div class="beneficio">
+                <span class="beneficio-numero">03</span>
+                <h3>Una experiencia especial</h3>
+                <p>Descubrí aromas que acompañan tu identidad.</p>
+            </div>
+
+        </section>
+
     </main>
 
+
+    <!-- PIE DE PÁGINA -->
     <footer id="contacto">
-        <div>
-            <h2>EMPRENDIMIENTO MAY</h2>
-            <p>PERFUMERÍA</p>
-            <span>El aroma que te representa.</span>
+
+        <div class="footer-contenido">
+            <div class="footer-marca">
+                <h2>EMPRENDIMIENTO MAY</h2>
+                <p>PERFUMERÍA</p>
+            </div>
+
+            <div class="footer-info">
+                <p>El arte de elegir tu fragancia.</p>
+                <a href="#inicio">Volver arriba ↑</a>
+            </div>
         </div>
 
-        <div>
-            <h3>Explorá</h3>
-            <a href="#inicio">Inicio</a>
-            <a href="#catalogo">Catálogo</a>
-            <a href="#contacto">Contacto</a>
+        <div class="footer-final">
+            <p>© 2026 Emprendimiento May · Todos los derechos reservados</p>
         </div>
 
-        <div>
-            <p>Gracias por elegirnos.</p>
-            <small>© 2026 Emprendimiento May</small>
-        </div>
     </footer>
 
 </body>

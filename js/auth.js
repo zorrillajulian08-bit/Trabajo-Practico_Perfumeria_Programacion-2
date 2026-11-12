@@ -9,40 +9,104 @@ import {
 } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-auth.js";
 
 
-// DIRECCIÓN DE LA API
+// ==========================================
+// CONFIGURACIÓN DE LA API
+// ==========================================
 
 const API = "https://localhost:7177/api/Perfumeria";
 
 
 // ==========================================
-// SELECTOR CLIENTE / EMPLEADO
+// ELEMENTOS DEL HTML
 // ==========================================
 
+const formularioRegistro = document.getElementById("form-registro");
+const formularioLogin = document.getElementById("form-login");
+
+const inputNombre = document.getElementById("nombre");
+const inputEmail = document.getElementById("email");
+const inputPassword = document.getElementById("password");
+const inputConfirmarPassword = document.getElementById("confirmar-password");
+
+const mensajeRegistro = document.getElementById("mensaje-registro");
+const mensajeLogin = document.getElementById("mensaje-login");
+
+const rolLogin = document.getElementById("rol-login");
 const botonesRol = document.querySelectorAll(".boton-rol");
-const inputRol = document.getElementById("rol-login");
 
-botonesRol.forEach(boton => {
 
-    boton.addEventListener("click", () => {
+// ==========================================
+// FUNCIONES AUXILIARES
+// ==========================================
 
-        botonesRol.forEach(b => {
-            b.classList.remove("seleccionado");
+function mostrarMensaje(elemento, mensaje, tipo = "error") {
+    if (!elemento) return;
+
+    elemento.textContent = mensaje;
+    elemento.className = `mensaje ${tipo}`;
+}
+
+function limpiarMensaje(elemento) {
+    if (!elemento) return;
+
+    elemento.textContent = "";
+    elemento.className = "mensaje";
+}
+
+async function obtenerMensajeRespuesta(response) {
+    const texto = await response.text();
+
+    if (!texto) {
+        return `Error HTTP ${response.status}`;
+    }
+
+    try {
+        const datos = JSON.parse(texto);
+
+        if (typeof datos === "string") {
+            return datos;
+        }
+
+        return datos.message ||
+            datos.title ||
+            datos.detail ||
+            texto;
+    } catch {
+        return texto;
+    }
+}
+
+
+// ==========================================
+// SELECCIÓN DE ROL EN EL LOGIN
+// ==========================================
+
+if (botonesRol.length > 0) {
+
+    botonesRol.forEach(boton => {
+
+        boton.addEventListener("click", () => {
+
+            botonesRol.forEach(b => {
+                b.classList.remove("seleccionado");
+            });
+
+            boton.classList.add("seleccionado");
+
+            if (rolLogin) {
+                rolLogin.value = boton.dataset.rol;
+            }
+
+            limpiarMensaje(mensajeLogin);
         });
-
-        boton.classList.add("seleccionado");
-
-        inputRol.value = boton.dataset.rol;
-
     });
 
-});
+}
 
 
 // ==========================================
 // REGISTRO DE USUARIOS
 // ==========================================
-
-const formularioRegistro = document.getElementById("form-registro");
 
 if (formularioRegistro) {
 
@@ -50,49 +114,71 @@ if (formularioRegistro) {
 
         e.preventDefault();
 
-        const nombre = document.getElementById("nombre").value.trim();
-        const email = document.getElementById("email").value.trim();
-        const password = document.getElementById("password").value;
-        const confirmarPassword = document.getElementById("confirmar-password").value;
+        limpiarMensaje(mensajeRegistro);
 
-        const mensaje = document.getElementById("mensaje-registro");
-        const botonRegistrar = formularioRegistro.querySelector(".boton-login");
+        const nombre = inputNombre.value.trim();
+        const email = inputEmail.value.trim();
+        const password = inputPassword.value;
+        const confirmarPassword = inputConfirmarPassword.value;
 
-        mensaje.textContent = "";
-        botonRegistrar.disabled = true;
+        // VALIDACIONES
+
+        if (!nombre || !email || !password || !confirmarPassword) {
+            mostrarMensaje(
+                mensajeRegistro,
+                "Completá todos los campos."
+            );
+            return;
+        }
+
+        if (nombre.length > 100) {
+            mostrarMensaje(
+                mensajeRegistro,
+                "El nombre no puede superar los 100 caracteres."
+            );
+            return;
+        }
+
+        if (email.length > 150) {
+            mostrarMensaje(
+                mensajeRegistro,
+                "El email es demasiado largo."
+            );
+            return;
+        }
+
+        if (password !== confirmarPassword) {
+            mostrarMensaje(
+                mensajeRegistro,
+                "Las contraseñas no coinciden."
+            );
+            return;
+        }
+
+        if (password.length < 6) {
+            mostrarMensaje(
+                mensajeRegistro,
+                "La contraseña debe tener al menos 6 caracteres."
+            );
+            return;
+        }
 
         let usuarioFirebase = null;
 
         try {
 
-            // VALIDACIONES
+            // CREAR USUARIO EN FIREBASE
 
-            if (!nombre || !email || !password || !confirmarPassword) {
-                mensaje.textContent = "Completá todos los campos.";
-                return;
-            }
-
-            if (password.length < 6) {
-                mensaje.textContent = "La contraseña debe tener al menos 6 caracteres.";
-                return;
-            }
-
-            if (password !== confirmarPassword) {
-                mensaje.textContent = "Las contraseñas no coinciden.";
-                return;
-            }
-
-            // 1. CREAR CUENTA EN FIREBASE
-
-            const credenciales = await createUserWithEmailAndPassword(
-                auth,
-                email,
-                password
-            );
+            const credenciales =
+                await createUserWithEmailAndPassword(
+                    auth,
+                    email,
+                    password
+                );
 
             usuarioFirebase = credenciales.user;
 
-            // 2. PREPARAR DATOS PARA SQL SERVER
+            // PREPARAR DATOS PARA SQL SERVER
 
             const nuevoUsuario = {
                 firebaseUid: usuarioFirebase.uid,
@@ -100,72 +186,70 @@ if (formularioRegistro) {
                 email: email
             };
 
-            // 3. ENVIAR USUARIO A LA API
+            // REGISTRAR USUARIO EN LA API
 
-            const respuesta = await fetch(`${API}/usuarios`, {
-
+            const response = await fetch(`${API}/usuarios`, {
                 method: "POST",
-
                 headers: {
                     "Content-Type": "application/json"
                 },
-
                 body: JSON.stringify(nuevoUsuario)
-
             });
 
-            if (!respuesta.ok) {
-                throw new Error("No se pudo guardar el usuario en SQL Server.");
-            }
+            if (!response.ok) {
 
-            // 4. CERRAR SESIÓN DE FIREBASE
+                const mensaje = await obtenerMensajeRespuesta(response);
 
-            await signOut(auth);
-
-            formularioRegistro.reset();
-
-            mensaje.textContent = "¡Cuenta creada correctamente! Ya podés iniciar sesión.";
-
-        } catch (error) {
-
-            console.error(error);
-
-            // Si Firebase creó la cuenta pero SQL falló,
-            // intentamos eliminar la cuenta recién creada.
-
-            if (usuarioFirebase) {
+                // ELIMINAR CUENTA DE FIREBASE SI FALLA SQL
 
                 try {
                     await deleteUser(usuarioFirebase);
-                } catch (errorEliminar) {
-                    console.error("No se pudo eliminar la cuenta de Firebase:", errorEliminar);
+                } catch (error) {
+                    console.error(
+                        "No se pudo eliminar el usuario de Firebase:",
+                        error
+                    );
+
                     await signOut(auth);
                 }
 
+                throw new Error(mensaje);
             }
+
+            mostrarMensaje(
+                mensajeRegistro,
+                "¡Cuenta creada correctamente! Ya podés iniciar sesión.",
+                "exito"
+            );
+
+            formularioRegistro.reset();
+
+        } catch (error) {
+
+            console.error("ERROR COMPLETO AL REGISTRAR:", error);
+
+            let mensaje = "No se pudo completar el registro.";
 
             if (error.code === "auth/email-already-in-use") {
-
-                mensaje.textContent = "Ese correo ya está registrado.";
-
-            } else if (error.code === "auth/invalid-email") {
-
-                mensaje.textContent = "El correo electrónico no es válido.";
-
-            } else if (error.code === "auth/weak-password") {
-
-                mensaje.textContent = "La contraseña es demasiado débil.";
-
-            } else {
-
-                mensaje.textContent = "No se pudo completar el registro. Intentá nuevamente.";
-
+                mensaje = "Este email ya está registrado.";
+            }
+            else if (error.code === "auth/invalid-email") {
+                mensaje = "El email no es válido.";
+            }
+            else if (error.code === "auth/weak-password") {
+                mensaje = "La contraseña es demasiado débil.";
+            }
+            else if (
+                error.message &&
+                error.message.includes("Failed to fetch")
+            ) {
+                mensaje = "No se pudo conectar con el servidor.";
+            }
+            else if (error.message) {
+                mensaje = error.message;
             }
 
-        } finally {
-
-            botonRegistrar.disabled = false;
-
+            mostrarMensaje(mensajeRegistro, mensaje);
         }
 
     });
@@ -177,123 +261,156 @@ if (formularioRegistro) {
 // INICIO DE SESIÓN
 // ==========================================
 
-const formulario = document.getElementById("form-login");
+if (formularioLogin) {
 
-if (formulario) {
-
-    formulario.addEventListener("submit", async (e) => {
+    formularioLogin.addEventListener("submit", async (e) => {
 
         e.preventDefault();
 
-        const email = document.getElementById("email").value.trim();
-        const password = document.getElementById("password").value;
-        const rolSeleccionado = inputRol?.value;
+        limpiarMensaje(mensajeLogin);
 
-        const mensaje = document.getElementById("mensaje-login");
-        const botonIngresar = formulario.querySelector(".boton-login");
+        const email = inputEmail.value.trim();
+        const password = inputPassword.value;
 
-        mensaje.textContent = "";
-        botonIngresar.disabled = true;
+        const rolSeleccionado =
+            rolLogin?.value?.toLowerCase();
+
+        if (!email || !password) {
+            mostrarMensaje(
+                mensajeLogin,
+                "Completá el email y la contraseña."
+            );
+            return;
+        }
+
+        if (
+            rolSeleccionado !== "cliente" &&
+            rolSeleccionado !== "empleado"
+        ) {
+            mostrarMensaje(
+                mensajeLogin,
+                "Seleccioná si querés ingresar como cliente o empleado."
+            );
+            return;
+        }
+
+        let usuarioFirebase = null;
 
         try {
 
-            if (!rolSeleccionado) {
-                mensaje.textContent = "Seleccioná Cliente o Empleado.";
-                return;
+            // INICIAR SESIÓN EN FIREBASE
+
+            const credenciales =
+                await signInWithEmailAndPassword(
+                    auth,
+                    email,
+                    password
+                );
+
+            usuarioFirebase = credenciales.user;
+
+            // CONSULTAR USUARIOS EN SQL SERVER
+
+            const response = await fetch(`${API}/usuarios`);
+
+            if (!response.ok) {
+
+                const mensaje = await obtenerMensajeRespuesta(response);
+
+                throw new Error(
+                    `Error al consultar SQL Server. Código HTTP: ${response.status}. ${mensaje}`
+                );
             }
 
-            // 1. COMPROBAR CORREO Y CONTRASEÑA EN FIREBASE
+            const usuarios = await response.json();
 
-            const credenciales = await signInWithEmailAndPassword(
-                auth,
-                email,
-                password
-            );
+            // BUSCAR EL USUARIO MEDIANTE SU UID DE FIREBASE
 
-            const usuarioFirebase = credenciales.user;
-
-            // 2. CONSULTAR LOS USUARIOS DE SQL SERVER
-
-            const respuesta = await fetch(`${API}/usuarios`);
-
-            if (!respuesta.ok) {
-                throw new Error("No se pudieron consultar los usuarios.");
-            }
-
-            const usuarios = await respuesta.json();
-
-            // 3. BUSCAR EL USUARIO MEDIANTE SU FIREBASE UID
-
-            const usuarioSQL = usuarios.find(usuario =>
-                (usuario.firebaseUid || usuario.FirebaseUid) === usuarioFirebase.uid
+            const usuarioSQL = usuarios.find(
+                usuario =>
+                    usuario.firebaseUid === usuarioFirebase.uid
             );
 
             if (!usuarioSQL) {
-
-                await signOut(auth);
-
-                mensaje.textContent = "No encontramos tu perfil en la base de datos.";
-
-                return;
+                throw new Error(
+                    "No se encontró el usuario en la base de datos."
+                );
             }
 
-            // 4. COMPROBAR EL ROL
+            const rolUsuario = usuarioSQL.rol?.toLowerCase();
 
-            const rolReal = (
-                usuarioSQL.rol || usuarioSQL.Rol || ""
-            ).toLowerCase();
+            // VALIDAR ROL SELECCIONADO
 
-            if (rolSeleccionado !== rolReal) {
+            if (rolSeleccionado === "empleado") {
 
-                await signOut(auth);
-
-                mensaje.textContent = rolSeleccionado === "empleado"
-                    ? "Esta cuenta no está autorizada como empleado."
-                    : "Esta cuenta está registrada como empleado.";
-
-                return;
-            }
-
-            // 5. REDIRECCIONAR
-
-            if (rolReal === "empleado") {
+                if (rolUsuario !== "empleado") {
+                    throw new Error(
+                        "No tenés permisos para ingresar como empleado."
+                    );
+                }
 
                 window.location.href = "empleado.html";
+                return;
+            }
 
-            } else if (rolReal === "cliente") {
+            if (rolSeleccionado === "cliente") {
+
+                if (rolUsuario !== "cliente") {
+                    throw new Error(
+                        "Tu cuenta no tiene permisos para ingresar como cliente."
+                    );
+                }
 
                 window.location.href = "index.html";
-
-            } else {
-
-                await signOut(auth);
-
-                mensaje.textContent = "El rol de esta cuenta no es válido.";
-
+                return;
             }
 
         } catch (error) {
 
-            console.error(error);
+            console.error(
+                "ERROR COMPLETO AL INICIAR SESIÓN:",
+                error
+            );
+
+            console.error("Código:", error.code);
+            console.error("Mensaje:", error.message);
+
+            // CERRAR SESIÓN SI EL LOGIN NO SE COMPLETÓ
+
+            if (usuarioFirebase) {
+                try {
+                    await signOut(auth);
+                } catch (errorSignOut) {
+                    console.error(
+                        "Error al cerrar sesión:",
+                        errorSignOut
+                    );
+                }
+            }
+
+            let mensaje = "No se pudo iniciar sesión.";
 
             if (
                 error.code === "auth/invalid-credential" ||
-                error.code === "auth/user-not-found" ||
-                error.code === "auth/wrong-password"
+                error.code === "auth/wrong-password" ||
+                error.code === "auth/user-not-found"
             ) {
-
-                mensaje.textContent = "Correo o contraseña incorrectos.";
-
-            } else {
-
-                mensaje.textContent = "Ocurrió un error al iniciar sesión. Intentá nuevamente.";
-
+                mensaje = "El email o la contraseña son incorrectos.";
+            }
+            else if (error.code === "auth/invalid-email") {
+                mensaje = "El email no es válido.";
+            }
+            else if (
+                error.message &&
+                error.message.includes("Failed to fetch")
+            ) {
+                mensaje = "No se pudo conectar con el servidor.";
+            }
+            else if (error.message) {
+                mensaje = error.message;
             }
 
-        } finally {
-
-            botonIngresar.disabled = false;
-
+            mostrarMensaje(mensajeLogin, mensaje);
         }
 
     });

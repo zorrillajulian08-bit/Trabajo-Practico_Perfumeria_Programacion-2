@@ -1,3 +1,4 @@
+
 import { db } from "../js/firebase.js";
 
 import {
@@ -5,7 +6,10 @@ import {
     getDocs
 } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-firestore.js";
 
+
+// ========================================
 // PRODUCTOS ORIGINALES
+// ========================================
 
 const perfumesOriginales = [
     {
@@ -38,24 +42,38 @@ const perfumesOriginales = [
     }
 ];
 
-// ELEMENTOS DEL HTML
 
-const catalogo = document.getElementById("catalogo");
+// ========================================
+// ELEMENTOS DEL HTML
+// ========================================
+
+const catalogo = document.getElementById("productos");
 const buscador = document.getElementById("buscador");
 const categoria = document.getElementById("categoria");
 
+
+// ========================================
 // LISTA GENERAL DE PERFUMES
+// ========================================
 
 let perfumes = [...perfumesOriginales];
 
+
+// ========================================
 // MOSTRAR PRODUCTOS
+// ========================================
 
 function mostrarPerfumes(lista) {
+
+    if (!catalogo) {
+        console.error("No se encontró el contenedor de productos.");
+        return;
+    }
 
     catalogo.innerHTML = "";
 
     if (lista.length === 0) {
-        catalogo.innerHTML = "<p>No se encontraron perfumes.</p>";
+        catalogo.innerHTML = "<p class='cargando-productos'>No se encontraron perfumes.</p>";
         return;
     }
 
@@ -80,6 +98,7 @@ function mostrarPerfumes(lista) {
 
         const precio = document.createElement("p");
         precio.className = "precio";
+
         precio.textContent = new Intl.NumberFormat("es-AR", {
             style: "currency",
             currency: "ARS",
@@ -93,17 +112,23 @@ function mostrarPerfumes(lista) {
         });
 
         tarjeta.addEventListener("keydown", (event) => {
+
             if (event.key === "Enter") {
                 verPerfume(perfume.nombre);
             }
+
         });
 
         catalogo.appendChild(tarjeta);
 
     });
+
 }
 
+
+// ========================================
 // FILTRAR PRODUCTOS
+// ========================================
 
 function filtrarPerfumes() {
 
@@ -117,6 +142,7 @@ function filtrarPerfumes() {
             perfume.marca.toLowerCase().includes(texto);
 
         const coincideCategoria =
+            seleccion === "todas" ||
             seleccion === "todos" ||
             perfume.categoria.toLowerCase() === seleccion;
 
@@ -125,9 +151,13 @@ function filtrarPerfumes() {
     });
 
     mostrarPerfumes(resultado);
+
 }
 
+
+// ========================================
 // ABRIR DETALLE DEL PERFUME
+// ========================================
 
 function verPerfume(nombre) {
 
@@ -136,7 +166,10 @@ function verPerfume(nombre) {
 
 }
 
-// CARGAR PRODUCTOS DESDE FIRESTORE
+
+// ========================================
+// CARGAR PRODUCTOS DESDE FIREBASE
+// ========================================
 
 async function cargarProductos() {
 
@@ -160,7 +193,7 @@ async function cargarProductos() {
 
         });
 
-        // COMBINAR PRODUCTOS ORIGINALES Y DE FIREBASE
+        // COMBINAR PRODUCTOS ORIGINALES Y FIREBASE
 
         perfumes = [
             ...perfumesOriginales,
@@ -173,28 +206,77 @@ async function cargarProductos() {
 
         console.error("Error al cargar productos de Firebase:", error);
 
-        // SI FIREBASE FALLA, SE MUESTRAN LOS PRODUCTOS ORIGINALES
+        // SI FIREBASE FALLA, MOSTRAR LOS PRODUCTOS ORIGINALES
 
-        mostrarPerfumes(perfumesOriginales);
+        perfumes = [...perfumesOriginales];
+
+        filtrarPerfumes();
 
     }
 
 }
 
+
+// ========================================
 // BUSCADOR Y CATEGORÍAS
+// ========================================
 
-buscador.addEventListener("input", filtrarPerfumes);
+if (buscador && categoria) {
 
-categoria.addEventListener("change", filtrarPerfumes);
+    buscador.addEventListener("input", filtrarPerfumes);
 
-// PERMITIR ELEGIR CATEGORÍAS DESDE OTROS BOTONES
+    categoria.addEventListener("change", filtrarPerfumes);
+
+}
+
+
+// ========================================
+// ELEGIR CATEGORÍAS DESDE OTROS BOTONES
+// ========================================
 
 window.elegirCategoria = function(valor) {
+
+    if (!categoria) return;
+
     categoria.value = valor.toLowerCase();
+
     filtrarPerfumes();
+
 };
 
+
+// ========================================
 // INICIAR CATÁLOGO
+// ========================================
 
 mostrarPerfumes(perfumes);
+
 cargarProductos();
+
+// ========================================
+// ACTUALIZAR CONTADOR DEL CARRITO
+// ========================================
+
+function actualizarContadorCarrito() {
+
+    const contador = document.getElementById("contador-carrito");
+
+    if (!contador) return;
+
+    const carrito = JSON.parse(localStorage.getItem("carritoMay")) || [];
+
+    const cantidad = carrito.reduce((total, producto) => {
+        return total + (Number(producto.cantidad) || 1);
+    }, 0);
+
+    contador.textContent = cantidad;
+}
+
+// Actualizar al cargar la página
+actualizarContadorCarrito();
+
+// Actualizar cuando se vuelve a la pestaña
+window.addEventListener("pageshow", actualizarContadorCarrito);
+
+// Actualizar si cambia el carrito desde otra pestaña
+window.addEventListener("storage", actualizarContadorCarrito);

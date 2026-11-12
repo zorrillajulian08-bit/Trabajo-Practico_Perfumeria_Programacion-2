@@ -27,7 +27,6 @@ namespace perfumeriamay.Controllers
         public async Task<IActionResult> GetAll()
         {
             var resultado = await _service.ObtenerTodosAsync();
-
             return Ok(resultado);
         }
 
@@ -36,7 +35,6 @@ namespace perfumeriamay.Controllers
         public async Task<IActionResult> GetMarcas()
         {
             var marcas = await _service.ObtenerMarcasAsync();
-
             return Ok(marcas);
         }
 
@@ -45,7 +43,6 @@ namespace perfumeriamay.Controllers
         public async Task<IActionResult> GetPedidos()
         {
             var pedidos = await _service.ObtenerPedidos();
-
             return Ok(pedidos);
         }
 
@@ -65,7 +62,6 @@ namespace perfumeriamay.Controllers
         public async Task<IActionResult> GetVentas()
         {
             var ventas = await _service.GetVentasAsync();
-
             return Ok(ventas);
         }
 
@@ -85,7 +81,6 @@ namespace perfumeriamay.Controllers
         public async Task<IActionResult> GetUsuarios()
         {
             var usuarios = await _service.ObtenerUsuariosAsync();
-
             return Ok(usuarios);
         }
 
@@ -100,26 +95,28 @@ namespace perfumeriamay.Controllers
             return Ok(usuario);
         }
 
-
         // =========================
         // POST
         // =========================
 
         // PRODUCTOS
         [HttpPost]
-        public async Task<IActionResult> AddProducto([FromBody] CreateProductoDTO producto)
+        public async Task<IActionResult> AddProducto(
+            [FromBody] CreateProductoDTO producto)
         {
             var resultado = await _service.AgregarperfumeAsync(producto);
 
             if (!resultado)
-                return BadRequest("No se pudo agregar el producto. Verificá los datos.");
+                return BadRequest(
+                    "No se pudo agregar el producto. Verificá los datos.");
 
             return Ok("Producto agregado correctamente.");
         }
 
         // MARCAS
         [HttpPost("Marcas")]
-        public async Task<IActionResult> AddMarca([FromBody] CreateMarcaDTO marca)
+        public async Task<IActionResult> AddMarca(
+            [FromBody] CreateMarcaDTO marca)
         {
             var resultado = await _service.AgregarMarcaAsync(marca);
 
@@ -131,19 +128,22 @@ namespace perfumeriamay.Controllers
 
         // PEDIDOS
         [HttpPost("pedidos")]
-        public async Task<IActionResult> AddPedido([FromBody] CreatePedidoDTO pedido)
+        public async Task<IActionResult> AddPedido(
+            [FromBody] CreatePedidoDTO pedido)
         {
             var resultado = await _service.AgregarPedidoAsync(pedido);
 
             if (!resultado)
-                return BadRequest("No se pudo crear el pedido. Verificá los datos.");
+                return BadRequest(
+                    "No se pudo crear el pedido. Verificá los datos.");
 
             return Ok("Pedido creado correctamente.");
         }
 
         // VENTAS
         [HttpPost("ventas")]
-        public async Task<IActionResult> CreateVenta([FromBody] CreateVentaDTO venta)
+        public async Task<IActionResult> CreateVenta(
+            [FromBody] CreateVentaDTO venta)
         {
             if (venta == null)
                 return BadRequest("Datos inválidos.");
@@ -151,15 +151,20 @@ namespace perfumeriamay.Controllers
             var resultado = await _service.CreateVentaAsync(venta);
 
             if (!resultado)
-                return BadRequest("No se pudo registrar la venta. Verificá los productos, las cantidades y el stock.");
+                return BadRequest(
+                    "No se pudo registrar la venta. Verificá los productos, las cantidades y el stock.");
 
             return Ok("Venta registrada correctamente.");
         }
+
+        // USUARIOS
         [HttpPost("usuarios")]
-        public async Task<IActionResult> AgregarUsuario(CreateUsuarioDTO usuario)
+        public async Task<IActionResult> AgregarUsuario(
+            [FromBody] CreateUsuarioDTO usuario)
         {
             if (usuario == null)
-                return BadRequest("Los datos del usuario son obligatorios.");
+                return BadRequest(
+                    "Los datos del usuario son obligatorios.");
 
             var resultado = await _service.AgregarUsuarioAsync(usuario);
 
@@ -169,38 +174,46 @@ namespace perfumeriamay.Controllers
             return Ok("Usuario registrado correctamente.");
         }
 
-
         // =========================
         // PUT
         // =========================
 
         // PRODUCTOS
         [HttpPut]
-        public async Task<IActionResult> UpdateProducto(int id, [FromBody] UpdateProductoDTO producto)
+        public async Task<IActionResult> UpdateProducto(
+            int id,
+            [FromBody] UpdateProductoDTO producto)
         {
-            var resultado = await _service.ActualizarPerfumeAsync(id, producto);
+            var resultado =
+                await _service.ActualizarPerfumeAsync(id, producto);
 
             if (!resultado)
-                return BadRequest("No se pudo actualizar el producto. Verificá los datos.");
+                return BadRequest(
+                    "No se pudo actualizar el producto. Verificá los datos.");
 
             return Ok("Producto actualizado correctamente.");
         }
 
         // MARCAS
         [HttpPut("Marca/{id}")]
-        public async Task<IActionResult> UpdateMarca(int id, [FromBody] UpdateMarca marca)
+        public async Task<IActionResult> UpdateMarca(
+            int id,
+            [FromBody] UpdateMarca marca)
         {
             var resultado = await _service.ActualizarMarcaAsync(id, marca);
 
             if (!resultado)
-                return BadRequest("No se pudo actualizar la marca. Verificá los datos.");
+                return BadRequest(
+                    "No se pudo actualizar la marca. Verificá los datos.");
 
             return Ok("Marca actualizada correctamente.");
         }
 
         // PEDIDOS
         [HttpPut("pedidos/{id}")]
-        public async Task<IActionResult> UpdatePedido(int id, [FromBody] UpdatePedidoDTO pedido)
+        public async Task<IActionResult> UpdatePedido(
+            int id,
+            [FromBody] UpdatePedidoDTO pedido)
         {
             var resultado = await _service.ActualizarPedidoAsync(id, pedido);
 
@@ -212,16 +225,18 @@ namespace perfumeriamay.Controllers
 
         // USUARIOS
         [HttpPut("usuarios/{id}")]
-        public async Task<IActionResult> UpdateUsuario(int id, [FromBody] UpdateUsuariosDTO usuario)
+        public async Task<IActionResult> UpdateUsuario(
+            int id,
+            [FromBody] UpdateUsuariosDTO usuario)
         {
             var resultado = await _service.ActualizarUsuarioAsync(id, usuario);
 
             if (!resultado)
-                return BadRequest("No se pudo actualizar el usuario. Verificá los datos.");
+                return BadRequest(
+                    "No se pudo actualizar el usuario. Verificá los datos.");
 
             return Ok("Usuario actualizado correctamente.");
         }
-
 
         // =========================
         // DELETE
@@ -282,10 +297,10 @@ namespace perfumeriamay.Controllers
             var resultado = await _service.EliminarUsuarioAsync(id);
 
             if (!resultado)
-                return BadRequest("No se pudo eliminar el usuario. Puede tener pedidos o ventas asociados.");
+                return BadRequest(
+                    "No se pudo eliminar el usuario. Puede tener pedidos o ventas asociados.");
 
             return Ok("Usuario eliminado correctamente.");
         }
     }
 }
-
