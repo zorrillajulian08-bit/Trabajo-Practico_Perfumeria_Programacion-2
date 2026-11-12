@@ -178,10 +178,13 @@ if (formularioRegistro) {
 
             usuarioFirebase = credenciales.user;
 
+            // OBTENER TOKEN DE FIREBASE
+
+            const token = await usuarioFirebase.getIdToken();
+
             // PREPARAR DATOS PARA SQL SERVER
 
             const nuevoUsuario = {
-                firebaseUid: usuarioFirebase.uid,
                 nombre: nombre,
                 email: email
             };
@@ -191,7 +194,8 @@ if (formularioRegistro) {
             const response = await fetch(`${API}/usuarios`, {
                 method: "POST",
                 headers: {
-                    "Content-Type": "application/json"
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
                 },
                 body: JSON.stringify(nuevoUsuario)
             });
@@ -215,6 +219,10 @@ if (formularioRegistro) {
 
                 throw new Error(mensaje);
             }
+
+            // CERRAR SESIÓN DESPUÉS DEL REGISTRO
+
+            await signOut(auth);
 
             mostrarMensaje(
                 mensajeRegistro,

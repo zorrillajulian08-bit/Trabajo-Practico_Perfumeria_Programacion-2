@@ -1,4 +1,5 @@
-﻿
+﻿using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc;
 using perfumeriamay.dto;
 using perfumeriamay.interfaces;
@@ -158,13 +159,37 @@ namespace perfumeriamay.Controllers
         }
 
         // USUARIOS
+        [Authorize]
         [HttpPost("usuarios")]
         public async Task<IActionResult> AgregarUsuario(
-            [FromBody] CreateUsuarioDTO usuario)
+    [FromBody] CreateUsuarioDTO usuario)
         {
             if (usuario == null)
-                return BadRequest(
-                    "Los datos del usuario son obligatorios.");
+                return BadRequest("Los datos del usuario son obligatorios.");
+
+            // Obtener el UID del token verificado por Firebase
+            var firebaseUid = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (string.IsNullOrWhiteSpace(firebaseUid))
+                return Unauthorized("No se pudo identificar al usuario.");
+
+            // Obtener el email del token
+            var emailToken = User.FindFirstValue(ClaimTypes.Email);
+
+            if (string.IsNullOrWhiteSpace(emailToken))
+                return Unauthorized("El token no contiene un email válido.");
+
+            // Comprobar que el email enviado coincida con el de Firebase
+            if (!string.Equals(
+                usuario.Email?.Trim(),
+                emailToken.Trim(),
+                StringComparison.OrdinalIgnoreCase))
+            {
+                return BadRequest("El email enviado no coincide con el usuario autenticado.");
+            }
+
+            // El UID siempre se obtiene del token, nunca del cuerpo de la petición
+            usuario.FirebaseUid = firebaseUid;
 
             var resultado = await _service.AgregarUsuarioAsync(usuario);
 

@@ -209,7 +209,7 @@ namespace perfumeriamay.services.Implementations
 
             return await _repository.DeleteVentaAsync(id);
         }
-        // USUARIOS
+
 
         public async Task<List<Usuario>> ObtenerUsuariosAsync()
         {
@@ -254,42 +254,50 @@ namespace perfumeriamay.services.Implementations
         }
         public async Task<bool> AgregarUsuarioAsync(CreateUsuarioDTO usuario)
         {
-            // Validar que el objeto exista
+
             if (usuario == null)
                 return false;
 
-            // Validar FirebaseUid
-            if (string.IsNullOrWhiteSpace(usuario.FirebaseUid))
+            // Validar campos obligatorios
+            if (string.IsNullOrWhiteSpace(usuario.FirebaseUid) ||
+                string.IsNullOrWhiteSpace(usuario.Nombre) ||
+                string.IsNullOrWhiteSpace(usuario.Email))
                 return false;
 
-            // Validar Nombre
-            if (string.IsNullOrWhiteSpace(usuario.Nombre))
+            // Limpiar espacios
+            usuario.FirebaseUid = usuario.FirebaseUid.Trim();
+            usuario.Nombre = usuario.Nombre.Trim();
+            usuario.Email = usuario.Email.Trim().ToLowerInvariant();
+
+            // Validar longitudes
+            if (usuario.FirebaseUid.Length > 128)
                 return false;
 
             if (usuario.Nombre.Length > 100)
                 return false;
 
-            // Validar Email
-            if (string.IsNullOrWhiteSpace(usuario.Email))
-                return false;
-
             if (usuario.Email.Length > 150)
                 return false;
 
+            // Validar formato del email
             if (!System.Text.RegularExpressions.Regex.IsMatch(
                 usuario.Email,
                 @"^[^@\s]+@[^@\s]+\.[^@\s]+$"))
                 return false;
 
-            // Validar longitud del UID
-            if (usuario.FirebaseUid.Length > 128)
+            // Obtener usuarios registrados
+            var usuarios = await _repository.GetUsuariosAsync();
+
+            // Comprobar UID duplicado
+            if (usuarios.Any(u => u.FirebaseUid == usuario.FirebaseUid))
                 return false;
 
-            // Asignar siempre el rol Cliente
-            usuario.FirebaseUid = usuario.FirebaseUid.Trim();
-            usuario.Nombre = usuario.Nombre.Trim();
-            usuario.Email = usuario.Email.Trim();
+            // Comprobar email duplicado
+            if (usuarios.Any(u =>
+                u.Email.Equals(usuario.Email, StringComparison.OrdinalIgnoreCase)))
+                return false;
 
+            // Guardar usuario
             return await _repository.AddUsuarioAsync(usuario);
         }
     }

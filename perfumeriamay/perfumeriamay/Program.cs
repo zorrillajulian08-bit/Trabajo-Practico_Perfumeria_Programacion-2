@@ -1,12 +1,30 @@
-
 using Microsoft.EntityFrameworkCore;
 using perfumeriamay.Implementations;
 using perfumeriamay.interfaces;
 using perfumeriamay.Models;
 using perfumeriamay.services.Implementations;
 using perfumeriamay.services.interfaces;
+using FirebaseAdmin;
+using Google.Apis.Auth.OAuth2;
+using Microsoft.AspNetCore.Authentication;
+using perfumeriamay.Security;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Configuración de Firebase
+var credentialPath = builder.Configuration["Firebase:CredentialPath"];
+
+if (string.IsNullOrWhiteSpace(credentialPath) || !File.Exists(credentialPath))
+{
+    throw new Exception("No se encontró el archivo de credenciales de Firebase.");
+}
+
+FirebaseApp.Create(new AppOptions
+{
+    Credential = CredentialFactory
+    .FromFile<ServiceAccountCredential>(credentialPath)
+    .ToGoogleCredential()
+});
 
 // CORS
 builder.Services.AddCors(options =>
@@ -19,6 +37,14 @@ builder.Services.AddCors(options =>
             .AllowAnyMethod();
     });
 });
+
+// Autenticación con Firebase
+builder.Services
+    .AddAuthentication("Firebase")
+    .AddScheme<AuthenticationSchemeOptions, FirebaseAuthenticationHandler>(
+        "Firebase", options => { });
+
+builder.Services.AddAuthorization();
 
 // Servicios
 builder.Services.AddControllers()
@@ -52,6 +78,8 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseCors("PermitirFrontend");
+
+app.UseAuthentication();
 
 app.UseAuthorization();
 
