@@ -149,20 +149,26 @@
             <!-- BUSCADOR Y FILTROS -->
             <div class="herramientas-catalogo">
 
-                <div class="busqueda">
+    <div class="busqueda">
+        <span class="icono-busqueda">⌕</span>
 
-                    <span class="icono-busqueda">⌕</span>
+        <input
+            type="text"
+            id="buscador"
+            placeholder="Buscar por nombre..."
+            autocomplete="off"
+        >
+    </div>
 
-                    <input
-                        type="text"
-                        id="buscador"
-                        placeholder="Buscar por nombre o marca..."
-                        autocomplete="off"
-                    >
+    <button
+        type="button"
+        class="boton-todas-categorias"
+        onclick="elegirCategoria('Todas')"
+    >
+        Ver todos
+    </button>
 
-                </div>
-
-            </div>
+</div>
 
 
             <!-- PRODUCTOS -->
@@ -210,25 +216,53 @@
 
 
     <!-- PIE DE PÁGINA -->
-    <footer id="contacto">
+    
+<!-- PIE DE PÁGINA -->
+<footer id="contacto">
 
-        <div class="footer-contenido">
+    <div class="footer-contenido">
 
-            <div class="footer-marca">
-                <h2>EMPRENDIMIENTO MAY</h2>
-                <p>PERFUMERÍA</p>
-            </div>
-
-            <div class="footer-info">
-                <p>El arte de elegir tu fragancia.</p>
-                <a href="#inicio">Volver arriba ↑</a>
-            </div>
-
+        <div class="footer-marca">
+            <h2>EMPRENDIMIENTO MAY</h2>
+            <p>PERFUMERÍA</p>
         </div>
 
-        <div class="footer-final">
-            <p>© 2026 Emprendimiento May · Todos los derechos reservados</p>
+        <div class="footer-info">
+            <p>El arte de elegir tu fragancia.</p>
+            <a href="#inicio">Volver arriba ↑</a>
         </div>
+
+    </div>
+
+    <div class="footer-nosotros">
+        <h3>Nosotros</h3>
+        <p>¿Querés comunicarte con nosotros?</p>
+
+        <div class="footer-contactos">
+
+            <a href="https://wa.me/5493510000000" target="_blank">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path fill="currentColor" d="M20.5 3.5A11.8 11.8 0 0 0 12.1 0C5.6 0 .3 5.3.3 11.8c0 2.1.6 4.2 1.6 6L.2 24l6.3-1.7a11.8 11.8 0 0 0 5.6 1.4h.1c6.5 0 11.8-5.3 11.8-11.8 0-3.2-1.2-6.2-3.5-8.4ZM12.1 21.7c-1.8 0-3.5-.5-5-1.4l-.4-.2-3.7 1 1-3.6-.2-.4a9.8 9.8 0 1 1 8.3 4.6Zm5.4-7.3c-.3-.1-1.7-.8-2-.9-.3-.1-.5-.1-.7.2-.2.3-.8.9-1 1.1-.2.2-.4.2-.7.1-1.8-.9-3-1.6-4.2-3.6-.3-.5.3-.5.9-1.7.1-.2 0-.4 0-.5l-.9-2.1c-.2-.5-.5-.4-.7-.4h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.4s1 2.8 1.2 3c.1.2 2 3.1 4.9 4.3 1.8.8 2.5.8 3.4.7.5-.1 1.7-.7 2-1.4.2-.7.2-1.3.2-1.4-.1-.1-.3-.2-.5-.3Z"/>
+                </svg>
+                <span>+54 9 351 000-0000</span>
+            </a>
+
+            <a href="https://www.instagram.com/perfumeriamay/" target="_blank">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path fill="currentColor" d="M7 2h10a5 5 0 0 1 5 5v10a5 5 0 0 1-5 5H7a5 5 0 0 1-5-5V7a5 5 0 0 1 5-5Zm0 2a3 3 0 0 0-3 3v10a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3V7a3 3 0 0 0-3-3H7Zm5 3a5 5 0 1 1 0 10 5 5 0 0 1 0-10Zm0 2a3 3 0 1 0 0 6 3 3 0 0 0 0-6Zm5.5-3a1.2 1.2 0 1 1 0 2.4 1.2 1.2 0 0 1 0-2.4Z"/>
+                </svg>
+                <span>@perfumeriamay</span>
+            </a>
+
+        </div>
+    </div>
+
+    <div class="footer-final">
+        <p>© 2026 Emprendimiento May · Todos los derechos reservados</p>
+    </div>
+
+</footer>
+
 
     </footer>
 

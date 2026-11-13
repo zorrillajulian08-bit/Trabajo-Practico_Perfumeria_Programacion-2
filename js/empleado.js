@@ -1,3 +1,4 @@
+
 import { auth } from "./firebase.js";
 
 import {
@@ -166,8 +167,6 @@ async function solicitarAPI(url, opciones = {}, requiereToken = false) {
         ...(opciones.headers || {})
     };
 
-    // Solamente enviamos el token cuando el endpoint lo requiere.
-
     if (requiereToken) {
 
         const usuario = auth.currentUser;
@@ -186,24 +185,28 @@ async function solicitarAPI(url, opciones = {}, requiereToken = false) {
         headers
     });
 
-    if (!respuesta.ok) {
-
-        const error = await respuesta.text();
-
-        throw new Error(
-            error || `Error en la solicitud: ${respuesta.status}`
-        );
-    }
-
     const contenido = await respuesta.text();
 
-    if (!contenido) return null;
+    let resultado = contenido;
 
     try {
-        return JSON.parse(contenido);
+        resultado = contenido ? JSON.parse(contenido) : null;
     } catch {
-        return contenido;
+        resultado = contenido;
     }
+
+    if (!respuesta.ok) {
+
+        const mensajeError =
+            resultado?.mensaje ||
+            resultado?.message ||
+            (typeof resultado === "string" ? resultado : null) ||
+            `Error en la solicitud: ${respuesta.status}`;
+
+        throw new Error(mensajeError);
+    }
+
+    return resultado;
 }
 
 
@@ -338,8 +341,6 @@ onAuthStateChanged(auth, async (usuario) => {
 
             return;
         }
-
-        // Cargar toda la información del panel.
 
         await cargarMarcas();
         await cargarProductos();
@@ -1172,9 +1173,10 @@ async function eliminarProducto(id) {
 
     if (!producto) return;
 
-    const confirmar = await abrirModalEliminar(
-        obtenerPropiedad(producto, "nombre") || "este producto"
-    );
+    const nombreProducto =
+        obtenerPropiedad(producto, "nombre") || "este producto";
+
+    const confirmar = await abrirModalEliminar(nombreProducto);
 
     if (!confirmar) return;
 
@@ -1191,18 +1193,33 @@ async function eliminarProducto(id) {
             cancelarEdicion();
         }
 
-        mensaje.textContent =
-            "Producto eliminado correctamente.";
-
         await cargarProductos();
+
+        await Swal.fire({
+            title: "¡Producto eliminado!",
+            text: "El perfume se eliminó correctamente.",
+            icon: "success",
+            confirmButtonText: "Aceptar",
+            confirmButtonColor: "#80674F",
+            background: "#F3EADF",
+            color: "#594333"
+        });
+
+        mensaje.textContent = "";
 
     } catch (error) {
 
         console.error("Error al eliminar:", error);
 
-        mensaje.textContent =
-            error.message ||
-            "No se pudo eliminar el producto. Puede estar relacionado con pedidos o ventas.";
+        await Swal.fire({
+            title: "No se puede eliminar",
+            text: error.message || "Este perfume está relacionado con pedidos o ventas y no se puede eliminar.",
+            icon: "warning",
+            confirmButtonText: "Entendido",
+            confirmButtonColor: "#80674F",
+            background: "#F3EADF",
+            color: "#594333"
+        });
 
     }
 
@@ -1222,8 +1239,6 @@ async function cargarPedidos() {
                 <td colspan="5">Cargando pedidos...</td>
             </tr>
         `;
-
-        // Este endpoint tiene [Authorize], por eso enviamos el token.
 
         const respuesta = await solicitarAPI(
             `${API}/pedidos`,
@@ -1412,7 +1427,7 @@ function renderizarPedidos(pedidos, estadoFiltro) {
 
         const selectorEstado = document.createElement("select");
 
-        selectorEstado.style.padding = "7px";
+        selectorEstado.className = "selector-estado";
 
         const estadosDisponibles = [
             "Pendiente",
@@ -1420,8 +1435,6 @@ function renderizarPedidos(pedidos, estadoFiltro) {
             "Cancelado",
             "Entregado"
         ];
-
-        // Si el pedido tiene otro estado, también lo mostramos.
 
         if (
             !estadosDisponibles.some(
@@ -1488,6 +1501,25 @@ async function cambiarEstadoPedido(
     estadoAnterior
 ) {
 
+    const confirmacion = await Swal.fire({
+        title: "¿Cambiar estado del pedido?",
+        html: `¿Querés cambiar el pedido <strong>#${idPedido}</strong> de <strong>${estadoAnterior}</strong> a <strong>${nuevoEstado}</strong>?`,
+        icon: "question",
+        showCancelButton: true,
+        confirmButtonText: "Sí, cambiar estado",
+        cancelButtonText: "Cancelar",
+        confirmButtonColor: "#80674F",
+        cancelButtonColor: "#a8a29e",
+        background: "#F3EADF",
+        color: "#594333",
+        reverseButtons: true
+    });
+
+    if (!confirmacion.isConfirmed) {
+        selector.value = estadoAnterior;
+        return;
+    }
+
     selector.disabled = true;
 
     try {
@@ -1496,33 +1528,50 @@ async function cambiarEstadoPedido(
             `${API}/pedidos/${idPedido}`,
             {
                 method: "PUT",
-
                 headers: {
                     "Content-Type": "application/json"
                 },
-
                 body: JSON.stringify({
                     estado: nuevoEstado
                 })
-            }
+            },
+            true
         );
 
-        alert("Estado actualizado correctamente.");
-
         await cargarPedidos();
+
+        if (normalizarEstado(nuevoEstado) === "confirmado") {
+            await cargarVentas();
+        }
+
+        await cargarProductos();
+
+        await Swal.fire({
+            title: "¡Estado actualizado!",
+            html: `El pedido <strong>#${idPedido}</strong> cambió correctamente de <strong>${estadoAnterior}</strong> a <strong>${nuevoEstado}</strong>.`,
+            icon: "success",
+            confirmButtonText: "Aceptar",
+            confirmButtonColor: "#80674F",
+            background: "#F3EADF",
+            color: "#594333"
+        });
 
     } catch (error) {
 
         console.error("Error al cambiar estado:", error);
 
-        alert(
-            error.message ||
-            "No se pudo actualizar el estado del pedido."
-        );
-
         selector.value = estadoAnterior;
-
         selector.disabled = false;
+
+        await Swal.fire({
+            title: "No se pudo cambiar el estado",
+            text: error.message || "Ocurrió un error al actualizar el pedido.",
+            icon: "error",
+            confirmButtonText: "Aceptar",
+            confirmButtonColor: "#80674F",
+            background: "#F3EADF",
+            color: "#594333"
+        });
 
     }
 
@@ -1530,7 +1579,7 @@ async function cambiarEstadoPedido(
 
 
 // ==========================================
-// CARGAR VENTAS
+// CARGAR VENTAS REALES
 // ==========================================
 
 async function cargarVentas() {
@@ -1590,8 +1639,6 @@ function renderizarMasVendidos(ventas) {
 
     ventas.forEach(venta => {
 
-        // Algunas respuestas pueden traer el ranking ya calculado.
-
         const nombreDirecto = obtenerPropiedad(
             venta,
             "nombrePerfume",
@@ -1632,9 +1679,6 @@ function renderizarMasVendidos(ventas) {
 
             return;
         }
-
-
-        // Obtener detalles de la venta.
 
         const detalles = obtenerPropiedad(
             venta,
@@ -1692,9 +1736,6 @@ function renderizarMasVendidos(ventas) {
             return;
         }
 
-
-        // Alternativa si la API devuelve ventas individuales.
-
         const productoId = Number(
             obtenerPropiedad(venta, "productoId")
         );
@@ -1735,12 +1776,8 @@ function renderizarMasVendidos(ventas) {
 
     });
 
-
-    // Ordenar de mayor a menor cantidad vendida.
-
     const productosOrdenados = Array.from(ranking.values())
         .sort((a, b) => b.cantidad - a.cantidad);
-
 
     if (productosOrdenados.length === 0) {
 
@@ -1755,7 +1792,6 @@ function renderizarMasVendidos(ventas) {
 
         return;
     }
-
 
     productosOrdenados.forEach(producto => {
 

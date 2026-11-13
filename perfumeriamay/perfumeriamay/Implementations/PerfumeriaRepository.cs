@@ -16,14 +16,17 @@ namespace perfumeriamay.Implementations
             _context = context;
         }
 
+
         public async Task<bool> AddAsync(CreatePedidoDTO pedido)
-        {
+        { 
+            if (pedido == null || pedido.Detalles == null || !pedido.Detalles.Any())
+                return false;
+
             var usuarioExiste = await _context.Usuarios
-             .AnyAsync(u => u.UsuarioId == pedido.UsuarioId);
+                .AnyAsync(u => u.UsuarioId == pedido.UsuarioId);
 
             if (!usuarioExiste)
                 return false;
-
 
             var nuevoPedido = new Pedido
             {
@@ -35,11 +38,17 @@ namespace perfumeriamay.Implementations
 
             foreach (var detalle in pedido.Detalles)
             {
+                if (detalle.Cantidad <= 0)
+                    return false;
+
                 var producto = await _context.Productos
                     .FindAsync(detalle.ProductoId);
 
-                if (producto == null)
+                if (producto == null || producto.Stock < detalle.Cantidad)
                     return false;
+
+                // Descontamos el stock
+                producto.Stock -= detalle.Cantidad;
 
                 var subtotal = producto.Precio * detalle.Cantidad;
 
@@ -54,10 +63,25 @@ namespace perfumeriamay.Implementations
             }
 
             await _context.Pedidos.AddAsync(nuevoPedido);
+
+            Console.WriteLine("========== PRUEBA DE STOCK ==========");
+
+            foreach (var detalle in pedido.Detalles)
+            {
+                var productoGuardado = await _context.Productos
+                    .FindAsync(detalle.ProductoId);
+
+                Console.WriteLine($"Producto ID: {detalle.ProductoId}");
+                Console.WriteLine($"Stock antes de guardar: {productoGuardado?.Stock}");
+            }
+
             await _context.SaveChangesAsync();
+
+            Console.WriteLine("========== PEDIDO GUARDADO ==========");
 
             return true;
         }
+        
 
         public async Task<bool> AddMarcaAsync(CreateMarcaDTO marca)
         {
@@ -119,7 +143,6 @@ namespace perfumeriamay.Implementations
             if (venta == null)
                 throw new Exception("La venta llegó vacía.");
 
-            // Validar que el usuario exista y sea empleado
             var usuario = await _context.Usuarios
                 .FirstOrDefaultAsync(u => u.UsuarioId == venta.EmpleadoId);
 
@@ -148,9 +171,6 @@ namespace perfumeriamay.Implementations
                 if (detalle.Cantidad <= 0)
                     throw new Exception("La cantidad debe ser mayor a cero.");
 
-                if (producto.Stock < detalle.Cantidad)
-                    throw new Exception("Stock insuficiente. Stock actual: " + producto.Stock);
-
                 var detalleVenta = new DetalleVenta
                 {
                     ProductoId = producto.ProductoId,
@@ -161,8 +181,6 @@ namespace perfumeriamay.Implementations
                 nuevaVenta.Total += producto.Precio * detalle.Cantidad;
 
                 nuevaVenta.DetalleVenta.Add(detalleVenta);
-
-                producto.Stock -= detalle.Cantidad;
             }
 
             _context.Ventas.Add(nuevaVenta);
@@ -206,9 +224,27 @@ namespace perfumeriamay.Implementations
         public async Task<bool> DeletePerfumeAsync(int id)
         {
             var producto = await _context.Productos
-        .FirstOrDefaultAsync(p => p.ProductoId == id);
+       .FirstOrDefaultAsync(p => p.ProductoId == id);
 
             if (producto == null)
+            {
+                return false;
+            }
+
+            // Comprobar si aparece en pedidos
+            var tienePedidos = await _context.DetallePedidos
+                .AnyAsync(d => d.ProductoId == id);
+
+            if (tienePedidos)
+            {
+                return false;
+            }
+
+            // Comprobar si aparece en ventas
+            var tieneVentas = await _context.DetalleVentas
+                .AnyAsync(d => d.ProductoId == id);
+
+            if (tieneVentas)
             {
                 return false;
             }
@@ -286,14 +322,90 @@ namespace perfumeriamay.Implementations
                                         .FirstOrDefaultAsync(v => v.VentaId == id);
         }
 
-        public async Task<bool> UpdateAsync(int id, UpdatePedidoDTO pedido)
+        public async Task<bool> UpdateAsync(int id,UpdatePedidoDTO pedido,string firebaseUid)
         {
-            var existente = await _context.Pedidos.FindAsync(id);
+            if (pedido == null || string.IsNullOrWhiteSpace(firebaseUid))
+                return false;
+
+            var existente = await _context.Pedidos
+                .Include(p => p.DetallePedidos)
+                .FirstOrDefaultAsync(p => p.PedidoId == id);
 
             if (existente == null)
                 return false;
 
-            existente.Estado = pedido.Estado;
+            // Convertimos los estados a minúsculas solo para compararlos.
+            string estadoAnterior = existente.Estado?.Trim().ToLowerInvariant() ?? "";
+            string nuevoEstado = pedido.Estado?.Trim().ToLowerInvariant() ?? "";
+
+            // No permitir cancelar un pedido confirmado.
+            if (estadoAnterior == "confirmado" && nuevoEstado == "cancelado")
+                return false;
+
+            // No permitir confirmar un pedido cancelado.
+            if (estadoAnterior == "cancelado" && nuevoEstado == "confirmado")
+                return false;
+
+            // Si se confirma el pedido, creamos la venta.
+            if (nuevoEstado == "confirmado")
+            {
+                // Buscamos al empleado que está realizando la operación.
+                var empleado = await _context.Usuarios
+                    .FirstOrDefaultAsync(u => u.FirebaseUid == firebaseUid);
+
+                if (empleado == null ||
+                    !string.Equals(
+                        empleado.Rol,
+                        "Empleado",
+                        StringComparison.OrdinalIgnoreCase))
+                {
+                    return false;
+                }
+
+                // Comprobamos que el pedido no tenga ya una venta.
+                bool ventaExistente = await _context.Ventas
+                    .AnyAsync(v => v.PedidoId == id);
+
+                if (!ventaExistente)
+                {
+                    var nuevaVenta = new Venta
+                    {
+                        PedidoId = existente.PedidoId,
+                        EmpleadoId = empleado.UsuarioId,
+                        Fecha = DateTime.Now,
+                        Total = existente.Total
+                    };
+
+                    // Copiamos los detalles del pedido a la venta.
+                    foreach (var detalle in existente.DetallePedidos)
+                    {
+                        nuevaVenta.DetalleVenta.Add(new DetalleVenta
+                        {
+                            ProductoId = detalle.ProductoId,
+                            Cantidad = detalle.Cantidad,
+                            PrecioUnitario = detalle.PrecioUnitario
+                        });
+                    }
+
+                    await _context.Ventas.AddAsync(nuevaVenta);
+                }
+            }
+
+            // Si se cancela el pedido, devolvemos las unidades al stock.
+            if (nuevoEstado == "cancelado" && estadoAnterior != "cancelado")
+            {
+                foreach (var detalle in existente.DetallePedidos)
+                {
+                    var producto = await _context.Productos
+                        .FindAsync(detalle.ProductoId);
+
+                    if (producto != null)
+                        producto.Stock += detalle.Cantidad;
+                }
+            }
+
+            // Guardamos el estado original con su mayúscula inicial.
+            existente.Estado = pedido.Estado.Trim();
 
             await _context.SaveChangesAsync();
 
@@ -425,10 +537,16 @@ namespace perfumeriamay.Implementations
         }
         public async Task<List<Pedido>> GetPedidosPorFirebaseUidAsync(string firebaseUid)
         {
+            var usuario = await _context.Usuarios
+        .FirstOrDefaultAsync(u => u.FirebaseUid == firebaseUid);
+
+            if (usuario == null)
+                return new List<Pedido>();
+
             return await _context.Pedidos
                 .Include(p => p.DetallePedidos)
                     .ThenInclude(d => d.Producto)
-                .Where(p => p.Usuario.FirebaseUid == firebaseUid)
+                .Where(p => p.UsuarioId == usuario.UsuarioId)
                 .OrderByDescending(p => p.Fecha)
                 .ToListAsync();
         }

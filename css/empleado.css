@@ -301,7 +301,9 @@ body {
     border: 1px solid var(--borde);
 }
 
-/* BOTÓN AGREGAR */
+/* =========================================
+   BOTÓN AGREGAR
+========================================= */
 
 .boton-agregar {
     padding: 15px 25px;
@@ -327,7 +329,9 @@ body {
     transform: none;
 }
 
-/* BOTÓN CANCELAR EDICIÓN */
+/* =========================================
+   BOTÓN CANCELAR EDICIÓN
+========================================= */
 
 .boton-cancelar {
     margin-left: 10px;
@@ -345,7 +349,9 @@ body {
     background: var(--beige);
 }
 
-/* MENSAJES */
+/* =========================================
+   MENSAJES
+========================================= */
 
 #mensaje-producto {
     margin-top: 18px;
@@ -599,7 +605,7 @@ td button.boton-eliminar:active {
     }
 }
 
-/* ENCABEZADO */
+/* ENCABEZADO DEL MODAL */
 
 .encabezado-modal-usuario {
     display: flex;
@@ -731,6 +737,11 @@ td button.boton-eliminar:active {
     opacity: 0.6;
     cursor: not-allowed;
 }
+
+/* =========================================
+   FILTROS DE PEDIDOS
+========================================= */
+
 .filtros-pedidos {
     display: flex;
     gap: 12px;
@@ -763,6 +774,7 @@ td button.boton-eliminar:active {
     color: #ffffff;
     font-weight: 500;
     box-shadow: 0 4px 12px rgba(128, 99, 68, 0.2);
+}
 
 /* =========================================
    PIE DE PÁGINA
@@ -779,6 +791,109 @@ footer p {
     color: var(--texto-suave);
     font-size: 10px;
     letter-spacing: 2px;
+}
+
+/* =========================================
+   MENSAJE DE ÉXITO AL EDITAR USUARIO
+========================================= */
+
+.mensaje-exito-usuario {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 13px 15px;
+    margin-top: 18px;
+    background: #edf3e9;
+    border: 1px solid #d5e3ce;
+    border-radius: 9px;
+    color: #526d48;
+    font-size: 13px;
+    font-weight: 600;
+    animation: aparecerExito 0.25s ease;
+}
+
+.icono-exito-usuario {
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #dce9d5;
+    border-radius: 50%;
+    font-size: 14px;
+}
+
+@keyframes aparecerExito {
+    from {
+        opacity: 0;
+        transform: translateY(5px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* =========================================
+   SELECTORES DE ESTADO Y ROL
+========================================= */
+
+.selector-estado,
+.selector-rol {
+    appearance: none;
+    -webkit-appearance: none;
+    padding: 10px 36px 10px 14px;
+    border: 1px solid #c9b69e;
+    border-radius: 9px;
+    background-color: #f3eadf;
+    color: #594333;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    outline: none;
+
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%2380674f' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    transition: all 0.25s ease;
+}
+
+.selector-estado:hover,
+.selector-rol:hover {
+    background-color: #e9dccb;
+    border-color: #9b8063;
+}
+
+.selector-estado:focus,
+.selector-rol:focus {
+    border-color: #80674f;
+    box-shadow: 0 0 0 3px rgba(128, 103, 79, 0.15);
+}
+
+.selector-estado option,
+.selector-rol option {
+    background-color: #f3eadf;
+    color: #594333;
+    padding: 10px;
+    font-weight: 500;
+}
+
+.selector-estado:disabled,
+.selector-rol:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+#lista-usuarios .selector-rol {
+    margin: 4px;
+}
+
+#lista-pedidos-empleado .selector-estado {
+    min-width: 135px;
 }
 
 /* =========================================
@@ -866,55 +981,4 @@ footer p {
         width: 100%;
     }
 
-/* =========================================
-   MENSAJE DE ÉXITO AL EDITAR USUARIO
-========================================= */
-
-.mensaje-exito-usuario {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-
-    padding: 13px 15px;
-    margin-top: 18px;
-
-    background: #edf3e9;
-    border: 1px solid #d5e3ce;
-    border-radius: 9px;
-
-    color: #526d48;
-    font-size: 13px;
-    font-weight: 600;
-
-    animation: aparecerExito 0.25s ease;
-}
-
-.icono-exito-usuario {
-    width: 24px;
-    height: 24px;
-    flex-shrink: 0;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    background: #dce9d5;
-    border-radius: 50%;
-
-    font-size: 14px;
-}
-
-@keyframes aparecerExito {
-    from {
-        opacity: 0;
-        transform: translateY(5px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-}
 }

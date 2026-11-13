@@ -163,7 +163,7 @@ namespace perfumeriamay.services.Implementations
             return await _repository.AddAsync(pedido);
         }
 
-        public async Task<bool> ActualizarPedidoAsync(int id, UpdatePedidoDTO pedido)
+     public async Task<bool> ActualizarPedidoAsync(int id,UpdatePedidoDTO pedido,string firebaseUid)
         {
             if (id <= 0 || pedido == null)
                 return false;
@@ -171,8 +171,16 @@ namespace perfumeriamay.services.Implementations
             if (string.IsNullOrWhiteSpace(pedido.Estado))
                 return false;
 
-            return await _repository.UpdateAsync(id, pedido);
+            if (string.IsNullOrWhiteSpace(firebaseUid))
+                return false;
+
+            return await _repository.UpdateAsync(
+                id,
+                pedido,
+                firebaseUid
+            );
         }
+        
 
         public async Task<bool> EliminarPedidoAsync(int id)
         {
@@ -232,6 +240,18 @@ namespace perfumeriamay.services.Implementations
             if (string.IsNullOrWhiteSpace(usuario.Nombre))
                 return false;
 
+            usuario.Nombre = usuario.Nombre.Trim();
+
+           
+            if (!System.Text.RegularExpressions.Regex.IsMatch(
+                usuario.Nombre,
+                @"^[\p{L}\p{M}]+(?:[ '\-][\p{L}\p{M}]+)*$"))
+            {
+                throw new ArgumentException(
+                    "No se permiten caracteres especiales en el nombre."
+                );
+            }
+
             if (string.IsNullOrWhiteSpace(usuario.Email))
                 return false;
 
@@ -258,19 +278,27 @@ namespace perfumeriamay.services.Implementations
             if (usuario == null)
                 return false;
 
-            // Validar campos obligatorios
             if (string.IsNullOrWhiteSpace(usuario.FirebaseUid) ||
                 string.IsNullOrWhiteSpace(usuario.Nombre) ||
                 string.IsNullOrWhiteSpace(usuario.Email))
                 return false;
 
-            // Limpiar espacios
+           
             usuario.FirebaseUid = usuario.FirebaseUid.Trim();
             usuario.Nombre = usuario.Nombre.Trim();
             usuario.Email = usuario.Email.Trim().ToLowerInvariant();
 
-            // Validar longitudes
-            if (usuario.FirebaseUid.Length > 128)
+
+            if (!System.Text.RegularExpressions.Regex.IsMatch(
+    usuario.Nombre,
+    @"^[\p{L}\p{M}]+(?:[ '\-][\p{L}\p{M}]+)*$"))
+            {
+                throw new ArgumentException(
+                    "No se permiten caracteres especiales en el nombre."
+                );
+            }
+
+                if (usuario.FirebaseUid.Length > 128)
                 return false;
 
             if (usuario.Nombre.Length > 100)
@@ -279,46 +307,43 @@ namespace perfumeriamay.services.Implementations
             if (usuario.Email.Length > 150)
                 return false;
 
-            // Validar formato del email
+          
             if (!System.Text.RegularExpressions.Regex.IsMatch(
                 usuario.Email,
                 @"^[^@\s]+@[^@\s]+\.[^@\s]+$"))
                 return false;
 
-            // Obtener usuarios registrados
+         
             var usuarios = await _repository.GetUsuariosAsync();
 
-            // Comprobar UID duplicado
+            
             if (usuarios.Any(u => u.FirebaseUid == usuario.FirebaseUid))
                 return false;
 
-            // Comprobar email duplicado
+            
             if (usuarios.Any(u =>
                 u.Email.Equals(usuario.Email, StringComparison.OrdinalIgnoreCase)))
                 return false;
 
-            // Guardar usuario
+     
             return await _repository.AddUsuarioAsync(usuario);
-        
-        
+
         }
         public async Task<List<Pedido>> ObtenerPedidosPorFirebaseUidAsync(string firebaseUid)
         {
-            // Validar que el UID no sea nulo ni vacío
+           
             if (string.IsNullOrWhiteSpace(firebaseUid))
                 return new List<Pedido>();
 
-            // Limpiar espacios
+           
             firebaseUid = firebaseUid.Trim();
 
-            // Validar longitud máxima de Firebase UID
             if (firebaseUid.Length > 128)
                 return new List<Pedido>();
 
-            // Consultar pedidos
             var pedidos = await _repository.GetPedidosPorFirebaseUidAsync(firebaseUid);
 
-            // Validar resultado
+       
             if (pedidos == null)
                 return new List<Pedido>();
 

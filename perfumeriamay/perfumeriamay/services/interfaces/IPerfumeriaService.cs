@@ -24,7 +24,7 @@ namespace perfumeriamay.services.interfaces
         public Task<List<Pedido>> ObtenerPedidos();
         public Task<Pedido?> ObtenerPorIdAsync(int id);
         public Task<bool> AgregarPedidoAsync(CreatePedidoDTO pedido);
-        public Task<bool> ActualizarPedidoAsync(int id, UpdatePedidoDTO pedido);
+        
         public Task<bool> EliminarPedidoAsync(int id);
 
         public Task<List<Venta>> GetVentasAsync();
@@ -46,5 +46,7 @@ namespace perfumeriamay.services.interfaces
         public Task<bool> EliminarUsuarioAsync(int id);
 
         public Task<List<Pedido>> ObtenerPedidosPorFirebaseUidAsync(string firebaseUid);
+
+        Task<bool> ActualizarPedidoAsync(int id,UpdatePedidoDTO pedido,string firebaseUid);
     }
 }

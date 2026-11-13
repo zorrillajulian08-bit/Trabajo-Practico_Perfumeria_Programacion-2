@@ -17,7 +17,7 @@ html {
 
 body {
     min-height: 100vh;
-    background: #e4d9ca;
+    background: #28221e;
     color: #30271f;
     font-family: 'Inter', sans-serif;
 }
@@ -32,14 +32,18 @@ a {
 
 .encabezado-tienda {
     width: 100%;
-    min-height: 65px;
-    padding: 12px 4%;
+    min-height: 68px;
+    padding: 12px 5%;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: #e4d9ca;
-    border-bottom: 1px solid rgba(70, 55, 40, 0.12);
-    position: relative;
+    background: rgba(30, 25, 21, 0.58);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+    position: absolute;
+    top: 0;
+    left: 0;
     z-index: 10;
 }
 
@@ -47,14 +51,14 @@ a {
     display: flex;
     flex-direction: column;
     gap: 4px;
-    color: #30271f;
+    color: #fffaf2;
     font-size: 15px;
     font-weight: 600;
     letter-spacing: 2px;
 }
 
 .encabezado-tienda .logo small {
-    color: #927b60;
+    color: #d5bea0;
     font-size: 9px;
     letter-spacing: 4px;
     text-align: center;
@@ -67,13 +71,13 @@ a {
 }
 
 .encabezado-tienda nav a {
-    color: #51483e;
+    color: #f4ece1;
     font-size: 12px;
-    transition: color .3s ease;
+    transition: color .25s ease;
 }
 
 .encabezado-tienda nav a:hover {
-    color: #a17b4e;
+    color: #d5b58d;
 }
 
 .enlace-carrito {
@@ -90,158 +94,203 @@ a {
     align-items: center;
     justify-content: center;
     border-radius: 50%;
-    background: #806344;
+    background: #a17b4e;
     color: white;
     font-size: 10px;
     font-weight: 600;
 }
 
 /* ========================================
-   PÁGINA DEL PRODUCTO
+   CONTENEDOR PRINCIPAL
 ======================================== */
 
-.pagina-producto {
+.pagina-producto,
+#detalle-perfume {
     width: 100%;
-    min-height: calc(100vh - 65px);
-    padding: 0;
-    margin: 0;
+    min-height: 100vh;
+}
+
+.cargando {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #e8ded0;
+    font-size: 14px;
 }
 
 /* ========================================
-   PORTADA DEL PERFUME
+   ESCENA DEL PRODUCTO
 ======================================== */
 
 .producto-detalle {
     position: relative;
+    isolation: isolate;
     width: 100%;
-    min-height: calc(100vh - 65px);
+    min-height: 100vh;
+    min-height: 100svh;
     display: flex;
     align-items: center;
     overflow: hidden;
-    background: #211b16;
+    padding: 100px 5% 65px;
+    background: #28221e;
 }
 
 /* ========================================
-   IMAGEN DE FONDO
+   IMAGEN COMPLETA DEL PERFUME
 ======================================== */
 
 .detalle-foto {
     position: absolute;
     inset: 0;
+    z-index: 0;
     width: 100%;
     height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     overflow: hidden;
-    z-index: 1;
+    background: #d9cbbb;
 }
 
-#imagen-perfume {
+/* Fondo ampliado y suavizado */
+.detalle-foto::before {
+    content: "";
     position: absolute;
-    inset: 0;
+    inset: -15px;
+    z-index: 0;
+    background-image: var(--imagen-fondo);
+    background-size: cover;
+    background-position: center;
+    filter: blur(12px) brightness(.78);
+    transform: scale(1.04);
+}
+
+/* Fotografía completa, sin recortes */
+#imagen-perfume {
+    position: relative;
+    z-index: 1;
+    display: block;
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: contain;
     object-position: center;
     cursor: zoom-in;
-    transition: transform .6s ease;
+    transition: transform .3s ease;
 }
 
 #imagen-perfume:hover {
-    transform: scale(1.025);
+    transform: scale(1.02);
 }
 
-/* Degradado para mejorar la lectura del texto */
-
+/* Oscurecimiento suave para destacar la información */
 .detalle-foto::after {
     content: "";
     position: absolute;
     inset: 0;
+    z-index: 2;
     background: linear-gradient(
         90deg,
-        rgba(20, 16, 12, .15) 0%,
-        rgba(20, 16, 12, .35) 40%,
-        rgba(20, 16, 12, .78) 100%
+        rgba(20, 16, 13, 0.02) 0%,
+        rgba(20, 16, 13, 0.08) 45%,
+        rgba(20, 16, 13, 0.48) 100%
     );
     pointer-events: none;
 }
 
 /* ========================================
-   TARJETA DE INFORMACIÓN SUPERPUESTA
+   DEGRADADO PARA INTEGRAR LA IMAGEN
+======================================== */
+
+.detalle-foto::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background:
+        linear-gradient(
+            90deg,
+            rgba(20, 16, 13, 0.02) 0%,
+            rgba(20, 16, 13, 0.08) 35%,
+            rgba(20, 16, 13, 0.55) 68%,
+            rgba(20, 16, 13, 0.88) 100%
+        ),
+        linear-gradient(
+            0deg,
+            rgba(20, 16, 13, 0.35),
+            transparent 30%,
+            transparent 75%,
+            rgba(20, 16, 13, 0.2)
+        );
+    pointer-events: none;
+}
+
+/* ========================================
+   INFORMACIÓN DEL PRODUCTO
 ======================================== */
 
 .detalle-datos {
-    position: relative;
+    position: absolute;
     z-index: 2;
-    width: 430px;
-    max-width: 42%;
-    margin-left: auto;
-    margin-right: 7%;
+    top: 50%;
+    right: 7%;
+    transform: translateY(-50%);
+    width: min(440px, 40%);
+    max-height: 76vh;
+    overflow-y: auto;
     padding: 35px;
-
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    justify-content: center;
-    gap: 15px;
-
-    background: rgba(25, 21, 17, .58);
-    border: 1px solid rgba(255, 255, 255, .25);
-    border-radius: 12px;
-
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-
-    box-shadow: 0 15px 45px rgba(0, 0, 0, .20);
-
-    color: white;
+    gap: 14px;
+    background: rgba(35, 29, 25, 0.78);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 15px;
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    box-shadow: 0 18px 55px rgba(0, 0, 0, 0.25);
 }
 
-/* Marca */
-
 .detalle-marca {
-    color: #d8bd98;
-    font-size: 11px;
+    color: #d9c2a6;
+    font-size: 10px;
     font-weight: 600;
     letter-spacing: 3px;
     text-transform: uppercase;
 }
 
-/* Nombre */
-
 .detalle-datos h1 {
-    color: #fffaf2;
+    width: 100%;
+    color: #fffaf3;
     font-family: 'Cormorant Garamond', serif;
-    font-size: 48px;
-    font-weight: 500;
-    line-height: 1.1;
+    font-size: clamp(34px, 3.3vw, 49px);
+    font-weight: 600;
+    line-height: 1.05;
+    overflow-wrap: anywhere;
 }
 
-/* Categoría */
-
 .detalle-categoria {
-    color: #d8bd98;
+    color: #e3d0b9;
     font-size: 10px;
+    font-weight: 500;
     letter-spacing: 2px;
     text-transform: uppercase;
 }
 
-/* Descripción */
-
 .detalle-descripcion {
     max-width: 100%;
-    color: #f0e8de;
-    font-size: 13px;
-    font-weight: 400;
-    line-height: 1.8;
-    margin-top: 8px;
+    color: #f1e9df;
+    font-size: 12px;
+    line-height: 1.85;
+    margin-top: 7px;
+    overflow-wrap: anywhere;
 }
-
-/* Separador */
 
 .separador {
     width: 100%;
     height: 1px;
     margin: 8px 0;
-    background: rgba(255, 255, 255, .25);
+    background: rgba(255, 255, 255, 0.3);
 }
 
 /* ========================================
@@ -249,17 +298,19 @@ a {
 ======================================== */
 
 .texto-precio {
-    color: #d8bd98;
+    color: #e3d0b9;
     font-size: 10px;
+    font-weight: 600;
     letter-spacing: 2px;
     text-transform: uppercase;
 }
 
 .detalle-precio {
-    color: white;
+    color: #fffaf3;
     font-family: 'Cormorant Garamond', serif;
-    font-size: 35px;
-    font-weight: 600;
+    font-size: 38px;
+    font-weight: 700;
+    line-height: 1;
 }
 
 /* ========================================
@@ -270,50 +321,48 @@ a {
     width: 100%;
     display: flex;
     flex-direction: column;
-    align-items: stretch;
     gap: 11px;
-    margin-top: 15px;
+    margin-top: 13px;
 }
 
 .boton-volver,
 .boton-carrito {
     width: 100%;
-    min-height: 48px;
-    padding: 0 18px;
+    min-height: 49px;
+    padding: 12px 18px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     border-radius: 7px;
     font-family: 'Inter', sans-serif;
-    font-size: 12px;
-    font-weight: 500;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: .4px;
     cursor: pointer;
-    transition: .3s ease;
+    transition: .25s ease;
 }
 
-/* Volver */
-
 .boton-volver {
-    border: 1px solid rgba(255, 255, 255, .55);
+    border: 1px solid #d5bea0;
     background: transparent;
-    color: white;
+    color: #fffaf2;
 }
 
 .boton-volver:hover {
-    background: rgba(255, 255, 255, .15);
+    background: rgba(255, 255, 255, 0.15);
+    transform: translateY(-1px);
 }
 
-/* Agregar al carrito */
-
 .boton-carrito {
-    border: 1px solid #d1b38b;
-    background: #d1b38b;
-    color: #211b16;
+    border: 1px solid #d5bea0;
+    background: #d5bea0;
+    color: #29231d;
 }
 
 .boton-carrito:hover {
-    background: #e4c9a5;
-    border-color: #e4c9a5;
+    border-color: #ead7bc;
+    background: #ead7bc;
+    transform: translateY(-1px);
 }
 
 .boton-carrito span {
@@ -321,27 +370,34 @@ a {
     font-size: 15px;
 }
 
+.boton-carrito:disabled {
+    opacity: .55;
+    cursor: not-allowed;
+    transform: none;
+}
+
 /* ========================================
-   BOTÓN AMPLIAR IMAGEN
+   AYUDA DE ZOOM
 ======================================== */
 
 .ayuda-zoom {
     position: absolute;
-    z-index: 3;
     left: 30px;
     bottom: 25px;
-    padding: 10px 15px;
-    background: rgba(25, 21, 17, .65);
-    border: 1px solid rgba(255, 255, 255, .4);
+    z-index: 3;
+    padding: 10px 14px;
+    background: rgba(35, 29, 25, 0.65);
+    border: 1px solid rgba(255, 255, 255, 0.25);
     border-radius: 6px;
     color: white;
-    font-size: 11px;
+    font-size: 10px;
     cursor: pointer;
-    transition: .3s ease;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
 }
 
 .ayuda-zoom:hover {
-    background: rgba(25, 21, 17, .9);
+    background: rgba(35, 29, 25, 0.9);
 }
 
 /* ========================================
@@ -349,25 +405,30 @@ a {
 ======================================== */
 
 .perfume-no-encontrado {
-    min-height: 70vh;
-    padding: 50px 20px;
+    min-height: 100vh;
+    padding: 100px 20px 50px;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 25px;
+    gap: 22px;
     text-align: center;
 }
 
 .perfume-no-encontrado h2 {
-    color: #302920;
+    color: #fffaf3;
     font-family: 'Cormorant Garamond', serif;
     font-size: 40px;
     font-weight: 500;
 }
 
+.perfume-no-encontrado p {
+    color: #d5bea0;
+    font-size: 13px;
+}
+
 /* ========================================
-   ZOOM DE IMAGEN
+   ZOOM
 ======================================== */
 
 .zoom-overlay {
@@ -400,12 +461,13 @@ a {
 .zoom-overlay p {
     color: #e9dfd1;
     font-size: 13px;
+    text-align: center;
 }
 
 .cerrar-zoom {
     position: absolute;
-    top: 25px;
-    right: 35px;
+    top: 20px;
+    right: 30px;
     border: none;
     background: transparent;
     color: white;
@@ -422,41 +484,58 @@ body.zoom-abierto {
 ======================================== */
 
 .pie-tienda {
-    padding: 25px 20px;
-    background: #33291f;
-    color: #c9bca9;
+    position: absolute;
+    z-index: 5;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding: 14px 20px;
+    background: rgba(30, 25, 21, 0.55);
+    color: #e9dfd1;
     text-align: center;
     font-size: 11px;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
 }
 
 /* ========================================
-   RESPONSIVE - TABLETS
+   TABLETS
 ======================================== */
 
 @media (max-width: 950px) {
+    .producto-detalle {
+        min-height: 100vh;
+    }
+
+    #imagen-perfume {
+        padding-right: 43%;
+        padding-left: 2%;
+    }
 
     .detalle-datos {
-        width: 390px;
-        max-width: 48%;
-        margin-right: 4%;
-        padding: 27px;
+        width: 45%;
+        padding: 25px;
+        right: 4%;
     }
 
     .detalle-datos h1 {
-        font-size: 40px;
+        font-size: 36px;
+    }
+
+    .detalle-descripcion {
+        font-size: 11px;
     }
 }
 
 /* ========================================
-   RESPONSIVE - CELULARES
+   CELULARES
 ======================================== */
 
 @media (max-width: 650px) {
-
     .encabezado-tienda {
-        padding: 18px 5%;
+        padding: 15px 5%;
         flex-direction: column;
-        gap: 18px;
+        gap: 15px;
     }
 
     .encabezado-tienda nav {
@@ -470,40 +549,53 @@ body.zoom-abierto {
     }
 
     .producto-detalle {
-        min-height: 900px;
-        align-items: flex-end;
+        min-height: 100svh;
+        padding: 90px 0 25px;
+    }
+
+    .detalle-foto {
+        justify-content: center;
+        align-items: flex-start;
     }
 
     #imagen-perfume {
         width: 100%;
         height: 100%;
-        object-fit: cover;
-        object-position: center;
+        padding: 105px 12px 310px;
+        object-fit: contain;
+        object-position: center top;
     }
 
     .detalle-foto::after {
         background: linear-gradient(
             180deg,
-            rgba(20, 16, 12, .10) 0%,
-            rgba(20, 16, 12, .35) 35%,
-            rgba(20, 16, 12, .92) 100%
+            rgba(20, 16, 13, 0.02) 0%,
+            rgba(20, 16, 13, 0.08) 38%,
+            rgba(20, 16, 13, 0.88) 75%,
+            rgba(20, 16, 13, 0.96) 100%
         );
     }
 
     .detalle-datos {
+        top: auto;
+        bottom: 48px;
+        right: 5%;
+        transform: none;
         width: 90%;
-        max-width: none;
-        margin: 0 auto 30px;
-        padding: 25px;
-        gap: 13px;
+        max-width: 480px;
+        max-height: 52vh;
+        margin: 0 auto;
+        padding: 21px;
+        gap: 10px;
     }
 
     .detalle-datos h1 {
-        font-size: 38px;
+        font-size: 33px;
     }
 
     .detalle-descripcion {
-        font-size: 12px;
+        font-size: 11px;
+        line-height: 1.65;
     }
 
     .detalle-precio {
@@ -511,13 +603,13 @@ body.zoom-abierto {
     }
 
     .botones-detalle {
-        margin-top: 12px;
+        margin-top: 7px;
     }
 
     .ayuda-zoom {
-        top: 15px;
-        left: 15px;
+        top: 100px;
         bottom: auto;
+        left: 15px;
     }
 
     .zoom-overlay img {
@@ -526,8 +618,12 @@ body.zoom-abierto {
     }
 
     .cerrar-zoom {
-        top: 15px;
-        right: 20px;
+        top: 12px;
+        right: 18px;
+    }
+
+    .pie-tienda {
+        position: relative;
     }
 }
 
@@ -536,17 +632,21 @@ body.zoom-abierto {
 ======================================== */
 
 @media (max-width: 380px) {
+    .encabezado-tienda nav {
+        gap: 15px;
+    }
 
-    .producto-detalle {
-        min-height: 950px;
+    #imagen-perfume {
+        padding-bottom: 330px;
     }
 
     .detalle-datos {
-        padding: 22px;
+        padding: 17px;
+        max-height: 55vh;
     }
 
     .detalle-datos h1 {
-        font-size: 32px;
+        font-size: 29px;
     }
 
     .detalle-precio {

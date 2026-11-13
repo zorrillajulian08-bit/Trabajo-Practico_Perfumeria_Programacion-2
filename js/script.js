@@ -1,33 +1,46 @@
-// ========================================
-// CONFIGURACIÓN DE LA API
-// ========================================
+
+import { auth } from "./firebase.js";
+
+import {
+    onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/13.2.0/firebase-auth.js";
+
 const API = "https://localhost:7177/api/Perfumeria";
 
-// ========================================
-// ELEMENTOS DEL HTML
-// ========================================
 const catalogo = document.getElementById("productos");
 const buscador = document.getElementById("buscador");
-const categoria = document.getElementById("categoria");
+
+let perfumes = [];
+let categoriaSeleccionada = "todas";
+let CLAVE_CARRITO = null;
 
 // ========================================
-// LISTA GENERAL DE PERFUMES
+// NORMALIZAR TEXTOS
 // ========================================
-let perfumes = [];
+
+function normalizarTexto(texto) {
+    return String(texto || "")
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .trim();
+}
 
 // ========================================
 // MOSTRAR PRODUCTOS
 // ========================================
+
 function mostrarPerfumes(lista) {
-    if (!catalogo) {
-        console.error("No se encontró el contenedor de productos.");
-        return;
-    }
+    if (!catalogo) return;
 
     catalogo.innerHTML = "";
 
     if (lista.length === 0) {
-        catalogo.innerHTML = "<p class='cargando-productos'>No se encontraron perfumes.</p>";
+        catalogo.innerHTML = `
+            <p class="cargando-productos">
+                No se encontraron perfumes.
+            </p>
+        `;
         return;
     }
 
@@ -54,7 +67,7 @@ function mostrarPerfumes(lista) {
             style: "currency",
             currency: "ARS",
             maximumFractionDigits: 0
-        }).format(perfume.precio || 0);
+        }).format(perfume.precio);
 
         tarjeta.append(imagen, nombre, marca, precio);
 
@@ -73,21 +86,25 @@ function mostrarPerfumes(lista) {
 }
 
 // ========================================
-// FILTRAR PRODUCTOS
+// BUSCADOR Y FILTROS
 // ========================================
+
 function filtrarPerfumes() {
-    const texto = buscador.value.toLowerCase().trim();
-    const seleccion = categoria.value.toLowerCase();
+    const texto = normalizarTexto(buscador?.value || "");
+    const categoria = normalizarTexto(categoriaSeleccionada);
 
     const resultado = perfumes.filter((perfume) => {
+        const nombre = normalizarTexto(perfume.nombre);
+        const marca = normalizarTexto(perfume.marca);
+        const genero = normalizarTexto(perfume.categoria);
+
         const coincideTexto =
-            perfume.nombre.toLowerCase().includes(texto) ||
-            perfume.marca.toLowerCase().includes(texto);
+            nombre.includes(texto) ||
+            marca.includes(texto);
 
         const coincideCategoria =
-            seleccion === "todas" ||
-            seleccion === "todos" ||
-            perfume.categoria.toLowerCase() === seleccion;
+            categoria === "todas" ||
+            genero === categoria;
 
         return coincideTexto && coincideCategoria;
     });
@@ -96,91 +113,183 @@ function filtrarPerfumes() {
 }
 
 // ========================================
+// BOTONES DE CATEGORÍAS
+// ========================================
+
+window.elegirCategoria = function (valor) {
+    categoriaSeleccionada = normalizarTexto(valor);
+
+    filtrarPerfumes();
+
+    document.getElementById("catalogo")?.scrollIntoView({
+        behavior: "smooth"
+    });
+};
+
+// ========================================
 // ABRIR DETALLE DEL PERFUME
 // ========================================
+
 function verPerfume(nombre) {
-    window.location.href = "perfume.html?nombre=" + encodeURIComponent(nombre);
+    window.location.href =
+        "perfume.html?nombre=" + encodeURIComponent(nombre);
 }
 
 // ========================================
-// CARGAR PRODUCTOS DESDE LA API SQL
+// CARGAR PRODUCTOS DESDE LA API
 // ========================================
+
 async function cargarProductos() {
     try {
         const respuesta = await fetch(`${API}/todos`);
-        if (!respuesta.ok) throw new Error("Error en la API");
+
+        if (!respuesta.ok) {
+            throw new Error("Error al obtener los productos");
+        }
 
         const datos = await respuesta.json();
 
-        // Mapeamos los datos tal cual vienen de SQL
         perfumes = datos.map((item) => ({
             productoId: item.productoId,
-            nombre: item.nombre,
-            // Si la API devuelve el objeto "marca", extraemos el nombre. Si no, lo usamos directo.
+            nombre: item.nombre || "",
             marca: item.marca?.nombre || item.marca || "",
             precio: Number(item.precio) || 0,
-            categoria: (item.categoria || "").toLowerCase(),
+            categoria: item.categoria || "",
             imagen: item.imagen || "",
             descripcion: item.descripcion || ""
         }));
 
-        // Si el buscador y la categoria existen, filtramos
-        if (buscador && categoria) {
-            filtrarPerfumes();
-        } else {
-            mostrarPerfumes(perfumes);
-        }
+        filtrarPerfumes();
 
     } catch (error) {
-        console.error("Error al cargar productos de SQL:", error);
-        catalogo.innerHTML = "<p class='cargando-productos'>No se pudieron cargar los productos. Revisá si la API está corriendo.</p>";
+        console.error("Error al cargar productos:", error);
+
+        if (catalogo) {
+            catalogo.innerHTML = `
+                <p class="cargando-productos">
+                    No se pudieron cargar los productos.
+                    Revisá si la API está funcionando.
+                </p>
+            `;
+        }
     }
 }
 
 // ========================================
-// BUSCADOR Y CATEGORÍAS
+// EVENTO DEL BUSCADOR
 // ========================================
-if (buscador && categoria) {
+
+if (buscador) {
     buscador.addEventListener("input", filtrarPerfumes);
-    categoria.addEventListener("change", filtrarPerfumes);
 }
 
 // ========================================
-// ELEGIR CATEGORÍAS DESDE OTROS BOTONES
+// CONTADOR DEL CARRITO
 // ========================================
-window.elegirCategoria = function(valor) {
-    if (!categoria) return;
-    categoria.value = valor.toLowerCase();
-    filtrarPerfumes();
-};
 
-// ========================================
-// ACTUALIZAR CONTADORES (CARRITO Y PEDIDOS)
-// ========================================
 function actualizarContadorCarrito() {
     const contador = document.getElementById("contador-carrito");
+
     if (!contador) return;
-    const carrito = JSON.parse(localStorage.getItem("carritoMay")) || [];
-    const cantidad = carrito.reduce((total, producto) => {
-        return total + (Number(producto.cantidad) || 1);
-    }, 0);
-    contador.textContent = cantidad;
+
+    // Si no hay usuario, el carrito está vacío.
+    if (!CLAVE_CARRITO) {
+        contador.textContent = 0;
+        return;
+    }
+
+    try {
+        const carrito = JSON.parse(
+            localStorage.getItem(CLAVE_CARRITO)
+        ) || [];
+
+        const cantidad = carrito.reduce((total, producto) => {
+            return total + (Number(producto.cantidad) || 0);
+        }, 0);
+
+        contador.textContent = cantidad;
+
+    } catch (error) {
+        console.error("Error al actualizar el contador del carrito:", error);
+        contador.textContent = 0;
+    }
 }
 
-function actualizarContadorPedidos() {
+// ========================================
+// CONTADOR DE PEDIDOS
+// ========================================
+
+async function actualizarContadorPedidos() {
     const contador = document.getElementById("contador-pedidos");
+
     if (!contador) return;
-    // Como los pedidos ahora están en SQL, podríamos hacer un fetch, 
-    // pero para no sobrecargar, lo dejamos en 0 o mostramos si hay algo en localStorage.
-    // Si querés que cuente los pedidos reales, avisame y lo conectamos a GET /pedidos/mis-pedidos.
-    contador.textContent = 0; 
+
+    try {
+        // Esperar a que Firebase identifique al usuario.
+        const usuario = await new Promise((resolve) => {
+            const cancelar = onAuthStateChanged(auth, (usuarioActual) => {
+                cancelar();
+                resolve(usuarioActual);
+            });
+        });
+
+        if (!usuario) {
+            contador.textContent = 0;
+            return;
+        }
+
+        // Obtener el token de autenticación.
+        const token = await usuario.getIdToken();
+
+        // Consultar los pedidos del usuario.
+        const respuesta = await fetch(`${API}/pedidos/mis-pedidos`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+
+        if (!respuesta.ok) {
+            throw new Error("No se pudieron obtener los pedidos.");
+        }
+
+        const datos = await respuesta.json();
+
+        const pedidos = Array.isArray(datos)
+    ? datos
+    : datos.pedidos || datos.data || datos.$values || [];;
+
+    const pedidosPendientes = pedidos.filter((pedido) =>
+    String(pedido.estado ?? pedido.Estado ?? "").trim().toLowerCase() === "pendiente"
+);
+
+        contador.textContent = pedidosPendientes.length;
+
+    } catch (error) {
+        console.error("Error al actualizar el contador de pedidos:", error);
+        contador.textContent = 0;
+    }
 }
+
+// ========================================
+// ESCUCHAR CAMBIOS DE SESIÓN
+// ========================================
+
+onAuthStateChanged(auth, (usuario) => {
+
+    if (usuario) {
+        CLAVE_CARRITO = `carritoMay_${usuario.uid}`;
+    } else {
+        CLAVE_CARRITO = null;
+    }
+
+    actualizarContadorCarrito();
+});
 
 // ========================================
 // INICIAR
 // ========================================
+
 cargarProductos();
-actualizarContadorCarrito();
 actualizarContadorPedidos();
 
 window.addEventListener("pageshow", () => {

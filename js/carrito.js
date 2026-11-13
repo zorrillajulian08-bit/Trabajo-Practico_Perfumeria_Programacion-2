@@ -1,6 +1,8 @@
-import { auth } from "./firebase.js"; // Importamos Firebase
 
-const CLAVE_CARRITO = "carritoMay";
+import { auth } from "./firebase.js";
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-auth.js";
+
+let CLAVE_CARRITO = null;
 const API = "https://localhost:7177/api/Perfumeria";
 
 const contenedor = document.getElementById("productos-carrito");
@@ -12,11 +14,21 @@ const botonConfirmar = document.getElementById("confirmar-pedido");
 // ========================================
 // FUNCIONES AUXILIARES
 // ========================================
+
 function obtenerCarrito() {
-    return JSON.parse(localStorage.getItem(CLAVE_CARRITO)) || [];
+    if (!CLAVE_CARRITO) return [];
+
+    try {
+        return JSON.parse(localStorage.getItem(CLAVE_CARRITO)) || [];
+    } catch (error) {
+        console.error("Error al leer el carrito:", error);
+        return [];
+    }
 }
 
 function guardarCarrito(carrito) {
+    if (!CLAVE_CARRITO) return;
+
     localStorage.setItem(CLAVE_CARRITO, JSON.stringify(carrito));
 }
 
@@ -27,7 +39,10 @@ function formatoPrecio(precio) {
 // ========================================
 // MOSTRAR PRODUCTOS
 // ========================================
+
 function mostrarCarrito() {
+    if (!contenedor) return;
+
     const carrito = obtenerCarrito();
     contenedor.replaceChildren();
 
@@ -39,14 +54,17 @@ function mostrarCarrito() {
                 <a href="index.html#catalogo" class="boton-volver">Explorar perfumes</a>
             </div>
         `;
+
         actualizarTotal([]);
-        if(botonConfirmar) botonConfirmar.disabled = true;
-        if(botonVaciar) botonVaciar.disabled = true;
+
+        if (botonConfirmar) botonConfirmar.disabled = true;
+        if (botonVaciar) botonVaciar.disabled = true;
+
         return;
     }
 
-    if(botonConfirmar) botonConfirmar.disabled = false;
-    if(botonVaciar) botonVaciar.disabled = false;
+    if (botonConfirmar) botonConfirmar.disabled = false;
+    if (botonVaciar) botonVaciar.disabled = false;
 
     carrito.forEach(function (producto) {
         const tarjeta = document.createElement("article");
@@ -67,6 +85,7 @@ function mostrarCarrito() {
             </div>
             <div class="subtotal-producto">${formatoPrecio(producto.precio * producto.cantidad)}</div>
         `;
+
         contenedor.appendChild(tarjeta);
     });
 
@@ -76,32 +95,53 @@ function mostrarCarrito() {
 // ========================================
 // ACTUALIZAR TOTALES
 // ========================================
+
 function actualizarTotal(carrito) {
-    const total = carrito.reduce((suma, producto) => suma + producto.precio * producto.cantidad, 0);
-    subtotalElemento.textContent = formatoPrecio(total);
-    totalElemento.textContent = formatoPrecio(total);
+    const total = carrito.reduce(
+        (suma, producto) => suma + producto.precio * producto.cantidad,
+        0
+    );
+
+    if (subtotalElemento) {
+        subtotalElemento.textContent = formatoPrecio(total);
+    }
+
+    if (totalElemento) {
+        totalElemento.textContent = formatoPrecio(total);
+    }
 }
 
 // ========================================
 // CAMBIAR CANTIDAD Y ELIMINAR
 // ========================================
-window.cambiarCantidad = function(productoId, cambio) {
+
+window.cambiarCantidad = function (productoId, cambio) {
     const carrito = obtenerCarrito();
-    const producto = carrito.find((p) => p.productoId === productoId);
+
+    const producto = carrito.find(
+        p => Number(p.productoId) === Number(productoId)
+    );
+
     if (!producto) return;
 
     producto.cantidad += cambio;
+
     if (producto.cantidad <= 0) {
-        eliminarProducto(productoId);
+        window.eliminarProducto(productoId);
         return;
     }
+
     guardarCarrito(carrito);
     mostrarCarrito();
 };
 
-window.eliminarProducto = function(productoId) {
+window.eliminarProducto = function (productoId) {
     let carrito = obtenerCarrito();
-    carrito = carrito.filter((p) => p.productoId !== productoId);
+
+    carrito = carrito.filter(
+        p => Number(p.productoId) !== Number(productoId)
+    );
+
     guardarCarrito(carrito);
     mostrarCarrito();
 };
@@ -109,8 +149,10 @@ window.eliminarProducto = function(productoId) {
 // ========================================
 // VACIAR CARRITO
 // ========================================
+
 function vaciarCarrito() {
     const carrito = obtenerCarrito();
+
     if (carrito.length === 0) return;
 
     Swal.fire({
@@ -128,6 +170,7 @@ function vaciarCarrito() {
         if (resultado.isConfirmed) {
             guardarCarrito([]);
             mostrarCarrito();
+
             Swal.fire({
                 title: "Carrito vacío",
                 text: "Eliminamos todos los productos.",
@@ -141,15 +184,16 @@ function vaciarCarrito() {
 }
 
 // ========================================
-// CONFIRMAR PEDIDO (Buscando el Token real y el ID en SQL)
+// CONFIRMAR PEDIDO
 // ========================================
+
 async function confirmarPedido() {
     const carrito = obtenerCarrito();
+
     if (carrito.length === 0) return;
 
-    // 1. Buscamos al usuario actual en Firebase directamente
     const usuarioActual = auth.currentUser;
-    
+
     if (!usuarioActual) {
         Swal.fire({
             title: "Iniciá sesión",
@@ -159,34 +203,61 @@ async function confirmarPedido() {
             background: "#faf7f1",
             color: "#33271d"
         });
+
         return;
     }
 
-    // 2. Obtenemos el token real
     const tokenReal = await usuarioActual.getIdToken();
-    localStorage.setItem("firebaseToken", tokenReal); // Lo guardamos para la próxima
 
-    // 3. Buscamos el ID de SQL para ese usuario
+    localStorage.setItem("firebaseToken", tokenReal);
+
+    // Buscar el ID del usuario en SQL
     let usuarioIdSQL = null;
+
     try {
-        const resUsuarios = await fetch(`${API}/usuarios`);
+        const resUsuarios = await fetch(`${API}/usuarios`, {
+            headers: {
+                "Authorization": `Bearer ${tokenReal}`
+            }
+        });
+
         if (resUsuarios.ok) {
             const usuarios = await resUsuarios.json();
-            const encontrado = usuarios.find(u => String(u.firebaseUid).trim() === String(usuarioActual.uid).trim());
+
+            const encontrado = usuarios.find(
+                u => String(u.firebaseUid).trim() === String(usuarioActual.uid).trim()
+            );
+
             if (encontrado) {
                 usuarioIdSQL = encontrado.usuarioId;
-                localStorage.setItem("usuarioId", usuarioIdSQL);
             }
         }
-    } catch (e) { 
-        console.warn("No se pudo buscar en SQL, usando ID 1 por defecto."); 
+    } catch (error) {
+        console.warn("No se pudo buscar al usuario en SQL:", error);
     }
 
-    if (!usuarioIdSQL) usuarioIdSQL = 1; // Fallback por si falla la API
+    // No utilizar un ID de respaldo que podría pertenecer a otra persona
+    if (!usuarioIdSQL) {
+        Swal.fire({
+            title: "No se pudo identificar tu cuenta",
+            text: "No encontramos tu usuario en la base de datos. Cerrá sesión e iniciá sesión nuevamente.",
+            icon: "error",
+            confirmButtonColor: "#493524",
+            background: "#faf7f1",
+            color: "#33271d"
+        });
 
-    // 4. Mostramos el resumen de confirmación
-    const total = carrito.reduce((suma, producto) => suma + producto.precio * producto.cantidad, 0);
+        return;
+    }
+
+    // Resumen del pedido
+    const total = carrito.reduce(
+        (suma, producto) => suma + producto.precio * producto.cantidad,
+        0
+    );
+
     let resumen = "";
+
     carrito.forEach((p) => {
         resumen += `${p.nombre} x ${p.cantidad} — ${formatoPrecio(p.precio * p.cantidad)}\n`;
     });
@@ -204,8 +275,7 @@ async function confirmarPedido() {
         color: "#33271d"
     }).then(async (resultado) => {
         if (resultado.isConfirmed) {
-            
-            // 5. Armamos el JSON y enviamos a la API
+
             const pedidoParaAPI = {
                 usuarioId: Number(usuarioIdSQL),
                 detalles: carrito.map((prod) => ({
@@ -228,7 +298,7 @@ async function confirmarPedido() {
                     throw new Error("Error al crear el pedido en el servidor.");
                 }
 
-                // 6. Éxito
+                // Vaciar solamente el carrito de este usuario
                 guardarCarrito([]);
                 mostrarCarrito();
 
@@ -246,6 +316,7 @@ async function confirmarPedido() {
 
             } catch (error) {
                 console.error(error);
+
                 Swal.fire({
                     title: "No se pudo confirmar",
                     text: error.message || "Error de conexión con el servidor.",
@@ -262,7 +333,25 @@ async function confirmarPedido() {
 // ========================================
 // EVENTOS
 // ========================================
-if(botonVaciar) botonVaciar.addEventListener("click", vaciarCarrito);
-if(botonConfirmar) botonConfirmar.addEventListener("click", confirmarPedido);
 
-mostrarCarrito();
+if (botonVaciar) {
+    botonVaciar.addEventListener("click", vaciarCarrito);
+}
+
+if (botonConfirmar) {
+    botonConfirmar.addEventListener("click", confirmarPedido);
+}
+
+// ========================================
+// IDENTIFICAR USUARIO Y CARGAR SU CARRITO
+// ========================================
+
+onAuthStateChanged(auth, (usuario) => {
+    if (usuario) {
+        CLAVE_CARRITO = `carritoMay_${usuario.uid}`;
+    } else {
+        CLAVE_CARRITO = null;
+    }
+
+    mostrarCarrito();
+});

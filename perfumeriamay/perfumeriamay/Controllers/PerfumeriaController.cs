@@ -226,12 +226,19 @@ namespace perfumeriamay.Controllers
 
             usuario.FirebaseUid = firebaseUid;
 
-            var resultado = await _service.AgregarUsuarioAsync(usuario);
+            try
+            {
+                var resultado = await _service.AgregarUsuarioAsync(usuario);
 
-            if (!resultado)
-                return BadRequest("No se pudo registrar el usuario.");
+                if (!resultado)
+                    return BadRequest("No se pudo registrar el usuario.");
 
-            return Ok("Usuario registrado correctamente.");
+                return Ok("Usuario registrado correctamente.");
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         // =========================
@@ -270,12 +277,23 @@ namespace perfumeriamay.Controllers
         }
 
         // PEDIDOS
+        [Authorize]
         [HttpPut("pedidos/{id}")]
         public async Task<IActionResult> UpdatePedido(
-            int id,
-            [FromBody] UpdatePedidoDTO pedido)
+    int id,
+    [FromBody] UpdatePedidoDTO pedido)
         {
-            var resultado = await _service.ActualizarPedidoAsync(id, pedido);
+            // Obtener el UID del empleado autenticado mediante Firebase.
+            var firebaseUid = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (string.IsNullOrEmpty(firebaseUid))
+                return Unauthorized("No se pudo identificar al empleado.");
+
+            var resultado = await _service.ActualizarPedidoAsync(
+                id,
+                pedido,
+                firebaseUid
+            );
 
             if (!resultado)
                 return BadRequest("No se pudo actualizar el pedido.");
@@ -289,13 +307,20 @@ namespace perfumeriamay.Controllers
             int id,
             [FromBody] UpdateUsuariosDTO usuario)
         {
-            var resultado = await _service.ActualizarUsuarioAsync(id, usuario);
+            try
+            {
+                var resultado = await _service.ActualizarUsuarioAsync(id, usuario);
 
-            if (!resultado)
-                return BadRequest(
-                    "No se pudo actualizar el usuario. Verificá los datos.");
+                if (!resultado)
+                    return BadRequest(
+                        "No se pudo actualizar el usuario. Verificá los datos.");
 
-            return Ok("Usuario actualizado correctamente.");
+                return Ok("Usuario actualizado correctamente.");
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         // =========================
@@ -309,9 +334,17 @@ namespace perfumeriamay.Controllers
             var resultado = await _service.EliminarPerfumeAsync(id);
 
             if (!resultado)
-                return NotFound("No se encontró el producto.");
+            {
+                return BadRequest(new
+                {
+                    mensaje = "No se puede eliminar este perfume porque tiene ventas registradas. El historial de ventas debe conservarse."
+                });
+            }
 
-            return Ok("Producto eliminado correctamente.");
+            return Ok(new
+            {
+                mensaje = "Producto eliminado correctamente."
+            });
         }
 
         // MARCAS

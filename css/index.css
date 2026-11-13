@@ -1,3 +1,4 @@
+
 /* ========================================
    CONFIGURACIÓN GENERAL
 ======================================== */
@@ -30,7 +31,6 @@ input,
 select {
     font: inherit;
 }
-
 
 /* ========================================
    ENCABEZADO
@@ -120,7 +120,6 @@ select {
     color: white;
     border-color: #806344;
 }
-
 
 /* ========================================
    PORTADA CON IMAGEN DE FONDO
@@ -243,7 +242,6 @@ select {
     }
 }
 
-
 /* ========================================
    INTRODUCCIÓN
 ======================================== */
@@ -274,7 +272,6 @@ select {
     font-size: 12px;
     line-height: 1.9;
 }
-
 
 /* ========================================
    CATEGORÍAS
@@ -324,7 +321,6 @@ select {
     font-size: 18px;
 }
 
-
 /* ========================================
    CATÁLOGO
 ======================================== */
@@ -357,7 +353,6 @@ select {
     line-height: 1.8;
     text-align: right;
 }
-
 
 /* ========================================
    BUSCADOR Y FILTROS
@@ -411,7 +406,6 @@ select {
     cursor: pointer;
 }
 
-
 /* ========================================
    PRODUCTOS
 ======================================== */
@@ -419,37 +413,54 @@ select {
 .productos {
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 24px;
+    gap: 26px;
 }
 
 .producto {
     min-width: 0;
-    padding: 15px 15px 22px;
-    background: rgba(249, 246, 240, .65);
-    border: 1px solid rgba(204, 190, 171, .5);
+    padding: 0 15px 22px;
+    background: #f8f4ed;
+    border: 1px solid rgba(180, 158, 130, .4);
+    border-radius: 5px;
+    box-shadow: 0 5px 18px rgba(67, 49, 29, .06);
+    overflow: hidden;
     transition: transform .35s ease, box-shadow .35s ease;
 }
 
 .producto:hover {
-    transform: translateY(-7px);
-    box-shadow: 0 15px 35px rgba(67, 49, 29, .09);
+    transform: translateY(-5px);
+    box-shadow: 0 14px 30px rgba(67, 49, 29, .12);
 }
 
 .producto img {
-    width: 100%;
+    width: calc(100% + 30px);
     height: 260px;
+    margin-left: -15px;
     display: block;
-    object-fit: contain;
-    mix-blend-mode: multiply;
+    object-fit: cover;
+    object-position: center;
+    border-radius: 4px 4px 0 0;
+
+    -webkit-mask-image: radial-gradient(
+        ellipse at center,
+        #000 72%,
+        transparent 100%
+    );
+    mask-image: radial-gradient(
+        ellipse at center,
+        #000 72%,
+        transparent 100%
+    );
+
     transition: transform .4s ease;
 }
 
 .producto:hover img {
-    transform: scale(1.045);
+    transform: scale(1.035);
 }
 
 .producto h3 {
-    margin-top: 17px;
+    margin-top: 15px;
     color: #3b3026;
     font-family: 'Cormorant Garamond', serif;
     font-size: 25px;
@@ -499,7 +510,6 @@ select {
     font-size: 13px;
 }
 
-
 /* ========================================
    BENEFICIOS
 ======================================== */
@@ -536,7 +546,6 @@ select {
     font-size: 11px;
     line-height: 1.8;
 }
-
 
 /* ========================================
    PIE DE PÁGINA
@@ -594,6 +603,54 @@ footer {
     text-align: center;
 }
 
+/* ========================================
+   NOSOTROS Y REDES SOCIALES
+======================================== */
+
+.footer-nosotros {
+    text-align: center;
+    padding: 35px 20px;
+    border-top: 1px solid rgba(255, 255, 255, .13);
+}
+
+.footer-nosotros h3 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 30px;
+    color: #eee5d8;
+    margin-bottom: 10px;
+}
+
+.footer-nosotros p {
+    color: #c9bca9;
+    margin-bottom: 20px;
+}
+
+.footer-contactos {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 30px;
+    flex-wrap: wrap;
+}
+
+.footer-contactos a {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #eee5d8;
+    text-decoration: none;
+    font-size: 15px;
+    transition: color .3s ease;
+}
+
+.footer-contactos a:hover {
+    color: #d6b990;
+}
+
+.footer-contactos svg {
+    width: 23px;
+    height: 23px;
+}
 
 /* ========================================
    RESPONSIVE - TABLETS
@@ -626,7 +683,6 @@ footer {
         height: 400px;
     }
 }
-
 
 /* ========================================
    RESPONSIVE - CELULARES
@@ -732,11 +788,13 @@ footer {
     }
 
     .producto {
-        padding: 10px 10px 17px;
+        padding: 0 10px 17px;
     }
 
     .producto img {
+        width: calc(100% + 20px);
         height: 175px;
+        margin-left: -10px;
     }
 
     .producto h3 {
@@ -768,8 +826,12 @@ footer {
     footer {
         padding: 45px 7% 20px;
     }
-}
 
+    .footer-contactos {
+        flex-direction: column;
+        gap: 18px;
+    }
+}
 
 /* ========================================
    RESPONSIVE - CELULARES PEQUEÑOS
@@ -787,5 +849,39 @@ footer {
 
     .portada h1 {
         font-size: 52px;
+    }
+}
+.boton-todas-categorias {
+    padding: 13px 25px;
+    background: #4b382e;
+    color: #f5eee5;
+    border: 1px solid #4b382e;
+    border-radius: 2px;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.boton-todas-categorias:hover {
+    background: #d8c5ae;
+    color: #4b382e;
+    border-color: #bba58c;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 14px rgba(75, 56, 46, 0.12);
+}
+
+.boton-todas-categorias:active {
+    transform: translateY(0);
+}
+
+/* Adaptación para celulares */
+@media (max-width: 600px) {
+    .boton-todas-categorias {
+        width: 100%;
+        padding: 14px;
     }
 }
