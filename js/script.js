@@ -153,9 +153,17 @@ function filtrarPerfumes() {
             nombre.includes(texto) ||
             marca.includes(texto);
 
+<<<<<<< HEAD
         const coincideGenero =
             generoSeleccionado === "todos" ||
             categoriaPerfume === generoSeleccionado;
+=======
+        const coincideCategoria =
+            seleccion === "" ||
+            seleccion === "todas" ||
+            seleccion === "todos" ||
+            (perfume.categoria || "").toLowerCase().trim() === seleccion;
+>>>>>>> d597a756ae3c5a44756e6354c193ce159abde8ff
 
         return coincideTexto && coincideGenero;
 
@@ -246,6 +254,7 @@ if (buscador) {
 
 window.elegirCategoria = function(genero) {
 
+<<<<<<< HEAD
     generoSeleccionado = genero.toLowerCase().trim();
 
     filtrarPerfumes();
@@ -253,6 +262,22 @@ window.elegirCategoria = function(genero) {
     document.getElementById("catalogo").scrollIntoView({
         behavior: "smooth"
     });
+=======
+    if (!categoria) return;
+
+    // Buscar la opción del <select> sin importar mayúsculas/minúsculas.
+    // Si se asigna un valor que no coincide EXACTAMENTE con ninguna opción,
+    // el select queda vacío ("") y el filtro no muestra ningún perfume.
+    const opcion = Array.from(categoria.options).find(
+        (o) => o.value.toLowerCase() === valor.toLowerCase()
+    );
+
+    categoria.value = opcion ? opcion.value : "Todas";
+
+    filtrarPerfumes();
+
+    document.getElementById("catalogo")?.scrollIntoView({ behavior: "smooth" });
+>>>>>>> d597a756ae3c5a44756e6354c193ce159abde8ff
 
 };
 
