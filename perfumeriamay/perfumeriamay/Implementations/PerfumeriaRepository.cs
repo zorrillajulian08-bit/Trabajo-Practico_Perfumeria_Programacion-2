@@ -274,8 +274,10 @@ namespace perfumeriamay.Implementations
 
         public async Task<List<Venta>> GetVentasAsync()
         {
-            return await _context.Ventas.Include(v => v.DetalleVenta)
-                                        .ToListAsync();
+            return await _context.Ventas
+        .Include(v => v.DetalleVenta)
+            .ThenInclude(d => d.Producto)
+        .ToListAsync();
         }
 
         public async Task<Venta?> GetVentasByIdAsync(int id)
@@ -420,6 +422,15 @@ namespace perfumeriamay.Implementations
             await _context.Usuarios.AddAsync(nuevoUsuario);
 
             return await _context.SaveChangesAsync() > 0;
+        }
+        public async Task<List<Pedido>> GetPedidosPorFirebaseUidAsync(string firebaseUid)
+        {
+            return await _context.Pedidos
+                .Include(p => p.DetallePedidos)
+                    .ThenInclude(d => d.Producto)
+                .Where(p => p.Usuario.FirebaseUid == firebaseUid)
+                .OrderByDescending(p => p.Fecha)
+                .ToListAsync();
         }
 
     }

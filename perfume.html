@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,32 +10,34 @@
     <link rel="stylesheet" href="css/perfume.css">
     <script src="js/perfume.js" defer></script>
 </head>
+
 <body>
 
     <header class="encabezado-tienda">
-        <a href="index.html" class="logo">EMPRENDIMIENTO MAY</a>
+
+        <a href="index.html" class="logo">
+            EMPRENDIMIENTO MAY
+            <small>PERFUMERÍA</small>
+        </a>
 
         <nav>
             <a href="index.html">Inicio</a>
             <a href="index.html#catalogo">Catálogo</a>
+
             <a href="carrito.html" class="enlace-carrito">
-                Carrito (<span id="contador-carrito">0</span>)
+                Carrito
+                <span id="contador-carrito">0</span>
             </a>
         </nav>
+
     </header>
 
     <main class="pagina-producto">
-        <div class="ruta">
-            <a href="index.html">Inicio</a>
-            <span>/</span>
-            <a href="index.html#catalogo">Perfumes</a>
-            <span>/</span>
-            <span>Detalle</span>
-        </div>
 
         <div id="detalle-perfume">
-            <p>Cargando producto...</p>
+            <p class="cargando">Cargando producto...</p>
         </div>
+
     </main>
 
     <footer class="pie-tienda">

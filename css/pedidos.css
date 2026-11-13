@@ -1,0 +1,464 @@
+/* =========================
+   CONFIGURACIÓN GENERAL
+========================= */
+
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    min-height: 100vh;
+    background: #faf8f4;
+    color: #302a23;
+    font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+}
+
+
+/* =========================
+   ENCABEZADO
+========================= */
+
+.encabezado-tienda {
+    width: 100%;
+    padding: 24px 7%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #faf8f4;
+    border-bottom: 1px solid #e8e1d7;
+}
+
+.logo {
+    color: #927653;
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 23px;
+    font-weight: 600;
+    text-decoration: none;
+    letter-spacing: 2px;
+}
+
+.encabezado-tienda nav {
+    display: flex;
+    gap: 30px;
+    align-items: center;
+}
+
+.encabezado-tienda nav a {
+    color: #51483e;
+    text-decoration: none;
+    font-size: 12px;
+    transition: color 0.3s;
+}
+
+.encabezado-tienda nav a:hover,
+.encabezado-tienda nav a.activo {
+    color: #a1845e;
+    font-weight: 600;
+}
+
+/* =========================
+   BOTÓN CERRAR SESIÓN
+========================= */
+.boton-cerrar-sesion {
+    background: transparent;
+    border: 1px solid #dcd3c6;
+    color: #51483e;
+    padding: 8px 14px;
+    border-radius: 3px;
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.boton-cerrar-sesion:hover {
+    background-color: #927653;
+    border-color: #927653;
+    color: #ffffff;
+}
+
+
+/* =========================
+   PÁGINA
+========================= */
+
+.pagina-pedidos {
+    width: 86%;
+    max-width: 1050px;
+    min-height: 70vh;
+    margin: 65px auto;
+    flex: 1;
+}
+
+.ruta {
+    margin-bottom: 30px;
+    color: #9a9083;
+    font-size: 11px;
+    letter-spacing: 0.5px;
+}
+
+.ruta a {
+    color: #927653;
+    text-decoration: none;
+}
+
+.pagina-pedidos h1 {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 52px;
+    font-weight: 500;
+    letter-spacing: -1px;
+}
+
+.subtitulo {
+    margin-top: 10px;
+    margin-bottom: 45px;
+    color: #8b8175;
+    font-size: 13px;
+    line-height: 1.8;
+}
+
+
+/* =========================
+   LISTA Y TARJETAS
+========================= */
+
+.lista-pedidos {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+.tarjeta-pedido {
+    background: #fffdfa;
+    border: 1px solid #e9e1d6;
+    border-radius: 10px;
+    overflow: hidden;
+    transition: box-shadow 0.3s, transform 0.3s;
+}
+
+.tarjeta-pedido:hover {
+    box-shadow: 0 10px 30px rgba(72, 57, 38, 0.07);
+    transform: translateY(-2px);
+}
+
+
+/* =========================
+   CABECERA DEL PEDIDO
+========================= */
+
+.cabecera-pedido {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 22px 25px;
+    background: #f5f0e8;
+    border-bottom: 1px solid #eee7dc;
+}
+
+.datos-pedido {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.numero-pedido {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 23px;
+    font-weight: 600;
+    color: #302a23;
+}
+
+.fecha-pedido {
+    font-size: 11px;
+    color: #8b8175;
+}
+
+
+/* =========================
+   ESTADOS
+========================= */
+
+.estado-pedido {
+    padding: 7px 15px;
+    border-radius: 20px;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+}
+
+.estado-entregado {
+    background: #e8eee5;
+    color: #54704d;
+}
+
+.estado-camino {
+    background: #f1e9dc;
+    color: #927653;
+}
+
+.estado-cancelado {
+    background: #f3e5e1;
+    color: #a46e60;
+}
+
+
+/* =========================
+   PRODUCTOS DEL PEDIDO
+========================= */
+
+.productos-pedido {
+    padding: 10px 25px;
+}
+
+.item-pedido {
+    display: grid;
+    grid-template-columns: 90px 1fr auto;
+    align-items: center;
+    gap: 20px;
+    padding: 18px 0;
+    border-bottom: 1px solid #f0eae1;
+}
+
+.item-pedido:last-child {
+    border-bottom: none;
+}
+
+.imagen-pedido {
+    width: 90px;
+    height: 95px;
+    padding: 8px;
+    object-fit: contain;
+    background: #f3efe8;
+    border-radius: 8px;
+}
+
+.info-item {
+    min-width: 0;
+}
+
+.marca-producto {
+    margin-bottom: 6px;
+    color: #a1845e;
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+}
+
+.info-item h3 {
+    margin-bottom: 7px;
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 23px;
+    font-weight: 500;
+}
+
+.detalle-cantidad {
+    color: #81776b;
+    font-size: 11px;
+}
+
+.subtotal-item {
+    color: #927653;
+    font-size: 13px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+
+/* =========================
+   PIE DEL PEDIDO
+========================= */
+
+.pie-pedido {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 25px;
+    background: #f5f0e8;
+    border-top: 1px solid #eee7dc;
+}
+
+.total-pedido {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    font-size: 12px;
+    color: #81776b;
+}
+
+.total-pedido strong {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 27px;
+    color: #302a23;
+}
+
+.acciones-pedido {
+    display: flex;
+    gap: 12px;
+}
+
+.boton-secundario,
+.boton-volver {
+    padding: 12px 19px;
+    border: none;
+    border-radius: 3px;
+    font-family: inherit;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.8px;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background 0.3s, transform 0.3s;
+}
+
+.boton-secundario {
+    background: #eae3d8;
+    color: #655644;
+}
+
+.boton-secundario:hover {
+    background: #ded3c3;
+}
+
+.boton-volver {
+    background: #514638;
+    color: white;
+}
+
+.boton-volver:hover {
+    background: #80694e;
+    transform: translateY(-2px);
+}
+
+
+/* =========================
+   PEDIDOS VACÍOS
+========================= */
+
+.pedidos-vacios {
+    padding: 75px 25px;
+    background: #f5f0e8;
+    border: 1px solid #e9e1d6;
+    border-radius: 10px;
+    text-align: center;
+}
+
+.icono-vacio {
+    margin-bottom: 20px;
+    font-size: 38px;
+}
+
+.pedidos-vacios h2 {
+    margin-bottom: 12px;
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 34px;
+    font-weight: 500;
+}
+
+.pedidos-vacios p {
+    margin-bottom: 28px;
+    color: #81776b;
+    font-size: 12px;
+}
+
+.pedidos-vacios .boton-volver {
+    display: inline-block;
+    padding: 14px 24px;
+}
+
+
+/* =========================
+   FOOTER
+========================= */
+
+.pie-tienda {
+    padding: 30px;
+    background: #29251f;
+    color: #c9bdad;
+    text-align: center;
+    font-size: 11px;
+    letter-spacing: 0.5px;
+}
+
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media (max-width: 700px) {
+
+    .pie-pedido {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 18px;
+    }
+
+    .total-pedido {
+        justify-content: space-between;
+    }
+
+    .acciones-pedido {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+    }
+
+}
+
+@media (max-width: 600px) {
+
+    .encabezado-tienda {
+        padding: 20px 5%;
+        flex-direction: column;
+        gap: 18px;
+    }
+
+    .encabezado-tienda nav {
+        gap: 20px;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .pagina-pedidos {
+        width: 92%;
+        margin: 40px auto;
+    }
+
+    .pagina-pedidos h1 {
+        font-size: 42px;
+    }
+
+    .cabecera-pedido {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+
+    .item-pedido {
+        grid-template-columns: 75px 1fr;
+        gap: 14px;
+    }
+
+    .imagen-pedido {
+        width: 75px;
+        height: 85px;
+    }
+
+    .info-item h3 {
+        font-size: 20px;
+    }
+
+    .subtotal-item {
+        grid-column: 2;
+        font-size: 13px;
+    }
+
+}

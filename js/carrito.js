@@ -1,4 +1,5 @@
 const CLAVE_CARRITO = "carritoMay";
+const CLAVE_PEDIDOS = "pedidosMay"; // Clave para guardar el historial de pedidos
 
 const contenedor = document.getElementById("productos-carrito");
 const subtotalElemento = document.getElementById("subtotal");
@@ -59,10 +60,10 @@ function mostrarCarrito() {
         const tarjeta = document.createElement("article");
         tarjeta.className = "producto-carrito";
 
-        // Imagen
+        // Imagen (Corregido: sin la barra "/" para que no falle)
         const imagen = document.createElement("img");
         imagen.className = "imagen-carrito";
-        imagen.src = "/" + producto.imagen;
+        imagen.src = producto.imagen; 
         imagen.alt = producto.nombre;
         imagen.loading = "eager";
 
@@ -258,17 +259,36 @@ function confirmarPedido() {
 
         if (resultado.isConfirmed) {
 
+            // 1. Crear el objeto del nuevo pedido
+            const nuevoPedido = {
+                id: Math.floor(Math.random() * 90000) + 10000,
+                fecha: new Date().toLocaleDateString('es-AR', { day: 'numeric', month: 'long', year: 'numeric' }),
+                estado: "En camino",
+                claseEstado: "estado-camino",
+                total: formatoPrecio(total),
+                productos: [...carrito]
+            };
+
+            // 2. Guardar en el historial de pedidos
+            let pedidos = JSON.parse(localStorage.getItem(CLAVE_PEDIDOS)) || [];
+            pedidos.push(nuevoPedido);
+            localStorage.setItem(CLAVE_PEDIDOS, JSON.stringify(pedidos));
+
+            // 3. Vaciar el carrito actual
             guardarCarrito([]);
             mostrarCarrito();
 
+            // 4. Alerta de éxito y redirección a mis pedidos
             Swal.fire({
                 title: "¡Pedido confirmado!",
-                text: "Gracias por elegir Emprendimiento May. Tu pedido quedó confirmado en esta demostración.",
+                text: "Gracias por elegir Emprendimiento May. Tu pedido quedó registrado con éxito.",
                 icon: "success",
-                confirmButtonText: "Aceptar",
+                confirmButtonText: "Ver mis pedidos",
                 confirmButtonColor: "#493524",
                 background: "#faf7f1",
                 color: "#33271d"
+            }).then(function () {
+                window.location.href = "pedidos.html";
             });
         }
     });

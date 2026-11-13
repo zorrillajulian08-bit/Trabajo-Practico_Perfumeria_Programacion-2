@@ -299,6 +299,31 @@ namespace perfumeriamay.services.Implementations
 
             // Guardar usuario
             return await _repository.AddUsuarioAsync(usuario);
+        
+        
         }
+        public async Task<List<Pedido>> ObtenerPedidosPorFirebaseUidAsync(string firebaseUid)
+        {
+            // Validar que el UID no sea nulo ni vacío
+            if (string.IsNullOrWhiteSpace(firebaseUid))
+                return new List<Pedido>();
+
+            // Limpiar espacios
+            firebaseUid = firebaseUid.Trim();
+
+            // Validar longitud máxima de Firebase UID
+            if (firebaseUid.Length > 128)
+                return new List<Pedido>();
+
+            // Consultar pedidos
+            var pedidos = await _repository.GetPedidosPorFirebaseUidAsync(firebaseUid);
+
+            // Validar resultado
+            if (pedidos == null)
+                return new List<Pedido>();
+
+            return pedidos;
+        }
+
     }
 }

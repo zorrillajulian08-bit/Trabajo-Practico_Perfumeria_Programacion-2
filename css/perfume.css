@@ -1,7 +1,9 @@
 
 /* ========================================
-   PÁGINA DE DETALLE - EMPRENDIMIENTO MAY
+   CONFIGURACIÓN GENERAL
 ======================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
 
 * {
     margin: 0;
@@ -15,287 +17,358 @@ html {
 
 body {
     min-height: 100vh;
-    background: #faf8f4;
-    color: #29251f;
-    font-family: "Segoe UI", Arial, sans-serif;
+    background: #e4d9ca;
+    color: #30271f;
+    font-family: 'Inter', sans-serif;
 }
 
-/* ENCABEZADO */
+a {
+    text-decoration: none;
+}
+
+/* ========================================
+   ENCABEZADO
+======================================== */
 
 .encabezado-tienda {
     width: 100%;
-    min-height: 85px;
-    padding: 20px 7%;
+    min-height: 65px;
+    padding: 12px 4%;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: rgba(250, 248, 244, 0.92);
-    border-bottom: 1px solid #eae2d7;
+    background: #e4d9ca;
+    border-bottom: 1px solid rgba(70, 55, 40, 0.12);
+    position: relative;
+    z-index: 10;
 }
 
 .encabezado-tienda .logo {
-    color: #725b40;
-    font-family: Georgia, serif;
-    font-size: 21px;
-    font-weight: bold;
-    text-decoration: none;
-    letter-spacing: 1.5px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    color: #30271f;
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 2px;
+}
+
+.encabezado-tienda .logo small {
+    color: #927b60;
+    font-size: 9px;
+    letter-spacing: 4px;
+    text-align: center;
 }
 
 .encabezado-tienda nav {
     display: flex;
     align-items: center;
-    gap: 32px;
+    gap: 30px;
 }
 
 .encabezado-tienda nav a {
     color: #51483e;
-    text-decoration: none;
-    font-size: 14px;
-    transition: color 0.3s ease;
+    font-size: 12px;
+    transition: color .3s ease;
 }
 
 .encabezado-tienda nav a:hover {
-    color: #a17c4e;
+    color: #a17b4e;
 }
 
 .enlace-carrito {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+#contador-carrito {
+    min-width: 21px;
+    height: 21px;
+    padding: 0 5px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: #806344;
+    color: white;
+    font-size: 10px;
     font-weight: 600;
 }
 
-/* CONTENEDOR PRINCIPAL */
+/* ========================================
+   PÁGINA DEL PRODUCTO
+======================================== */
 
 .pagina-producto {
     width: 100%;
-    min-height: calc(100vh - 160px);
-    padding: 35px 7% 75px;
+    min-height: calc(100vh - 65px);
+    padding: 0;
+    margin: 0;
 }
 
-/* RUTA DE NAVEGACIÓN */
-
-.ruta {
-    max-width: 1250px;
-    margin: 0 auto 35px;
-    color: #9b9185;
-    font-size: 13px;
-}
-
-.ruta a {
-    color: #8b7355;
-    text-decoration: none;
-}
-
-.ruta a:hover {
-    text-decoration: underline;
-}
-
-.ruta span {
-    margin: 0 7px;
-}
-
-/* DETALLE DEL PRODUCTO */
+/* ========================================
+   PORTADA DEL PERFUME
+======================================== */
 
 .producto-detalle {
-    max-width: 1250px;
-    margin: 0 auto;
-    display: grid;
-    grid-template-columns: 1.1fr 0.9fr;
+    position: relative;
+    width: 100%;
+    min-height: calc(100vh - 65px);
+    display: flex;
     align-items: center;
-    gap: 85px;
+    overflow: hidden;
+    background: #211b16;
 }
 
-/* IMAGEN DEL PERFUME */
+/* ========================================
+   IMAGEN DE FONDO
+======================================== */
 
 .detalle-foto {
-    min-height: 570px;
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 45px;
-    background: linear-gradient(
-        145deg,
-        #f0e9df,
-        #e9dfd1,
-        #f5f0e8
-    );
-    border-radius: 4px;
-    overflow: hidden;
-}
-
-.detalle-foto::before {
-    content: "";
     position: absolute;
-    width: 380px;
-    height: 380px;
-    border: 1px solid rgba(139, 115, 85, 0.15);
-    border-radius: 50%;
-    pointer-events: none;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    z-index: 1;
 }
 
 #imagen-perfume {
-    position: relative;
-    z-index: 1;
-    display: block;
+    position: absolute;
+    inset: 0;
     width: 100%;
-    max-width: 430px;
-    height: 440px;
-    object-fit: contain;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
     cursor: zoom-in;
-    transition: transform 0.5s ease;
+    transition: transform .6s ease;
 }
 
 #imagen-perfume:hover {
-    transform: scale(1.06);
+    transform: scale(1.025);
 }
 
-.ayuda-zoom {
-    position: relative;
-    z-index: 1;
-    margin-top: 15px;
-    color: #8d8172;
-    font-size: 12px;
-    letter-spacing: 0.5px;
+/* Degradado para mejorar la lectura del texto */
+
+.detalle-foto::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        90deg,
+        rgba(20, 16, 12, .15) 0%,
+        rgba(20, 16, 12, .35) 40%,
+        rgba(20, 16, 12, .78) 100%
+    );
+    pointer-events: none;
 }
 
-/* INFORMACIÓN DEL PERFUME */
+/* ========================================
+   TARJETA DE INFORMACIÓN SUPERPUESTA
+======================================== */
 
 .detalle-datos {
+    position: relative;
+    z-index: 2;
+    width: 430px;
+    max-width: 42%;
+    margin-left: auto;
+    margin-right: 7%;
+    padding: 35px;
+
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    gap: 17px;
+    justify-content: center;
+    gap: 15px;
+
+    background: rgba(25, 21, 17, .58);
+    border: 1px solid rgba(255, 255, 255, .25);
+    border-radius: 12px;
+
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+
+    box-shadow: 0 15px 45px rgba(0, 0, 0, .20);
+
+    color: white;
 }
 
+/* Marca */
+
 .detalle-marca {
-    color: #a08057;
-    font-size: 13px;
+    color: #d8bd98;
+    font-size: 11px;
     font-weight: 600;
     letter-spacing: 3px;
     text-transform: uppercase;
 }
 
+/* Nombre */
+
 .detalle-datos h1 {
-    color: #302920;
-    font-family: Georgia, serif;
-    font-size: clamp(34px, 4vw, 49px);
-    font-weight: 400;
-    line-height: 1.15;
+    color: #fffaf2;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 48px;
+    font-weight: 500;
+    line-height: 1.1;
 }
 
+/* Categoría */
+
 .detalle-categoria {
-    color: #8d8172;
-    font-size: 13px;
-    letter-spacing: 1px;
+    color: #d8bd98;
+    font-size: 10px;
+    letter-spacing: 2px;
     text-transform: uppercase;
 }
 
+/* Descripción */
+
 .detalle-descripcion {
-    max-width: 500px;
+    max-width: 100%;
+    color: #f0e8de;
+    font-size: 13px;
+    font-weight: 400;
+    line-height: 1.8;
     margin-top: 8px;
-    color: #756c61;
-    font-size: 15px;
-    line-height: 1.9;
 }
+
+/* Separador */
 
 .separador {
     width: 100%;
     height: 1px;
-    margin: 12px 0;
-    background: #e4dbcf;
+    margin: 8px 0;
+    background: rgba(255, 255, 255, .25);
 }
 
-/* PRECIO */
+/* ========================================
+   PRECIO
+======================================== */
 
-.detalle-datos .texto-precio {
-    color: #8d8172;
-    font-size: 12px;
+.texto-precio {
+    color: #d8bd98;
+    font-size: 10px;
     letter-spacing: 2px;
     text-transform: uppercase;
 }
 
 .detalle-precio {
-    color: #725b40;
-    font-family: Georgia, serif;
+    color: white;
+    font-family: 'Cormorant Garamond', serif;
     font-size: 35px;
-    font-weight: 500;
+    font-weight: 600;
 }
 
-/* BOTONES */
+/* ========================================
+   BOTONES
+======================================== */
 
 .botones-detalle {
     width: 100%;
     display: flex;
-    align-items: center;
-    gap: 13px;
-    margin-top: 18px;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 11px;
+    margin-top: 15px;
 }
 
 .boton-volver,
 .boton-carrito {
-    min-height: 52px;
+    width: 100%;
+    min-height: 48px;
+    padding: 0 18px;
     display: inline-flex;
-    justify-content: center;
     align-items: center;
-    padding: 0 24px;
-    border: 1px solid #8b7355;
-    border-radius: 3px;
-    font-family: inherit;
-    font-size: 13px;
-    font-weight: 600;
-    letter-spacing: 0.3px;
-    text-decoration: none;
+    justify-content: center;
+    border-radius: 7px;
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    font-weight: 500;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: .3s ease;
 }
 
-.botones-detalle .boton-volver {
-    flex: 1;
+/* Volver */
+
+.boton-volver {
+    border: 1px solid rgba(255, 255, 255, .55);
     background: transparent;
-    color: #725b40;
-    white-space: nowrap;
-}
-
-.botones-detalle .boton-volver:hover {
-    background: #eee5d9;
-}
-
-.boton-carrito {
-    flex: 1.3;
-    background: #806747;
     color: white;
 }
 
+.boton-volver:hover {
+    background: rgba(255, 255, 255, .15);
+}
+
+/* Agregar al carrito */
+
+.boton-carrito {
+    border: 1px solid #d1b38b;
+    background: #d1b38b;
+    color: #211b16;
+}
+
 .boton-carrito:hover {
-    background: #634d35;
-    border-color: #634d35;
-    transform: translateY(-2px);
+    background: #e4c9a5;
+    border-color: #e4c9a5;
 }
 
 .boton-carrito span {
-    margin-right: 8px;
-    font-size: 16px;
+    margin-right: 9px;
+    font-size: 15px;
 }
 
-/* PRODUCTO NO ENCONTRADO */
+/* ========================================
+   BOTÓN AMPLIAR IMAGEN
+======================================== */
+
+.ayuda-zoom {
+    position: absolute;
+    z-index: 3;
+    left: 30px;
+    bottom: 25px;
+    padding: 10px 15px;
+    background: rgba(25, 21, 17, .65);
+    border: 1px solid rgba(255, 255, 255, .4);
+    border-radius: 6px;
+    color: white;
+    font-size: 11px;
+    cursor: pointer;
+    transition: .3s ease;
+}
+
+.ayuda-zoom:hover {
+    background: rgba(25, 21, 17, .9);
+}
+
+/* ========================================
+   PRODUCTO NO ENCONTRADO
+======================================== */
 
 .perfume-no-encontrado {
-    max-width: 600px;
-    margin: 100px auto;
-    padding: 40px 20px;
+    min-height: 70vh;
+    padding: 50px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 25px;
     text-align: center;
 }
 
 .perfume-no-encontrado h2 {
-    margin-bottom: 20px;
     color: #302920;
-    font-family: Georgia, serif;
-    font-size: 32px;
-    font-weight: 400;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 40px;
+    font-weight: 500;
 }
 
-/* ZOOM DE IMAGEN */
+/* ========================================
+   ZOOM DE IMAGEN
+======================================== */
 
 .zoom-overlay {
     position: fixed;
@@ -307,10 +380,10 @@ body {
     justify-content: center;
     gap: 15px;
     padding: 30px;
-    background: rgba(25, 22, 18, 0.92);
+    background: rgba(25, 22, 18, .96);
     opacity: 0;
     visibility: hidden;
-    transition: opacity 0.3s ease, visibility 0.3s ease;
+    transition: opacity .3s ease, visibility .3s ease;
 }
 
 .zoom-overlay.activo {
@@ -344,49 +417,44 @@ body.zoom-abierto {
     overflow: hidden;
 }
 
-/* PIE DE PÁGINA */
+/* ========================================
+   PIE DE PÁGINA
+======================================== */
 
 .pie-tienda {
-    padding: 27px 20px;
-    background: #eee8df;
-    color: #81786e;
+    padding: 25px 20px;
+    background: #33291f;
+    color: #c9bca9;
     text-align: center;
-    font-size: 13px;
+    font-size: 11px;
 }
 
 /* ========================================
-   RESPONSIVE
+   RESPONSIVE - TABLETS
 ======================================== */
 
 @media (max-width: 950px) {
-    .producto-detalle {
-        gap: 45px;
+
+    .detalle-datos {
+        width: 390px;
+        max-width: 48%;
+        margin-right: 4%;
+        padding: 27px;
     }
 
-    .detalle-foto {
-        min-height: 480px;
-        padding: 25px;
-    }
-
-    #imagen-perfume {
-        height: 370px;
-    }
-
-    .botones-detalle {
-        flex-direction: column;
-        align-items: stretch;
-    }
-
-    .botones-detalle .boton-volver,
-    .botones-detalle .boton-carrito {
-        width: 100%;
-        flex: auto;
+    .detalle-datos h1 {
+        font-size: 40px;
     }
 }
 
-@media (max-width: 750px) {
+/* ========================================
+   RESPONSIVE - CELULARES
+======================================== */
+
+@media (max-width: 650px) {
+
     .encabezado-tienda {
-        padding: 20px 5%;
+        padding: 18px 5%;
         flex-direction: column;
         gap: 18px;
     }
@@ -394,68 +462,94 @@ body.zoom-abierto {
     .encabezado-tienda nav {
         justify-content: center;
         flex-wrap: wrap;
-        gap: 20px;
+        gap: 22px;
     }
 
-    .pagina-producto {
-        padding: 30px 5% 55px;
+    .encabezado-tienda nav a {
+        font-size: 11px;
     }
 
     .producto-detalle {
-        grid-template-columns: 1fr;
-        gap: 35px;
-    }
-
-    .detalle-foto {
-        min-height: 430px;
+        min-height: 900px;
+        align-items: flex-end;
     }
 
     #imagen-perfume {
-        height: 350px;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: center;
+    }
+
+    .detalle-foto::after {
+        background: linear-gradient(
+            180deg,
+            rgba(20, 16, 12, .10) 0%,
+            rgba(20, 16, 12, .35) 35%,
+            rgba(20, 16, 12, .92) 100%
+        );
     }
 
     .detalle-datos {
-        width: 100%;
+        width: 90%;
+        max-width: none;
+        margin: 0 auto 30px;
+        padding: 25px;
+        gap: 13px;
     }
 
     .detalle-datos h1 {
         font-size: 38px;
     }
-}
 
-@media (max-width: 450px) {
-    .encabezado-tienda .logo {
-        font-size: 18px;
-    }
-
-    .encabezado-tienda nav {
-        gap: 15px;
-    }
-
-    .encabezado-tienda nav a {
-        font-size: 13px;
-    }
-
-    .detalle-foto {
-        min-height: 350px;
-        padding: 20px;
-    }
-
-    #imagen-perfume {
-        height: 290px;
-    }
-
-    .detalle-datos h1 {
-        font-size: 33px;
+    .detalle-descripcion {
+        font-size: 12px;
     }
 
     .detalle-precio {
-        font-size: 30px;
+        font-size: 32px;
     }
 
-    .botones-detalle .boton-volver,
-    .botones-detalle .boton-carrito {
-        min-height: 49px;
-        font-size: 12px;
+    .botones-detalle {
+        margin-top: 12px;
+    }
+
+    .ayuda-zoom {
+        top: 15px;
+        left: 15px;
+        bottom: auto;
+    }
+
+    .zoom-overlay img {
+        max-width: 95%;
+        max-height: 75vh;
+    }
+
+    .cerrar-zoom {
+        top: 15px;
+        right: 20px;
+    }
+}
+
+/* ========================================
+   CELULARES PEQUEÑOS
+======================================== */
+
+@media (max-width: 380px) {
+
+    .producto-detalle {
+        min-height: 950px;
+    }
+
+    .detalle-datos {
+        padding: 22px;
+    }
+
+    .detalle-datos h1 {
+        font-size: 32px;
+    }
+
+    .detalle-precio {
+        font-size: 29px;
     }
 }

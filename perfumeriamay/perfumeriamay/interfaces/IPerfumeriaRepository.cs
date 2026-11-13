@@ -44,5 +44,7 @@ namespace perfumeriamay.interfaces
         public Task<bool> UpdateUsuarioAsync(int id, UpdateUsuariosDTO usuario);
 
         public Task<bool> DeleteUsuarioAsync(int id);
+
+        public Task<List<Pedido>> GetPedidosPorFirebaseUidAsync(string firebaseUid);
     }
 }

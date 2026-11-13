@@ -49,7 +49,6 @@ const perfumesOriginales = [
 
 const catalogo = document.getElementById("productos");
 const buscador = document.getElementById("buscador");
-const categoria = document.getElementById("categoria");
 
 
 // ========================================
@@ -57,6 +56,9 @@ const categoria = document.getElementById("categoria");
 // ========================================
 
 let perfumes = [...perfumesOriginales];
+
+// Género seleccionado. Por defecto muestra todos.
+let generoSeleccionado = "todos";
 
 
 // ========================================
@@ -73,7 +75,8 @@ function mostrarPerfumes(lista) {
     catalogo.innerHTML = "";
 
     if (lista.length === 0) {
-        catalogo.innerHTML = "<p class='cargando-productos'>No se encontraron perfumes.</p>";
+        catalogo.innerHTML =
+            "<p class='cargando-productos'>No se encontraron perfumes.</p>";
         return;
     }
 
@@ -132,23 +135,34 @@ function mostrarPerfumes(lista) {
 
 function filtrarPerfumes() {
 
-    const texto = buscador.value.toLowerCase().trim();
-    const seleccion = categoria.value.toLowerCase();
+    const texto = buscador
+        ? buscador.value.toLowerCase().trim()
+        : "";
 
     const resultado = perfumes.filter((perfume) => {
 
+        const nombre = (perfume.nombre || "").toLowerCase();
+        const marca = (perfume.marca || "").toLowerCase();
+
+        const categoriaPerfume = (perfume.categoria || "")
+            .toLowerCase()
+            .trim()
+            .replace(/s$/, "");
+
         const coincideTexto =
-            perfume.nombre.toLowerCase().includes(texto) ||
-            perfume.marca.toLowerCase().includes(texto);
+            nombre.includes(texto) ||
+            marca.includes(texto);
 
-        const coincideCategoria =
-            seleccion === "todas" ||
-            seleccion === "todos" ||
-            perfume.categoria.toLowerCase() === seleccion;
+        const coincideGenero =
+            generoSeleccionado === "todos" ||
+            categoriaPerfume === generoSeleccionado;
 
-        return coincideTexto && coincideCategoria;
+        return coincideTexto && coincideGenero;
 
     });
+
+    console.log("Género seleccionado:", generoSeleccionado);
+    console.log("Productos encontrados:", resultado);
 
     mostrarPerfumes(resultado);
 
@@ -186,7 +200,7 @@ async function cargarProductos() {
                 nombre: producto.nombre || "",
                 marca: producto.marca || "",
                 precio: Number(producto.precio) || 0,
-                categoria: (producto.categoria || "").toLowerCase(),
+                categoria: (producto.categoria || "").toLowerCase().trim(),
                 imagen: producto.imagen || "",
                 descripcion: producto.descripcion || ""
             };
@@ -218,29 +232,27 @@ async function cargarProductos() {
 
 
 // ========================================
-// BUSCADOR Y CATEGORÍAS
+// BUSCADOR
 // ========================================
 
-if (buscador && categoria) {
-
+if (buscador) {
     buscador.addEventListener("input", filtrarPerfumes);
-
-    categoria.addEventListener("change", filtrarPerfumes);
-
 }
 
 
 // ========================================
-// ELEGIR CATEGORÍAS DESDE OTROS BOTONES
+// ELEGIR GÉNERO DESDE LOS TRES BOTONES
 // ========================================
 
-window.elegirCategoria = function(valor) {
+window.elegirCategoria = function(genero) {
 
-    if (!categoria) return;
-
-    categoria.value = valor.toLowerCase();
+    generoSeleccionado = genero.toLowerCase().trim();
 
     filtrarPerfumes();
+
+    document.getElementById("catalogo").scrollIntoView({
+        behavior: "smooth"
+    });
 
 };
 
@@ -252,6 +264,7 @@ window.elegirCategoria = function(valor) {
 mostrarPerfumes(perfumes);
 
 cargarProductos();
+
 
 // ========================================
 // ACTUALIZAR CONTADOR DEL CARRITO
@@ -272,6 +285,7 @@ function actualizarContadorCarrito() {
     contador.textContent = cantidad;
 }
 
+
 // Actualizar al cargar la página
 actualizarContadorCarrito();
 
@@ -280,3 +294,14 @@ window.addEventListener("pageshow", actualizarContadorCarrito);
 
 // Actualizar si cambia el carrito desde otra pestaña
 window.addEventListener("storage", actualizarContadorCarrito);
+
+const pedidos = await respuesta.json();
+
+        // Actualizar el numerito en el menú de navegación
+        const badgePedidos = document.getElementById("contador-pedidos");
+        if (badgePedidos) {
+            badgePedidos.textContent = pedidos.length;
+        }
+
+        mostrarPedidos(pedidos, "todos");
+        configurarFiltros(pedidos);

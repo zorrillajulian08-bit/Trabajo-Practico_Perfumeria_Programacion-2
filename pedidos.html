@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Mis pedidos | Emprendimiento May</title>
+
+    <link rel="stylesheet" href="css/pedidos.css">
+
+    <!-- SweetAlert2 (para las alertas de confirmación) -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script type="module" src="js/pedidos.js"></script>
+    <script type="module" src="js/proteccion.js"></script>
+</head>
+
+<body>
+
+    <!-- ENCABEZADO -->
+    <header class="encabezado-tienda">
+
+        <a href="index.html" class="logo">
+            EMPRENDIMIENTO MAY
+        </a>
+
+        <nav>
+            <a href="index.html">Inicio</a>
+            <a href="index.html#catalogo">Catálogo</a>
+            <a href="carrito.html">Carrito</a>
+            <a href="pedidos.html" class="activo">Mis pedidos</a>
+
+            <button id="cerrar-sesion" class="boton-cerrar-sesion" type="button">
+                Cerrar sesión
+            </button>
+        </nav>
+
+    </header>
+
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <main class="pagina-pedidos">
+
+        <!-- RUTA -->
+        <div class="ruta">
+            <a href="index.html">Inicio</a> / Mis pedidos
+        </div>
+
+
+        <!-- TÍTULO -->
+        <h1>Mis pedidos</h1>
+
+        <p class="subtitulo">
+            Consultá tus compras, revisá los detalles
+            y seguí el estado de cada pedido.
+        </p>
+
+
+        <!-- LISTA DE PEDIDOS -->
+        <section id="lista-pedidos" class="lista-pedidos">
+
+            <div class="mensaje-cargando">
+                Cargando tus pedidos...
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- FOOTER -->
+    <footer class="pie-tienda">
+
+        © 2026 Emprendimiento May · Todos los derechos reservados
+
+    </footer>
+
+</body>
+
+</html>

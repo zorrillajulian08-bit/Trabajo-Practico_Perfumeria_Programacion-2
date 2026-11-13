@@ -1,6 +1,7 @@
 
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -17,6 +18,7 @@
 
     <!-- ENCABEZADO -->
     <header class="encabezado">
+
         <a href="index.html" class="logo">
             <span>EMPRENDIMIENTO MAY</span>
             <small>PERFUMERÍA</small>
@@ -26,6 +28,8 @@
             <a href="#inicio">Inicio</a>
             <a href="#catalogo">Catálogo</a>
             <a href="#contacto">Contacto</a>
+           <a href="pedidos.html" class="enlace-pedidos">Mis pedidos<span id="contador-pedidos">0</span>
+</a>
 
             <a href="carrito.html" class="enlace-carrito">
                 Carrito
@@ -36,6 +40,7 @@
                 Cerrar sesión
             </button>
         </nav>
+
     </header>
 
 
@@ -44,35 +49,38 @@
 
         <section class="portada" id="inicio">
 
-    <div class="portada-contenido">
-        <p class="portada-etiqueta">
-            EMPRENDIMIENTO MAY · PERFUMERÍA
-        </p>
+            <div class="portada-contenido">
 
-        <h1>
-            Una fragancia.
-            <br>
-            <span>Una identidad.</span>
-        </h1>
+                <p class="portada-etiqueta">
+                    EMPRENDIMIENTO MAY · PERFUMERÍA
+                </p>
 
-        <p class="portada-descripcion">
-            Descubrí una selección de fragancias elegidas
-            para acompañar tu estilo y dejar una impresión única.
-        </p>
+                <h1>
+                    Una fragancia.
+                    <br>
+                    <span>Una identidad.</span>
+                </h1>
 
-        <a href="#catalogo" class="boton-explorar">
-            EXPLORAR FRAGANCIAS
-            <span>→</span>
-        </a>
-    </div>
+                <p class="portada-descripcion">
+                    Descubrí una selección de fragancias elegidas
+                    para acompañar tu estilo y dejar una impresión única.
+                </p>
 
-    <div class="portada-numero">01 / 04</div>
+                <a href="#catalogo" class="boton-explorar">
+                    EXPLORAR FRAGANCIAS
+                    <span>→</span>
+                </a>
 
-</section>
+            </div>
+
+            <div class="portada-numero">01 / 04</div>
+
+        </section>
 
 
         <!-- PRESENTACIÓN -->
         <section class="introduccion">
+
             <p class="texto-superior">EL ARTE DE ELEGIR</p>
 
             <h2>
@@ -84,6 +92,7 @@
                 Explorá nuestra colección y descubrí aromas para cada
                 personalidad, momento y ocasión.
             </p>
+
         </section>
 
 
@@ -92,23 +101,29 @@
 
             <button class="categoria-item" type="button"
                 onclick="elegirCategoria('Masculino')">
+
                 <span class="categoria-numero">01</span>
-                <span class="categoria-nombre">Masculinos</span>
+                <span class="categoria-nombre">Masculino</span>
                 <span class="categoria-flecha">↗</span>
+
             </button>
 
             <button class="categoria-item" type="button"
                 onclick="elegirCategoria('Femenino')">
+
                 <span class="categoria-numero">02</span>
-                <span class="categoria-nombre">Femeninos</span>
+                <span class="categoria-nombre">Femenino</span>
                 <span class="categoria-flecha">↗</span>
+
             </button>
 
             <button class="categoria-item" type="button"
                 onclick="elegirCategoria('Unisex')">
+
                 <span class="categoria-numero">03</span>
                 <span class="categoria-nombre">Unisex</span>
                 <span class="categoria-flecha">↗</span>
+
             </button>
 
         </section>
@@ -118,6 +133,7 @@
         <section class="seccion-catalogo" id="catalogo">
 
             <div class="catalogo-encabezado">
+
                 <div>
                     <p class="texto-superior">NUESTRA COLECCIÓN</p>
                     <h2>Descubrí nuestras fragancias</h2>
@@ -126,6 +142,7 @@
                 <p class="catalogo-subtitulo">
                     Encontrá tu próximo aroma favorito.
                 </p>
+
             </div>
 
 
@@ -133,6 +150,7 @@
             <div class="herramientas-catalogo">
 
                 <div class="busqueda">
+
                     <span class="icono-busqueda">⌕</span>
 
                     <input
@@ -141,21 +159,19 @@
                         placeholder="Buscar por nombre o marca..."
                         autocomplete="off"
                     >
-                </div>
 
-                <select id="categoria">
-                    <option value="Todas">Todas las categorías</option>
-                    <option value="Masculino">Masculino</option>
-                    <option value="Femenino">Femenino</option>
-                    <option value="Unisex">Unisex</option>
-                </select>
+                </div>
 
             </div>
 
 
-            <!-- LOS PRODUCTOS SE CARGAN DESDE script.js -->
+            <!-- PRODUCTOS -->
             <div class="productos" id="productos">
-                <p class="cargando-productos">Cargando fragancias...</p>
+
+                <p class="cargando-productos">
+                    Cargando fragancias...
+                </p>
+
             </div>
 
         </section>
@@ -165,21 +181,27 @@
         <section class="beneficios">
 
             <div class="beneficio">
+
                 <span class="beneficio-numero">01</span>
                 <h3>Fragancias seleccionadas</h3>
                 <p>Una colección pensada para distintos estilos.</p>
+
             </div>
 
             <div class="beneficio">
+
                 <span class="beneficio-numero">02</span>
                 <h3>Atención personalizada</h3>
                 <p>Te ayudamos a encontrar tu próxima fragancia.</p>
+
             </div>
 
             <div class="beneficio">
+
                 <span class="beneficio-numero">03</span>
                 <h3>Una experiencia especial</h3>
                 <p>Descubrí aromas que acompañan tu identidad.</p>
+
             </div>
 
         </section>
@@ -191,6 +213,7 @@
     <footer id="contacto">
 
         <div class="footer-contenido">
+
             <div class="footer-marca">
                 <h2>EMPRENDIMIENTO MAY</h2>
                 <p>PERFUMERÍA</p>
@@ -200,6 +223,7 @@
                 <p>El arte de elegir tu fragancia.</p>
                 <a href="#inicio">Volver arriba ↑</a>
             </div>
+
         </div>
 
         <div class="footer-final">

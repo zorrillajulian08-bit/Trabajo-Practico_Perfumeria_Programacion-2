@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="es">
 
@@ -14,7 +15,10 @@
 
 <body>
 
-    <!-- BARRA SUPERIOR -->
+    <!-- ========================================
+         BARRA SUPERIOR
+    ======================================== -->
+
     <header class="encabezado">
 
         <div class="marca">
@@ -30,10 +34,14 @@
     </header>
 
 
-    <!-- CONTENIDO PRINCIPAL -->
+    <!-- ========================================
+         CONTENIDO PRINCIPAL
+    ======================================== -->
+
     <main class="contenedor-panel">
 
         <!-- BIENVENIDA -->
+
         <section class="bienvenida">
 
             <p class="subtitulo">ADMINISTRACIÓN</p>
@@ -48,7 +56,10 @@
         </section>
 
 
-        <!-- ESTADÍSTICAS -->
+        <!-- ========================================
+             ESTADÍSTICAS
+        ======================================== -->
+
         <section class="estadisticas">
 
             <div class="tarjeta-estadistica">
@@ -81,15 +92,20 @@
         </section>
 
 
-        <!-- FORMULARIO DE PRODUCTOS -->
+        <!-- ========================================
+             FORMULARIO DE PRODUCTOS
+        ======================================== -->
+
         <section class="seccion-productos">
 
             <div class="titulo-seccion">
+
                 <div>
                     <span class="etiqueta">CATÁLOGO</span>
                     <h3>Agregar un producto</h3>
                     <p>Completá los datos del nuevo perfume.</p>
                 </div>
+
             </div>
 
 
@@ -98,6 +114,7 @@
                 <div class="grupo-campos">
 
                     <!-- NOMBRE -->
+
                     <div class="campo">
 
                         <label for="nombre">Nombre del perfume</label>
@@ -113,6 +130,7 @@
 
 
                     <!-- MARCA -->
+
                     <div class="campo">
 
                         <label for="marca">Marca</label>
@@ -125,6 +143,7 @@
 
 
                     <!-- PRECIO -->
+
                     <div class="campo">
 
                         <label for="precio">Precio</label>
@@ -142,6 +161,7 @@
 
 
                     <!-- CATEGORÍA -->
+
                     <div class="campo">
 
                         <label for="categoria">Categoría</label>
@@ -159,6 +179,7 @@
 
 
                     <!-- STOCK -->
+
                     <div class="campo">
 
                         <label for="stock">Cantidad disponible</label>
@@ -176,6 +197,7 @@
 
 
                     <!-- IMAGEN -->
+
                     <div class="campo">
 
                         <label for="imagen">URL de la imagen</label>
@@ -200,6 +222,7 @@
 
 
                 <!-- DESCRIPCIÓN -->
+
                 <div class="campo campo-descripcion">
 
                     <label for="descripcion">Descripción</label>
@@ -215,6 +238,7 @@
 
 
                 <!-- BOTÓN AGREGAR -->
+
                 <button type="submit" class="boton-agregar">
                     AGREGAR PRODUCTO →
                 </button>
@@ -226,7 +250,10 @@
         </section>
 
 
-        <!-- LISTADO DE PRODUCTOS -->
+        <!-- ========================================
+             LISTADO DE PRODUCTOS
+        ======================================== -->
+
         <section class="seccion-listado">
 
             <div class="titulo-seccion">
@@ -272,7 +299,10 @@
         </section>
 
 
-        <!-- ADMINISTRACIÓN DE USUARIOS -->
+        <!-- ========================================
+             ADMINISTRACIÓN DE USUARIOS
+        ======================================== -->
+
         <section class="seccion-listado">
 
             <div class="titulo-seccion">
@@ -319,10 +349,124 @@
 
         </section>
 
+
+        <!-- ========================================
+             GESTIÓN DE PEDIDOS Y ESTADOS
+        ======================================== -->
+
+        <section class="seccion-listado">
+
+            <div class="titulo-seccion">
+
+                <div>
+                    <span class="etiqueta">GESTIÓN</span>
+                    <h3>Pedidos de clientes</h3>
+                    <p>Administrá y filtrá los pedidos según su estado.</p>
+                </div>
+
+            </div>
+
+
+            <!-- FILTROS DE PEDIDOS -->
+
+            <div class="filtros-pedidos" style="margin-bottom: 20px; display: flex; gap: 10px; flex-wrap: wrap;">
+
+              <button class="filtro-btn" data-estado="todos">Todos</button>
+<button class="filtro-btn" data-estado="pendiente">Pendientes</button>
+<button class="filtro-btn" data-estado="confirmado">Confirmados</button>
+<button class="filtro-btn" data-estado="entregado">Entregados</button>
+<button class="filtro-btn" data-estado="cancelado">Cancelados</button>
+
+            </div>
+
+
+            <!-- TABLA DE PEDIDOS -->
+
+            <div class="contenedor-tabla">
+
+                <table>
+
+                    <thead>
+                        <tr>
+                            <th>ID Pedido</th>
+                            <th>Fecha</th>
+                            <th>Estado</th>
+                            <th>Total</th>
+                            <th>Acciones / Cambiar Estado</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="lista-pedidos-empleado">
+
+                        <tr>
+                            <td colspan="5">
+                                Cargando pedidos...
+                            </td>
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+
+        <!-- ========================================
+             PRODUCTOS MÁS VENDIDOS
+        ======================================== -->
+
+        <section class="seccion-listado">
+
+            <div class="titulo-seccion">
+
+                <div>
+                    <span class="etiqueta">ESTADÍSTICAS</span>
+                    <h3>Productos más vendidos</h3>
+                    <p>Ranking basado en las ventas registradas.</p>
+                </div>
+
+            </div>
+
+
+            <!-- TABLA DE PRODUCTOS MÁS VENDIDOS -->
+
+            <div class="contenedor-tabla">
+
+                <table>
+
+                    <thead>
+                        <tr>
+                            <th>Perfume</th>
+                            <th>Cantidad vendida</th>
+                            <th>Recaudación total</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="lista-mas-vendidos">
+
+                        <tr>
+                            <td colspan="3">
+                                Cargando estadísticas...
+                            </td>
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
     </main>
 
 
-    <!-- MODAL DE CONFIRMACIÓN DE ELIMINACIÓN -->
+    <!-- ========================================
+         MODAL DE CONFIRMACIÓN DE ELIMINACIÓN
+    ======================================== -->
+
     <div id="modal-eliminar" class="modal-fondo" aria-hidden="true">
 
         <div
@@ -357,15 +501,10 @@
     </div>
 
 
-    <!-- PIE DE PÁGINA -->
-    <footer>
+    <!-- ========================================
+         MODAL EDITAR USUARIO
+    ======================================== -->
 
-        <p>EMPRENDIMIENTO MAY · PANEL DE ADMINISTRACIÓN</p>
-
-    </footer>
-
-
-    <!-- MODAL EDITAR USUARIO -->
     <div
         class="modal-editar-usuario"
         id="modal-editar-usuario"
@@ -440,6 +579,14 @@
 
     </div>
 
+
+    <!-- ========================================
+         PIE DE PÁGINA
+    ======================================== -->
+
+    <footer>
+        <p>EMPRENDIMIENTO MAY · PANEL DE ADMINISTRACIÓN</p>
+    </footer>
 
 </body>
 

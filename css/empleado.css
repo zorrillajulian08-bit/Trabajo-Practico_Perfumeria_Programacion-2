@@ -731,6 +731,38 @@ td button.boton-eliminar:active {
     opacity: 0.6;
     cursor: not-allowed;
 }
+.filtros-pedidos {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 25px;
+    flex-wrap: wrap;
+}
+
+.filtros-pedidos .filtro-btn {
+    background: #f7f3ec;
+    border: 1px solid #ddd3c5;
+    color: #51483e;
+    padding: 10px 22px;
+    font-size: 11px;
+    letter-spacing: 0.8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: 'Inter', sans-serif;
+}
+
+.filtros-pedidos .filtro-btn:hover {
+    background: #eae1d5;
+    border-color: #a58a68;
+    color: #30271f;
+    transform: translateY(-2px);
+}
+
+.filtros-pedidos .filtro-btn.activo {
+    background: #806344;
+    border-color: #806344;
+    color: #ffffff;
+    font-weight: 500;
+    box-shadow: 0 4px 12px rgba(128, 99, 68, 0.2);
 
 /* =========================================
    PIE DE PÁGINA
@@ -884,4 +916,5 @@ footer p {
     }
 }
 
+}
 }

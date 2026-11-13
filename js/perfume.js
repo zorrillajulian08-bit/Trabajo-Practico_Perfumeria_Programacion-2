@@ -1,11 +1,10 @@
-
 const perfumes = [
     {
         nombre: "Afnan 9PM",
         marca: "Afnan",
         precio: 65000,
         categoria: "Masculino",
-        imagen: "images/9pm.jpg",
+        imagen: "images/9pmperfume.jpg",
         descripcion: "Una fragancia moderna, intensa y con personalidad."
     },
     {
@@ -44,6 +43,7 @@ const perfume = perfumes.find(function (p) {
 const detalle = document.getElementById("detalle-perfume");
 
 const CLAVE_CARRITO = "carritoMay";
+
 
 // ========================================
 // FUNCIONES DEL CARRITO
@@ -94,6 +94,7 @@ function agregarAlCarrito(perfume) {
     actualizarContador();
 }
 
+
 // ========================================
 // MOSTRAR DETALLE DEL PERFUME
 // ========================================
@@ -107,7 +108,10 @@ if (detalle) {
         const seccion = document.createElement("section");
         seccion.className = "producto-detalle";
 
-        // IMAGEN
+
+        // ========================================
+        // IMAGEN DE FONDO
+        // ========================================
 
         const foto = document.createElement("div");
         foto.className = "detalle-foto";
@@ -116,17 +120,22 @@ if (detalle) {
         imagen.id = "imagen-perfume";
         imagen.src = perfume.imagen;
         imagen.alt = perfume.nombre;
-        imagen.tabIndex = 0;
+
         imagen.setAttribute("role", "button");
         imagen.setAttribute("aria-label", "Ampliar imagen de " + perfume.nombre);
+        imagen.tabIndex = 0;
 
-        const ayuda = document.createElement("p");
+        const ayuda = document.createElement("button");
         ayuda.className = "ayuda-zoom";
-        ayuda.textContent = "Clic para ampliar ⤢";
+        ayuda.type = "button";
+        ayuda.textContent = "AMPLIAR IMAGEN ⤢";
 
         foto.append(imagen, ayuda);
 
-        // INFORMACIÓN
+
+        // ========================================
+        // INFORMACIÓN DEL PERFUME
+        // ========================================
 
         const datos = document.createElement("div");
         datos.className = "detalle-datos";
@@ -157,7 +166,10 @@ if (detalle) {
         precio.className = "detalle-precio";
         precio.textContent = "$" + perfume.precio.toLocaleString("es-AR");
 
+
+        // ========================================
         // BOTONES
+        // ========================================
 
         const botones = document.createElement("div");
         botones.className = "botones-detalle";
@@ -168,20 +180,24 @@ if (detalle) {
         volver.textContent = "← Volver al catálogo";
 
         const botonCarrito = document.createElement("button");
-        botonCarrito.className = "boton-volver boton-carrito";
+        botonCarrito.className = "boton-carrito";
         botonCarrito.type = "button";
         botonCarrito.innerHTML = '<span>🛒</span> Agregar al carrito';
 
         botonCarrito.addEventListener("click", function () {
+
             agregarAlCarrito(perfume);
 
-            // Ambos archivos están en la carpeta raíz.
             window.location.href = "carrito.html";
+
         });
 
         botones.append(volver, botonCarrito);
 
+
+        // ========================================
         // UNIR ELEMENTOS
+        // ========================================
 
         datos.append(
             marca,
@@ -195,7 +211,9 @@ if (detalle) {
         );
 
         seccion.append(foto, datos);
+
         detalle.replaceChildren(seccion);
+
 
         // ========================================
         // VISOR DE IMAGEN AMPLIADA
@@ -218,7 +236,13 @@ if (detalle) {
         textoZoom.textContent = perfume.nombre + " · Clic afuera para cerrar";
 
         zoom.append(cerrar, imagenAmpliada, textoZoom);
+
         document.body.appendChild(zoom);
+
+
+        // ========================================
+        // ABRIR Y CERRAR ZOOM
+        // ========================================
 
         function abrirZoom() {
             zoom.classList.add("activo");
@@ -231,26 +255,33 @@ if (detalle) {
         }
 
         imagen.addEventListener("click", abrirZoom);
+        ayuda.addEventListener("click", abrirZoom);
 
         imagen.addEventListener("keydown", function (event) {
+
             if (event.key === "Enter" || event.key === " ") {
                 event.preventDefault();
                 abrirZoom();
             }
+
         });
 
         cerrar.addEventListener("click", cerrarZoom);
 
         zoom.addEventListener("click", function (event) {
+
             if (event.target === zoom) {
                 cerrarZoom();
             }
+
         });
 
         document.addEventListener("keydown", function (event) {
+
             if (event.key === "Escape" && zoom.classList.contains("activo")) {
                 cerrarZoom();
             }
+
         });
 
     } else {
@@ -269,6 +300,7 @@ if (detalle) {
         volver.textContent = "Volver al catálogo";
 
         mensaje.append(titulo, volver);
+
         detalle.replaceChildren(mensaje);
     }
 }

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿
+using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc;
 using perfumeriamay.dto;
@@ -39,14 +40,52 @@ namespace perfumeriamay.Controllers
             return Ok(marcas);
         }
 
-        // PEDIDOS
-        [HttpGet("pedidos")]
-        public async Task<IActionResult> GetPedidos()
+        // PEDIDOS DEL USUARIO
+        [Authorize]
+        [HttpGet("pedidos/mis-pedidos")]
+        public async Task<IActionResult> GetMisPedidos()
         {
-            var pedidos = await _service.ObtenerPedidos();
+            var firebaseUid = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (string.IsNullOrWhiteSpace(firebaseUid))
+                return Unauthorized();
+
+            var pedidos = await _service.ObtenerPedidosPorFirebaseUidAsync(firebaseUid);
+
             return Ok(pedidos);
         }
 
+        // TODOS LOS PEDIDOS (SOLO EMPLEADOS)
+        [Authorize]
+        [HttpGet("pedidos")]
+        public async Task<IActionResult> GetPedidos()
+        {
+            var firebaseUid = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (string.IsNullOrWhiteSpace(firebaseUid))
+                return Unauthorized();
+
+            var usuarios = await _service.ObtenerUsuariosAsync();
+
+            var usuario = usuarios.FirstOrDefault(
+                u => u.FirebaseUid == firebaseUid
+            );
+
+            if (usuario == null ||
+                !string.Equals(
+                    usuario.Rol,
+                    "Empleado",
+                    StringComparison.OrdinalIgnoreCase))
+            {
+                return Forbid();
+            }
+
+            var pedidos = await _service.ObtenerPedidos();
+
+            return Ok(pedidos);
+        }
+
+        // PEDIDO POR ID
         [HttpGet("pedidos/{id}")]
         public async Task<IActionResult> GetPedidosById(int id)
         {
@@ -162,24 +201,21 @@ namespace perfumeriamay.Controllers
         [Authorize]
         [HttpPost("usuarios")]
         public async Task<IActionResult> AgregarUsuario(
-    [FromBody] CreateUsuarioDTO usuario)
+            [FromBody] CreateUsuarioDTO usuario)
         {
             if (usuario == null)
                 return BadRequest("Los datos del usuario son obligatorios.");
 
-            // Obtener el UID del token verificado por Firebase
             var firebaseUid = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             if (string.IsNullOrWhiteSpace(firebaseUid))
                 return Unauthorized("No se pudo identificar al usuario.");
 
-            // Obtener el email del token
             var emailToken = User.FindFirstValue(ClaimTypes.Email);
 
             if (string.IsNullOrWhiteSpace(emailToken))
                 return Unauthorized("El token no contiene un email válido.");
 
-            // Comprobar que el email enviado coincida con el de Firebase
             if (!string.Equals(
                 usuario.Email?.Trim(),
                 emailToken.Trim(),
@@ -188,7 +224,6 @@ namespace perfumeriamay.Controllers
                 return BadRequest("El email enviado no coincide con el usuario autenticado.");
             }
 
-            // El UID siempre se obtiene del token, nunca del cuerpo de la petición
             usuario.FirebaseUid = firebaseUid;
 
             var resultado = await _service.AgregarUsuarioAsync(usuario);
