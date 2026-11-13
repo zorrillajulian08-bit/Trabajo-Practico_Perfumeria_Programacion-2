@@ -1,54 +1,17 @@
-const perfumes = [
-    {
-        nombre: "Afnan 9PM",
-        marca: "Afnan",
-        precio: 65000,
-        categoria: "Masculino",
-        imagen: "images/9pmperfume.jpg",
-        descripcion: "Una fragancia moderna, intensa y con personalidad."
-    },
-    {
-        nombre: "Sauvage",
-        marca: "Dior",
-        precio: 150000,
-        categoria: "Masculino",
-        imagen: "images/SauvageDior.jpg",
-        descripcion: "Un aroma fresco y amaderado de estilo elegante."
-    },
-    {
-        nombre: "Good Girl",
-        marca: "Carolina Herrera",
-        precio: 180000,
-        categoria: "Femenino",
-        imagen: "images/GoodGirl.jpg",
-        descripcion: "Una fragancia sofisticada con una identidad única."
-    },
-    {
-        nombre: "Baccarat Rouge 540",
-        marca: "Maison Francis Kurkdjian",
-        precio: 350000,
-        categoria: "Unisex",
-        imagen: "images/Baccarat.jpg",
-        descripcion: "Una fragancia envolvente y elegante."
-    }
-];
-
-const parametros = new URLSearchParams(window.location.search);
-const nombre = parametros.get("nombre");
-
-const perfume = perfumes.find(function (p) {
-    return p.nombre.toLowerCase() === (nombre || "").trim().toLowerCase();
-});
-
-const detalle = document.getElementById("detalle-perfume");
-
+// ========================================
+// CONFIGURACIÓN DE LA API
+// ========================================
+const API = "https://localhost:7177/api/Perfumeria";
 const CLAVE_CARRITO = "carritoMay";
 
+const parametros = new URLSearchParams(window.location.search);
+const nombreBuscado = parametros.get("nombre");
+
+const detalle = document.getElementById("detalle-perfume");
 
 // ========================================
 // FUNCIONES DEL CARRITO
 // ========================================
-
 function obtenerCarrito() {
     return JSON.parse(localStorage.getItem(CLAVE_CARRITO)) || [];
 }
@@ -59,29 +22,23 @@ function guardarCarrito(carrito) {
 
 function actualizarContador() {
     const contador = document.getElementById("contador-carrito");
-
     if (contador) {
         const carrito = obtenerCarrito();
-
-        const cantidad = carrito.reduce(function (total, producto) {
-            return total + producto.cantidad;
-        }, 0);
-
+        const cantidad = carrito.reduce((total, producto) => total + producto.cantidad, 0);
         contador.textContent = cantidad;
     }
 }
 
 function agregarAlCarrito(perfume) {
     const carrito = obtenerCarrito();
-
-    const productoExistente = carrito.find(function (producto) {
-        return producto.nombre === perfume.nombre;
-    });
+    // Buscamos por productoId (que es más seguro que el nombre)
+    const productoExistente = carrito.find((producto) => producto.productoId === perfume.productoId);
 
     if (productoExistente) {
         productoExistente.cantidad++;
     } else {
         carrito.push({
+            productoId: perfume.productoId, // GUARDAMOS EL ID DE SQL
             nombre: perfume.nombre,
             marca: perfume.marca,
             precio: perfume.precio,
@@ -94,66 +51,82 @@ function agregarAlCarrito(perfume) {
     actualizarContador();
 }
 
-
 // ========================================
 // MOSTRAR DETALLE DEL PERFUME
 // ========================================
+async function cargarDetallePerfume() {
+    if (!detalle) return;
 
-if (detalle) {
+    if (!nombreBuscado) {
+        detalle.innerHTML = "<div class='perfume-no-encontrado'><h2>Perfume no especificado</h2><a href='index.html#catalogo' class='boton-volver'>Volver al catálogo</a></div>";
+        return;
+    }
 
-    if (perfume) {
+    try {
+        // Traemos todos los productos de la API SQL
+        const respuesta = await fetch(`${API}/todos`);
+        
+        if (!respuesta.ok) {
+            throw new Error("La API no respondió correctamente.");
+        }
+
+        const productos = await respuesta.json();
+
+        // Buscamos el perfume por nombre (ignorando mayúsculas/minúsculas y espacios)
+        const perfumeEncontrado = productos.find(p => 
+            p.nombre.trim().toLowerCase() === nombreBuscado.trim().toLowerCase()
+        );
+
+        if (!perfumeEncontrado) {
+            document.title = "Perfume no encontrado | Emprendimiento May";
+            detalle.innerHTML = "<div class='perfume-no-encontrado'><h2>No encontramos ese perfume</h2><a href='index.html#catalogo' class='boton-volver'>Volver al catálogo</a></div>";
+            return;
+        }
+
+        // Adaptamos el objeto de SQL
+        const perfume = {
+            productoId: perfumeEncontrado.productoId,
+            nombre: perfumeEncontrado.nombre,
+            marca: perfumeEncontrado.marca?.nombre || perfumeEncontrado.marca || "",
+            precio: Number(perfumeEncontrado.precio) || 0,
+            categoria: perfumeEncontrado.categoria || "",
+            descripcion: perfumeEncontrado.descripcion || "",
+            imagen: perfumeEncontrado.imagen || ""
+        };
 
         document.title = perfume.nombre + " | Emprendimiento May";
 
+        // Construimos el HTML (respetando tu diseño original)
         const seccion = document.createElement("section");
         seccion.className = "producto-detalle";
 
-
-        // ========================================
-        // IMAGEN DE FONDO
-        // ========================================
-
         const foto = document.createElement("div");
         foto.className = "detalle-foto";
-
         const imagen = document.createElement("img");
-        imagen.id = "imagen-perfume";
         imagen.src = perfume.imagen;
         imagen.alt = perfume.nombre;
-
-        imagen.setAttribute("role", "button");
-        imagen.setAttribute("aria-label", "Ampliar imagen de " + perfume.nombre);
-        imagen.tabIndex = 0;
-
-        const ayuda = document.createElement("button");
+        const ayuda = document.createElement("p");
         ayuda.className = "ayuda-zoom";
-        ayuda.type = "button";
-        ayuda.textContent = "AMPLIAR IMAGEN ⤢";
-
+        ayuda.textContent = "Clic para ampliar ⤢";
         foto.append(imagen, ayuda);
-
-
-        // ========================================
-        // INFORMACIÓN DEL PERFUME
-        // ========================================
 
         const datos = document.createElement("div");
         datos.className = "detalle-datos";
 
-        const marca = document.createElement("p");
-        marca.className = "detalle-marca";
-        marca.textContent = perfume.marca;
+        const marcaEl = document.createElement("p");
+        marcaEl.className = "detalle-marca";
+        marcaEl.textContent = perfume.marca;
 
         const titulo = document.createElement("h1");
         titulo.textContent = perfume.nombre;
 
-        const categoria = document.createElement("p");
-        categoria.className = "detalle-categoria";
-        categoria.textContent = perfume.categoria;
+        const categoriaEl = document.createElement("p");
+        categoriaEl.className = "detalle-categoria";
+        categoriaEl.textContent = perfume.categoria;
 
-        const descripcion = document.createElement("p");
-        descripcion.className = "detalle-descripcion";
-        descripcion.textContent = perfume.descripcion;
+        const descripcionEl = document.createElement("p");
+        descripcionEl.className = "detalle-descripcion";
+        descripcionEl.textContent = perfume.descripcion;
 
         const separador = document.createElement("div");
         separador.className = "separador";
@@ -162,14 +135,9 @@ if (detalle) {
         textoPrecio.className = "texto-precio";
         textoPrecio.textContent = "Precio";
 
-        const precio = document.createElement("p");
-        precio.className = "detalle-precio";
-        precio.textContent = "$" + perfume.precio.toLocaleString("es-AR");
-
-
-        // ========================================
-        // BOTONES
-        // ========================================
+        const precioEl = document.createElement("p");
+        precioEl.className = "detalle-precio";
+        precioEl.textContent = "$" + perfume.precio.toLocaleString("es-AR");
 
         const botones = document.createElement("div");
         botones.className = "botones-detalle";
@@ -180,129 +148,58 @@ if (detalle) {
         volver.textContent = "← Volver al catálogo";
 
         const botonCarrito = document.createElement("button");
-        botonCarrito.className = "boton-carrito";
+        botonCarrito.className = "boton-volver boton-carrito";
         botonCarrito.type = "button";
         botonCarrito.innerHTML = '<span>🛒</span> Agregar al carrito';
 
         botonCarrito.addEventListener("click", function () {
-
             agregarAlCarrito(perfume);
-
             window.location.href = "carrito.html";
-
         });
 
         botones.append(volver, botonCarrito);
 
-
-        // ========================================
-        // UNIR ELEMENTOS
-        // ========================================
-
-        datos.append(
-            marca,
-            titulo,
-            categoria,
-            descripcion,
-            separador,
-            textoPrecio,
-            precio,
-            botones
-        );
-
+        datos.append(marcaEl, titulo, categoriaEl, descripcionEl, separador, textoPrecio, precioEl, botones);
         seccion.append(foto, datos);
-
         detalle.replaceChildren(seccion);
 
-
-        // ========================================
-        // VISOR DE IMAGEN AMPLIADA
-        // ========================================
-
+        // Zoom logic
         const zoom = document.createElement("div");
         zoom.className = "zoom-overlay";
-
         const cerrar = document.createElement("button");
         cerrar.className = "cerrar-zoom";
         cerrar.type = "button";
         cerrar.textContent = "×";
-        cerrar.setAttribute("aria-label", "Cerrar imagen");
-
         const imagenAmpliada = document.createElement("img");
         imagenAmpliada.src = perfume.imagen;
-        imagenAmpliada.alt = perfume.nombre;
-
         const textoZoom = document.createElement("p");
         textoZoom.textContent = perfume.nombre + " · Clic afuera para cerrar";
-
         zoom.append(cerrar, imagenAmpliada, textoZoom);
-
         document.body.appendChild(zoom);
 
-
-        // ========================================
-        // ABRIR Y CERRAR ZOOM
-        // ========================================
-
-        function abrirZoom() {
+        imagen.addEventListener("click", () => {
             zoom.classList.add("activo");
             document.body.classList.add("zoom-abierto");
-        }
+        });
 
-        function cerrarZoom() {
+        cerrar.addEventListener("click", () => {
             zoom.classList.remove("activo");
             document.body.classList.remove("zoom-abierto");
-        }
-
-        imagen.addEventListener("click", abrirZoom);
-        ayuda.addEventListener("click", abrirZoom);
-
-        imagen.addEventListener("keydown", function (event) {
-
-            if (event.key === "Enter" || event.key === " ") {
-                event.preventDefault();
-                abrirZoom();
-            }
-
         });
 
-        cerrar.addEventListener("click", cerrarZoom);
-
-        zoom.addEventListener("click", function (event) {
-
-            if (event.target === zoom) {
-                cerrarZoom();
+        zoom.addEventListener("click", (e) => {
+            if (e.target === zoom) {
+                zoom.classList.remove("activo");
+                document.body.classList.remove("zoom-abierto");
             }
-
         });
 
-        document.addEventListener("keydown", function (event) {
-
-            if (event.key === "Escape" && zoom.classList.contains("activo")) {
-                cerrarZoom();
-            }
-
-        });
-
-    } else {
-
-        document.title = "Perfume no encontrado | Emprendimiento May";
-
-        const mensaje = document.createElement("div");
-        mensaje.className = "perfume-no-encontrado";
-
-        const titulo = document.createElement("h2");
-        titulo.textContent = "No encontramos ese perfume";
-
-        const volver = document.createElement("a");
-        volver.className = "boton-volver";
-        volver.href = "index.html#catalogo";
-        volver.textContent = "Volver al catálogo";
-
-        mensaje.append(titulo, volver);
-
-        detalle.replaceChildren(mensaje);
+    } catch (error) {
+        console.error("Error al cargar detalle:", error);
+        detalle.innerHTML = "<div class='perfume-no-encontrado'><h2>Error de conexión con el servidor</h2><p>Revisá si la API está corriendo.</p><a href='index.html#catalogo' class='boton-volver'>Volver al catálogo</a></div>";
     }
 }
 
+// Iniciar
+cargarDetallePerfume();
 actualizarContador();

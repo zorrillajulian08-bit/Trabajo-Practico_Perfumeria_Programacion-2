@@ -1,5 +1,7 @@
+import { auth } from "./firebase.js"; // Importamos Firebase
+
 const CLAVE_CARRITO = "carritoMay";
-const CLAVE_PEDIDOS = "pedidosMay"; // Clave para guardar el historial de pedidos
+const API = "https://localhost:7177/api/Perfumeria";
 
 const contenedor = document.getElementById("productos-carrito");
 const subtotalElemento = document.getElementById("subtotal");
@@ -7,192 +9,108 @@ const totalElemento = document.getElementById("total");
 const botonVaciar = document.getElementById("vaciar-carrito");
 const botonConfirmar = document.getElementById("confirmar-pedido");
 
-// Obtener productos guardados
+// ========================================
+// FUNCIONES AUXILIARES
+// ========================================
 function obtenerCarrito() {
     return JSON.parse(localStorage.getItem(CLAVE_CARRITO)) || [];
 }
 
-// Guardar productos
 function guardarCarrito(carrito) {
     localStorage.setItem(CLAVE_CARRITO, JSON.stringify(carrito));
 }
 
-// Formatear precios argentinos
 function formatoPrecio(precio) {
-    return "$" + precio.toLocaleString("es-AR");
+    return "$" + Number(precio).toLocaleString("es-AR");
 }
 
-// Mostrar productos
+// ========================================
+// MOSTRAR PRODUCTOS
+// ========================================
 function mostrarCarrito() {
     const carrito = obtenerCarrito();
-
     contenedor.replaceChildren();
 
     if (carrito.length === 0) {
-        const vacio = document.createElement("div");
-        vacio.className = "carrito-vacio";
-
-        const titulo = document.createElement("h2");
-        titulo.textContent = "Tu carrito está vacío";
-
-        const mensaje = document.createElement("p");
-        mensaje.textContent = "Todavía no agregaste ningún perfume.";
-
-        const enlace = document.createElement("a");
-        enlace.href = "index.html#catalogo";
-        enlace.className = "boton-volver";
-        enlace.textContent = "Explorar perfumes";
-
-        vacio.append(titulo, mensaje, enlace);
-        contenedor.appendChild(vacio);
-
+        contenedor.innerHTML = `
+            <div class="carrito-vacio">
+                <h2>Tu carrito está vacío</h2>
+                <p>Todavía no agregaste ningún perfume.</p>
+                <a href="index.html#catalogo" class="boton-volver">Explorar perfumes</a>
+            </div>
+        `;
         actualizarTotal([]);
-        botonConfirmar.disabled = true;
-        botonVaciar.disabled = true;
-
+        if(botonConfirmar) botonConfirmar.disabled = true;
+        if(botonVaciar) botonVaciar.disabled = true;
         return;
     }
 
-    botonConfirmar.disabled = false;
-    botonVaciar.disabled = false;
+    if(botonConfirmar) botonConfirmar.disabled = false;
+    if(botonVaciar) botonVaciar.disabled = false;
 
     carrito.forEach(function (producto) {
         const tarjeta = document.createElement("article");
         tarjeta.className = "producto-carrito";
 
-        // Imagen (Corregido: sin la barra "/" para que no falle)
-        const imagen = document.createElement("img");
-        imagen.className = "imagen-carrito";
-        imagen.src = producto.imagen; 
-        imagen.alt = producto.nombre;
-        imagen.loading = "eager";
-
-        imagen.onerror = function () {
-            console.error("No se pudo cargar la imagen:", imagen.src);
-        };
-
-        // Información
-        const informacion = document.createElement("div");
-        informacion.className = "info-producto";
-
-        const nombre = document.createElement("h3");
-        nombre.textContent = producto.nombre;
-
-        const marca = document.createElement("p");
-        marca.className = "marca-producto";
-        marca.textContent = producto.marca;
-
-        const precio = document.createElement("p");
-        precio.className = "precio-unitario";
-        precio.textContent = formatoPrecio(producto.precio);
-
-        // Controles de cantidad
-        const controles = document.createElement("div");
-        controles.className = "controles-cantidad";
-
-        const disminuir = document.createElement("button");
-        disminuir.type = "button";
-        disminuir.textContent = "−";
-        disminuir.setAttribute("aria-label", "Disminuir cantidad");
-
-        const cantidad = document.createElement("span");
-        cantidad.className = "cantidad";
-        cantidad.textContent = producto.cantidad;
-
-        const aumentar = document.createElement("button");
-        aumentar.type = "button";
-        aumentar.textContent = "+";
-        aumentar.setAttribute("aria-label", "Aumentar cantidad");
-
-        disminuir.addEventListener("click", function () {
-            cambiarCantidad(producto.nombre, -1);
-        });
-
-        aumentar.addEventListener("click", function () {
-            cambiarCantidad(producto.nombre, 1);
-        });
-
-        controles.append(disminuir, cantidad, aumentar);
-
-        // Eliminar producto
-        const eliminar = document.createElement("button");
-        eliminar.type = "button";
-        eliminar.className = "boton-eliminar";
-        eliminar.textContent = "Eliminar producto";
-
-        eliminar.addEventListener("click", function () {
-            eliminarProducto(producto.nombre);
-        });
-
-        informacion.append(
-            nombre,
-            marca,
-            precio,
-            controles,
-            eliminar
-        );
-
-        // Subtotal del producto
-        const subtotalProducto = document.createElement("div");
-        subtotalProducto.className = "subtotal-producto";
-        subtotalProducto.textContent = formatoPrecio(
-            producto.precio * producto.cantidad
-        );
-
-        tarjeta.append(imagen, informacion, subtotalProducto);
+        tarjeta.innerHTML = `
+            <img class="imagen-carrito" src="${producto.imagen}" alt="${producto.nombre}">
+            <div class="info-producto">
+                <h3>${producto.nombre}</h3>
+                <p class="marca-producto">${producto.marca}</p>
+                <p class="precio-unitario">${formatoPrecio(producto.precio)}</p>
+                <div class="controles-cantidad">
+                    <button type="button" onclick="cambiarCantidad(${producto.productoId}, -1)">−</button>
+                    <span class="cantidad">${producto.cantidad}</span>
+                    <button type="button" onclick="cambiarCantidad(${producto.productoId}, 1)">+</button>
+                </div>
+                <button type="button" class="boton-eliminar" onclick="eliminarProducto(${producto.productoId})">Eliminar producto</button>
+            </div>
+            <div class="subtotal-producto">${formatoPrecio(producto.precio * producto.cantidad)}</div>
+        `;
         contenedor.appendChild(tarjeta);
     });
 
     actualizarTotal(carrito);
 }
 
-// Actualizar subtotal y total
+// ========================================
+// ACTUALIZAR TOTALES
+// ========================================
 function actualizarTotal(carrito) {
-    const total = carrito.reduce(function (suma, producto) {
-        return suma + producto.precio * producto.cantidad;
-    }, 0);
-
+    const total = carrito.reduce((suma, producto) => suma + producto.precio * producto.cantidad, 0);
     subtotalElemento.textContent = formatoPrecio(total);
     totalElemento.textContent = formatoPrecio(total);
 }
 
-// Cambiar cantidad
-function cambiarCantidad(nombre, cambio) {
+// ========================================
+// CAMBIAR CANTIDAD Y ELIMINAR
+// ========================================
+window.cambiarCantidad = function(productoId, cambio) {
     const carrito = obtenerCarrito();
-
-    const producto = carrito.find(function (p) {
-        return p.nombre === nombre;
-    });
-
+    const producto = carrito.find((p) => p.productoId === productoId);
     if (!producto) return;
 
     producto.cantidad += cambio;
-
     if (producto.cantidad <= 0) {
-        eliminarProducto(nombre);
+        eliminarProducto(productoId);
         return;
     }
-
     guardarCarrito(carrito);
     mostrarCarrito();
-}
+};
 
-// Eliminar producto
-function eliminarProducto(nombre) {
+window.eliminarProducto = function(productoId) {
     let carrito = obtenerCarrito();
-
-    carrito = carrito.filter(function (producto) {
-        return producto.nombre !== nombre;
-    });
-
+    carrito = carrito.filter((p) => p.productoId !== productoId);
     guardarCarrito(carrito);
     mostrarCarrito();
-}
+};
 
-// Vaciar todo el carrito con SweetAlert
+// ========================================
+// VACIAR CARRITO
+// ========================================
 function vaciarCarrito() {
     const carrito = obtenerCarrito();
-
     if (carrito.length === 0) return;
 
     Swal.fire({
@@ -206,17 +124,14 @@ function vaciarCarrito() {
         cancelButtonColor: "#a98968",
         background: "#faf7f1",
         color: "#33271d"
-    }).then(function (resultado) {
-
+    }).then((resultado) => {
         if (resultado.isConfirmed) {
             guardarCarrito([]);
             mostrarCarrito();
-
             Swal.fire({
                 title: "Carrito vacío",
                 text: "Eliminamos todos los productos.",
                 icon: "success",
-                confirmButtonText: "Aceptar",
                 confirmButtonColor: "#493524",
                 background: "#faf7f1",
                 color: "#33271d"
@@ -225,23 +140,55 @@ function vaciarCarrito() {
     });
 }
 
-// Confirmar pedido
-function confirmarPedido() {
+// ========================================
+// CONFIRMAR PEDIDO (Buscando el Token real y el ID en SQL)
+// ========================================
+async function confirmarPedido() {
     const carrito = obtenerCarrito();
-
     if (carrito.length === 0) return;
 
-    const total = carrito.reduce(function (suma, producto) {
-        return suma + producto.precio * producto.cantidad;
-    }, 0);
+    // 1. Buscamos al usuario actual en Firebase directamente
+    const usuarioActual = auth.currentUser;
+    
+    if (!usuarioActual) {
+        Swal.fire({
+            title: "Iniciá sesión",
+            text: "Tenés que estar logueado para confirmar tu pedido.",
+            icon: "warning",
+            confirmButtonColor: "#493524",
+            background: "#faf7f1",
+            color: "#33271d"
+        });
+        return;
+    }
 
+    // 2. Obtenemos el token real
+    const tokenReal = await usuarioActual.getIdToken();
+    localStorage.setItem("firebaseToken", tokenReal); // Lo guardamos para la próxima
+
+    // 3. Buscamos el ID de SQL para ese usuario
+    let usuarioIdSQL = null;
+    try {
+        const resUsuarios = await fetch(`${API}/usuarios`);
+        if (resUsuarios.ok) {
+            const usuarios = await resUsuarios.json();
+            const encontrado = usuarios.find(u => String(u.firebaseUid).trim() === String(usuarioActual.uid).trim());
+            if (encontrado) {
+                usuarioIdSQL = encontrado.usuarioId;
+                localStorage.setItem("usuarioId", usuarioIdSQL);
+            }
+        }
+    } catch (e) { 
+        console.warn("No se pudo buscar en SQL, usando ID 1 por defecto."); 
+    }
+
+    if (!usuarioIdSQL) usuarioIdSQL = 1; // Fallback por si falla la API
+
+    // 4. Mostramos el resumen de confirmación
+    const total = carrito.reduce((suma, producto) => suma + producto.precio * producto.cantidad, 0);
     let resumen = "";
-
-    carrito.forEach(function (producto) {
-        resumen += producto.nombre +
-            " x " + producto.cantidad +
-            " — " + formatoPrecio(producto.precio * producto.cantidad) +
-            "\n";
+    carrito.forEach((p) => {
+        resumen += `${p.nombre} x ${p.cantidad} — ${formatoPrecio(p.precio * p.cantidad)}\n`;
     });
 
     Swal.fire({
@@ -255,48 +202,67 @@ function confirmarPedido() {
         cancelButtonColor: "#a98968",
         background: "#faf7f1",
         color: "#33271d"
-    }).then(function (resultado) {
-
+    }).then(async (resultado) => {
         if (resultado.isConfirmed) {
-
-            // 1. Crear el objeto del nuevo pedido
-            const nuevoPedido = {
-                id: Math.floor(Math.random() * 90000) + 10000,
-                fecha: new Date().toLocaleDateString('es-AR', { day: 'numeric', month: 'long', year: 'numeric' }),
-                estado: "En camino",
-                claseEstado: "estado-camino",
-                total: formatoPrecio(total),
-                productos: [...carrito]
+            
+            // 5. Armamos el JSON y enviamos a la API
+            const pedidoParaAPI = {
+                usuarioId: Number(usuarioIdSQL),
+                detalles: carrito.map((prod) => ({
+                    productoId: Number(prod.productoId),
+                    cantidad: Number(prod.cantidad)
+                }))
             };
 
-            // 2. Guardar en el historial de pedidos
-            let pedidos = JSON.parse(localStorage.getItem(CLAVE_PEDIDOS)) || [];
-            pedidos.push(nuevoPedido);
-            localStorage.setItem(CLAVE_PEDIDOS, JSON.stringify(pedidos));
+            try {
+                const respuesta = await fetch(`${API}/pedidos`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${tokenReal}`
+                    },
+                    body: JSON.stringify(pedidoParaAPI)
+                });
 
-            // 3. Vaciar el carrito actual
-            guardarCarrito([]);
-            mostrarCarrito();
+                if (!respuesta.ok) {
+                    throw new Error("Error al crear el pedido en el servidor.");
+                }
 
-            // 4. Alerta de éxito y redirección a mis pedidos
-            Swal.fire({
-                title: "¡Pedido confirmado!",
-                text: "Gracias por elegir Emprendimiento May. Tu pedido quedó registrado con éxito.",
-                icon: "success",
-                confirmButtonText: "Ver mis pedidos",
-                confirmButtonColor: "#493524",
-                background: "#faf7f1",
-                color: "#33271d"
-            }).then(function () {
-                window.location.href = "pedidos.html";
-            });
+                // 6. Éxito
+                guardarCarrito([]);
+                mostrarCarrito();
+
+                Swal.fire({
+                    title: "¡Pedido confirmado!",
+                    text: "Tu pedido fue registrado en el sistema.",
+                    icon: "success",
+                    confirmButtonText: "Ver mis pedidos",
+                    confirmButtonColor: "#493524",
+                    background: "#faf7f1",
+                    color: "#33271d"
+                }).then(() => {
+                    window.location.href = "pedidos.html";
+                });
+
+            } catch (error) {
+                console.error(error);
+                Swal.fire({
+                    title: "No se pudo confirmar",
+                    text: error.message || "Error de conexión con el servidor.",
+                    icon: "error",
+                    confirmButtonColor: "#493524",
+                    background: "#faf7f1",
+                    color: "#33271d"
+                });
+            }
         }
     });
 }
 
-// Eventos
-botonVaciar.addEventListener("click", vaciarCarrito);
-botonConfirmar.addEventListener("click", confirmarPedido);
+// ========================================
+// EVENTOS
+// ========================================
+if(botonVaciar) botonVaciar.addEventListener("click", vaciarCarrito);
+if(botonConfirmar) botonConfirmar.addEventListener("click", confirmarPedido);
 
-// Cargar carrito
 mostrarCarrito();

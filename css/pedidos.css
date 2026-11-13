@@ -186,6 +186,10 @@ body {
    ESTADOS
 ========================= */
 
+/* =========================
+   ESTADOS
+========================= */
+
 .estado-pedido {
     padding: 7px 15px;
     border-radius: 20px;
@@ -195,14 +199,19 @@ body {
     text-transform: uppercase;
 }
 
+.estado-pendiente {
+    background: #f5efe6; 
+    color: #9c7a52;      
+}
+
+.estado-confirmado {
+    background: #e6f0f5; 
+    color: #4a7c8a;      
+}
+
 .estado-entregado {
     background: #e8eee5;
     color: #54704d;
-}
-
-.estado-camino {
-    background: #f1e9dc;
-    color: #927653;
 }
 
 .estado-cancelado {
