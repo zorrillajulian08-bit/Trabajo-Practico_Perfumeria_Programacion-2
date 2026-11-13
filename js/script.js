@@ -1,10 +1,7 @@
 
-import { db } from "../js/firebase.js";
-
-import {
-    collection,
-    getDocs
-} from "https://www.gstatic.com/firebasejs/13.2.0/firebase-firestore.js";
+// Firebase se importa dentro de cargarProductos() con import dinámico.
+// Así, si Firebase falla al cargar, el catálogo igual muestra los
+// perfumes originales en vez de quedarse en "Cargando fragancias...".
 
 
 // ========================================
@@ -187,6 +184,11 @@ function verPerfume(nombre) {
 async function cargarProductos() {
 
     try {
+
+        const [{ db }, { collection, getDocs }] = await Promise.all([
+            import("./firebase.js"),
+            import("https://www.gstatic.com/firebasejs/13.2.0/firebase-firestore.js")
+        ]);
 
         const referencia = collection(db, "productos");
         const resultado = await getDocs(referencia);
