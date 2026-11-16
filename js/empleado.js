@@ -1,4 +1,3 @@
-
 import { auth } from "./firebase.js";
 
 import {
@@ -70,7 +69,9 @@ const botonCancelarEliminar = document.getElementById("cancelar-eliminar");
 // ==========================================
 
 const listaPedidos = document.getElementById("lista-pedidos-empleado");
-const listaMasVendidos = document.getElementById("lista-mas-vendidos");
+
+const canvasMasVendidos = document.getElementById("grafico-mas-vendidos");
+const canvasTortaMasVendidos = document.getElementById("grafico-torta-mas-vendidos");
 
 const botonesFiltros = document.querySelectorAll(
     ".filtros-pedidos .filtro-btn"
@@ -90,6 +91,9 @@ let resolverModal = null;
 
 let pedidosGlobales = [];
 let filtroActualPedidos = "todos";
+
+let graficoMasVendidos = null;
+let graficoTortaMasVendidos = null;
 
 
 // ==========================================
@@ -221,6 +225,29 @@ function formatearPrecio(precio) {
         currency: "ARS",
         maximumFractionDigits: 0
     }).format(Number(precio) || 0);
+
+}
+
+
+// ==========================================
+// EVITAR INSERTAR HTML NO CONFIABLE
+// ==========================================
+
+function escaparHTML(texto) {
+
+    return String(texto).replace(/[&<>"']/g, caracter => {
+
+        const entidades = {
+            "&": "&amp;",
+            "<": "&lt;",
+            ">": "&gt;",
+            '"': "&quot;",
+            "'": "&#39;"
+        };
+
+        return entidades[caracter];
+
+    });
 
 }
 
@@ -1473,7 +1500,23 @@ function renderizarPedidos(pedidos, estadoFiltro) {
 
         });
 
-        celdaAcciones.appendChild(selectorEstado);
+
+        // BOTÓN VER DETALLE
+
+        const botonDetalle = document.createElement("button");
+
+        botonDetalle.type = "button";
+        botonDetalle.textContent = "Ver detalle";
+        botonDetalle.className = "boton-editar";
+
+        botonDetalle.addEventListener("click", () => {
+            verDetallePedido(id);
+        });
+
+        celdaAcciones.append(
+            botonDetalle,
+            selectorEstado
+        );
 
         fila.append(
             celdaId,
@@ -1486,6 +1529,180 @@ function renderizarPedidos(pedidos, estadoFiltro) {
         listaPedidos.appendChild(fila);
 
     });
+
+}
+
+
+// ==========================================
+// VER DETALLE DE UN PEDIDO
+// ==========================================
+
+async function verDetallePedido(idPedido) {
+
+    try {
+
+        const pedido = await solicitarAPI(
+            `${API}/pedidos/${idPedido}`,
+            {},
+            true
+        );
+
+        if (!pedido) {
+            throw new Error("No se encontró el pedido.");
+        }
+
+        const detalles = obtenerPropiedad(
+            pedido,
+            "detallePedidos",
+            "detalles"
+        ) || [];
+
+        const estado = obtenerPropiedad(pedido, "estado") || "Sin estado";
+
+        const fechaValor = obtenerPropiedad(pedido, "fecha");
+
+        const fecha = fechaValor
+            ? new Date(fechaValor).toLocaleDateString("es-AR")
+            : "Sin fecha";
+
+        const total = obtenerPropiedad(pedido, "total") || 0;
+
+        if (detalles.length === 0) {
+
+            await Swal.fire({
+                title: `Pedido #${idPedido}`,
+                text: "Este pedido no tiene productos registrados.",
+                icon: "info",
+                confirmButtonColor: "#80674F",
+                background: "#F3EADF",
+                color: "#594333"
+            });
+
+            return;
+        }
+
+        const filas = detalles.map(detalle => {
+
+            const producto = obtenerPropiedad(
+                detalle,
+                "producto"
+            );
+
+            const nombre = obtenerPropiedad(
+                producto,
+                "nombre"
+            ) || "Producto sin nombre";
+
+            const cantidad = Number(
+                obtenerPropiedad(detalle, "cantidad")
+            ) || 0;
+
+            const precio = Number(
+                obtenerPropiedad(detalle, "precioUnitario")
+            ) || 0;
+
+            const subtotal = cantidad * precio;
+
+            return `
+                <tr>
+                    <td style="padding: 10px; border-bottom: 1px solid #D8C7B3;">
+                        ${escaparHTML(nombre)}
+                    </td>
+
+                    <td style="padding: 10px; border-bottom: 1px solid #D8C7B3;">
+                        ${cantidad}
+                    </td>
+
+                    <td style="padding: 10px; border-bottom: 1px solid #D8C7B3;">
+                        ${formatearPrecio(precio)}
+                    </td>
+
+                    <td style="padding: 10px; border-bottom: 1px solid #D8C7B3;">
+                        ${formatearPrecio(subtotal)}
+                    </td>
+                </tr>
+            `;
+
+        }).join("");
+
+        await Swal.fire({
+
+            title: `Detalle del pedido #${idPedido}`,
+
+            html: `
+                <div style="text-align: left;">
+
+                    <p>
+                        <strong>Fecha:</strong> ${escaparHTML(fecha)}
+                    </p>
+
+                    <p>
+                        <strong>Estado:</strong> ${escaparHTML(estado)}
+                    </p>
+
+                    <div style="overflow-x: auto; margin-top: 20px;">
+
+                        <table style="
+                            width: 100%;
+                            border-collapse: collapse;
+                            font-size: 13px;
+                        ">
+
+                            <thead>
+                                <tr style="background: #E8D9C8;">
+                                    <th style="padding: 10px;">Producto</th>
+                                    <th style="padding: 10px;">Cantidad</th>
+                                    <th style="padding: 10px;">Precio</th>
+                                    <th style="padding: 10px;">Subtotal</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                ${filas}
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                    <h3 style="
+                        text-align: right;
+                        margin-top: 20px;
+                        color: #594333;
+                    ">
+                        Total: ${formatearPrecio(total)}
+                    </h3>
+
+                </div>
+            `,
+
+            confirmButtonText: "Cerrar",
+
+            confirmButtonColor: "#80674F",
+
+            background: "#F3EADF",
+
+            color: "#594333",
+
+            width: "750px"
+
+        });
+
+    } catch (error) {
+
+        console.error("Error al obtener el detalle del pedido:", error);
+
+        await Swal.fire({
+            title: "No se pudo cargar el pedido",
+            text: error.message || "Ocurrió un error al consultar el detalle.",
+            icon: "error",
+            confirmButtonText: "Aceptar",
+            confirmButtonColor: "#80674F",
+            background: "#F3EADF",
+            color: "#594333"
+        });
+
+    }
 
 }
 
@@ -1586,12 +1803,6 @@ async function cargarVentas() {
 
     try {
 
-        listaMasVendidos.innerHTML = `
-            <tr>
-                <td colspan="3">Cargando estadísticas...</td>
-            </tr>
-        `;
-
         const respuesta = await solicitarAPI(`${API}/ventas`);
 
         const ventas = obtenerLista(respuesta);
@@ -1602,14 +1813,17 @@ async function cargarVentas() {
 
         console.error("Error al cargar ventas:", error);
 
-        listaMasVendidos.innerHTML = `
-            <tr>
-                <td colspan="3">
-                    No se pudieron cargar las estadísticas.
-                    Revisá el endpoint /ventas.
-                </td>
-            </tr>
-        `;
+        if (graficoMasVendidos) {
+            graficoMasVendidos.destroy();
+            graficoMasVendidos = null;
+        }
+
+        if (graficoTortaMasVendidos) {
+            graficoTortaMasVendidos.destroy();
+            graficoTortaMasVendidos = null;
+        }
+
+        console.error("No se pudieron cargar las estadísticas de ventas.");
 
     }
 
@@ -1622,16 +1836,20 @@ async function cargarVentas() {
 
 function renderizarMasVendidos(ventas) {
 
-    listaMasVendidos.innerHTML = "";
+    // Destruir los gráficos anteriores para evitar duplicados
+
+    if (graficoMasVendidos) {
+        graficoMasVendidos.destroy();
+        graficoMasVendidos = null;
+    }
+
+    if (graficoTortaMasVendidos) {
+        graficoTortaMasVendidos.destroy();
+        graficoTortaMasVendidos = null;
+    }
 
     if (!ventas || ventas.length === 0) {
-
-        listaMasVendidos.innerHTML = `
-            <tr>
-                <td colspan="3">Todavía no hay ventas registradas.</td>
-            </tr>
-        `;
-
+        console.log("Todavía no hay ventas registradas.");
         return;
     }
 
@@ -1657,6 +1875,9 @@ function renderizarMasVendidos(ventas) {
             "recaudacionTotal"
         );
 
+
+        // CASO 1: LA API YA DEVUELVE LOS PRODUCTOS AGRUPADOS
+
         if (
             typeof nombreDirecto === "string" &&
             cantidadDirecta !== undefined
@@ -1679,6 +1900,9 @@ function renderizarMasVendidos(ventas) {
 
             return;
         }
+
+
+        // CASO 2: LA VENTA CONTIENE UNA LISTA DE DETALLES
 
         const detalles = obtenerPropiedad(
             venta,
@@ -1736,6 +1960,9 @@ function renderizarMasVendidos(ventas) {
             return;
         }
 
+
+        // CASO 3: LA API DEVUELVE CADA DETALLE COMO UN REGISTRO INDIVIDUAL
+
         const productoId = Number(
             obtenerPropiedad(venta, "productoId")
         );
@@ -1776,46 +2003,253 @@ function renderizarMasVendidos(ventas) {
 
     });
 
+
+    // ORDENAR PRODUCTOS DE MAYOR A MENOR CANTIDAD VENDIDA
+
     const productosOrdenados = Array.from(ranking.values())
         .sort((a, b) => b.cantidad - a.cantidad);
 
+
     if (productosOrdenados.length === 0) {
-
-        listaMasVendidos.innerHTML = `
-            <tr>
-                <td colspan="3">
-                    Hay ventas registradas, pero la API no está devolviendo
-                    los detalles necesarios para calcular los productos vendidos.
-                </td>
-            </tr>
-        `;
-
+        console.log(
+            "Hay ventas registradas, pero no se encontraron detalles para calcular los productos vendidos."
+        );
         return;
     }
 
-    productosOrdenados.forEach(producto => {
 
-        const fila = document.createElement("tr");
+    // ==========================================
+    // VERIFICAR DISPONIBILIDAD DE CHART.JS
+    // ==========================================
 
-        const nombre = document.createElement("td");
-        nombre.textContent = producto.nombre;
+    if (typeof Chart === "undefined") {
+        console.error("Chart.js no está disponible.");
+        return;
+    }
 
-        const cantidad = document.createElement("td");
-        cantidad.textContent = producto.cantidad;
 
-        const recaudacion = document.createElement("td");
-        recaudacion.textContent =
-            formatearPrecio(producto.recaudacion);
+    // ==========================================
+    // GRÁFICO DE BARRAS
+    // ==========================================
 
-        fila.append(
-            nombre,
-            cantidad,
-            recaudacion
-        );
+    if (canvasMasVendidos) {
 
-        listaMasVendidos.appendChild(fila);
+        graficoMasVendidos = new Chart(canvasMasVendidos, {
 
-    });
+            type: "bar",
+
+            data: {
+
+                labels: productosOrdenados.map(producto => producto.nombre),
+
+                datasets: [
+
+                    {
+                        label: "Unidades vendidas",
+
+                        data: productosOrdenados.map(producto => producto.cantidad),
+
+                        backgroundColor: "#A88B6A",
+
+                        borderColor: "#80674F",
+
+                        borderWidth: 1,
+
+                        borderRadius: 6
+
+                    }
+
+                ]
+
+            },
+
+            options: {
+
+                indexAxis: "y",
+
+                responsive: true,
+
+                maintainAspectRatio: false,
+
+                plugins: {
+
+                    legend: {
+                        display: false
+                    },
+
+                    title: {
+
+                        display: true,
+
+                        text: "Ranking de perfumes más vendidos",
+
+                        color: "#594333",
+
+                        font: {
+                            size: 16
+                        }
+
+                    }
+
+                },
+
+                scales: {
+
+                    x: {
+
+                        beginAtZero: true,
+
+                        ticks: {
+                            precision: 0
+                        },
+
+                        title: {
+                            display: true,
+                            text: "Unidades vendidas"
+                        }
+
+                    },
+
+                    y: {
+
+                        ticks: {
+                            color: "#594333"
+                        }
+
+                    }
+
+                }
+
+            }
+
+        });
+
+    } else {
+
+        console.error("No se encontró el canvas del gráfico de barras.");
+
+    }
+
+
+    // ==========================================
+    // GRÁFICO DE TORTA
+    // ==========================================
+
+    if (canvasTortaMasVendidos) {
+
+        graficoTortaMasVendidos = new Chart(canvasTortaMasVendidos, {
+
+            type: "pie",
+
+            data: {
+
+                labels: productosOrdenados.map(producto => producto.nombre),
+
+                datasets: [
+
+                    {
+
+                        label: "Unidades vendidas",
+
+                        data: productosOrdenados.map(producto => producto.cantidad),
+
+                        backgroundColor: [
+                            "#80674F",
+                            "#A88B6A",
+                            "#C5AA8B",
+                            "#D9C5AC",
+                            "#E8D9C8",
+                            "#B69A7A",
+                            "#92775C",
+                            "#D0B99D",
+                            "#6F5844",
+                            "#E2CEB6"
+                        ],
+
+                        borderColor: "#F3EADF",
+
+                        borderWidth: 2
+
+                    }
+
+                ]
+
+            },
+
+            options: {
+
+                responsive: true,
+
+                maintainAspectRatio: false,
+
+                plugins: {
+
+                    legend: {
+
+                        position: "bottom",
+
+                        labels: {
+
+                            color: "#594333",
+
+                            padding: 15,
+
+                            usePointStyle: true
+
+                        }
+
+                    },
+
+                    title: {
+
+                        display: true,
+
+                        text: "Distribución de unidades vendidas",
+
+                        color: "#594333",
+
+                        font: {
+                            size: 16
+                        }
+
+                    },
+
+                    tooltip: {
+
+                        callbacks: {
+
+                            label: function(context) {
+
+                                const cantidad = context.raw;
+
+                                const total = context.dataset.data.reduce(
+                                    (acumulado, valor) => acumulado + valor,
+                                    0
+                                );
+
+                                const porcentaje = total > 0
+                                    ? ((cantidad / total) * 100).toFixed(1)
+                                    : 0;
+
+                                return ` ${context.label}: ${cantidad} unidades (${porcentaje}%)`;
+
+                            }
+
+                        }
+
+                    }
+
+                }
+
+            }
+
+        });
+
+    } else {
+
+        console.error("No se encontró el canvas del gráfico de torta.");
+
+    }
 
 }
 

@@ -1,8 +1,12 @@
 
 import { auth } from "./firebase.js";
-import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-auth.js";
+
+import {
+    onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/13.2.0/firebase-auth.js";
 
 let CLAVE_CARRITO = null;
+
 const API = "https://localhost:7177/api/Perfumeria";
 
 const contenedor = document.getElementById("productos-carrito");
@@ -10,6 +14,7 @@ const subtotalElemento = document.getElementById("subtotal");
 const totalElemento = document.getElementById("total");
 const botonVaciar = document.getElementById("vaciar-carrito");
 const botonConfirmar = document.getElementById("confirmar-pedido");
+
 
 // ========================================
 // FUNCIONES AUXILIARES
@@ -35,6 +40,38 @@ function guardarCarrito(carrito) {
 function formatoPrecio(precio) {
     return "$" + Number(precio).toLocaleString("es-AR");
 }
+
+// Obtener el mensaje específico que devuelve la API
+async function obtenerMensajeError(respuesta) {
+    const contenido = await respuesta.text();
+
+    if (!contenido) {
+        return "No se pudo completar la operación. Código de error: " + respuesta.status;
+    }
+
+    try {
+        const datos = JSON.parse(contenido);
+
+        if (typeof datos === "string") {
+            return datos;
+        }
+
+        if (datos.mensaje) return datos.mensaje;
+        if (datos.message) return datos.message;
+        if (datos.detail) return datos.detail;
+        if (datos.title) return datos.title;
+
+        if (datos.errors) {
+            return Object.values(datos.errors).flat().join("\n");
+        }
+
+    } catch (error) {
+        return contenido;
+    }
+
+    return "No se pudo completar la operación. Código de error: " + respuesta.status;
+}
+
 
 // ========================================
 // MOSTRAR PRODUCTOS
@@ -92,6 +129,7 @@ function mostrarCarrito() {
     actualizarTotal(carrito);
 }
 
+
 // ========================================
 // ACTUALIZAR TOTALES
 // ========================================
@@ -110,6 +148,7 @@ function actualizarTotal(carrito) {
         totalElemento.textContent = formatoPrecio(total);
     }
 }
+
 
 // ========================================
 // CAMBIAR CANTIDAD Y ELIMINAR
@@ -145,6 +184,7 @@ window.eliminarProducto = function (productoId) {
     guardarCarrito(carrito);
     mostrarCarrito();
 };
+
 
 // ========================================
 // VACIAR CARRITO
@@ -182,6 +222,7 @@ function vaciarCarrito() {
         }
     });
 }
+
 
 // ========================================
 // CONFIRMAR PEDIDO
@@ -295,7 +336,8 @@ async function confirmarPedido() {
                 });
 
                 if (!respuesta.ok) {
-                    throw new Error("Error al crear el pedido en el servidor.");
+                    const mensaje = await obtenerMensajeError(respuesta);
+                    throw new Error(mensaje);
                 }
 
                 // Vaciar solamente el carrito de este usuario
@@ -317,9 +359,13 @@ async function confirmarPedido() {
             } catch (error) {
                 console.error(error);
 
+                const mensaje = error instanceof TypeError
+                    ? "No pudimos comunicarnos con el servidor. Verificá tu conexión e intentá nuevamente."
+                    : error.message || "Ocurrió un error inesperado al registrar tu pedido.";
+
                 Swal.fire({
-                    title: "No se pudo confirmar",
-                    text: error.message || "Error de conexión con el servidor.",
+                    title: "No se pudo confirmar el pedido",
+                    text: mensaje,
                     icon: "error",
                     confirmButtonColor: "#493524",
                     background: "#faf7f1",
@@ -329,6 +375,7 @@ async function confirmarPedido() {
         }
     });
 }
+
 
 // ========================================
 // EVENTOS
@@ -341,6 +388,7 @@ if (botonVaciar) {
 if (botonConfirmar) {
     botonConfirmar.addEventListener("click", confirmarPedido);
 }
+
 
 // ========================================
 // IDENTIFICAR USUARIO Y CARGAR SU CARRITO

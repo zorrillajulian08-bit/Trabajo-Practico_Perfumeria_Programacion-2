@@ -36,7 +36,6 @@ async function mostrarPedidos(usuario) {
     }
 
     try {
-        // Obtenemos el token del usuario actualmente autenticado
         const token = await usuario.getIdToken(true);
 
         const respuesta = await fetch(`${API}/pedidos/mis-pedidos`, {
@@ -152,9 +151,10 @@ function dibujarPedidos(pedidos) {
 
         let botonCancelarHTML = "";
 
-        if (estado.toLowerCase() !== "entregado" &&
-            estado.toLowerCase() !== "cancelado") {
-
+        if (
+            estado.toLowerCase() !== "entregado" &&
+            estado.toLowerCase() !== "cancelado"
+        ) {
             botonCancelarHTML = `
                 <button
                     class="boton-secundario boton-cancelar-pedido"
@@ -257,7 +257,11 @@ function cancelarPedido(idPedido) {
                 });
 
                 if (!respuesta.ok) {
-                    throw new Error("El servidor no permitió eliminar el pedido.");
+                    const mensaje = await respuesta.text();
+
+                    throw new Error(
+                        mensaje || "No se pudo cancelar el pedido."
+                    );
                 }
 
                 await Swal.fire({
@@ -276,7 +280,7 @@ function cancelarPedido(idPedido) {
 
                 Swal.fire({
                     title: "No se pudo cancelar",
-                    text: "Hubo un error en el servidor al intentar cancelar el pedido.",
+                    text: error.message,
                     icon: "error",
                     confirmButtonColor: "#493524",
                     background: "#faf7f1",

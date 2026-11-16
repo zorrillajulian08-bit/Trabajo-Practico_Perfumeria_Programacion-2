@@ -141,24 +141,27 @@ namespace perfumeriamay.services.Implementations
         public async Task<bool> AgregarPedidoAsync(CreatePedidoDTO pedido)
         {
             if (pedido == null)
-                return false;
+                throw new Exception("El pedido recibido está vacío.");
 
             if (pedido.UsuarioId <= 0)
-                return false;
+                throw new Exception("El usuario del pedido no es válido.");
 
             if (pedido.Detalles == null || pedido.Detalles.Count == 0)
-                return false;
+                throw new Exception("El pedido no contiene productos.");
 
             foreach (var detalle in pedido.Detalles)
             {
-                if (detalle.ProductoId <= 0 || detalle.Cantidad <= 0)
-                    return false;
+                if (detalle.ProductoId <= 0)
+                    throw new Exception("Hay un producto con un identificador inválido.");
+
+                if (detalle.Cantidad <= 0)
+                    throw new Exception("La cantidad solicitada debe ser mayor a cero.");
             }
 
             if (pedido.Detalles
                 .GroupBy(d => d.ProductoId)
                 .Any(g => g.Count() > 1))
-                return false;
+                throw new Exception("El pedido contiene productos repetidos.");
 
             return await _repository.AddAsync(pedido);
         }
@@ -186,6 +189,18 @@ namespace perfumeriamay.services.Implementations
         {
             if (id <= 0)
                 return false;
+
+            var pedido = await ObtenerPorIdAsync(id);
+
+            if (pedido == null)
+                return false;
+
+            if (pedido.Estado != "Pendiente")
+            {
+                throw new InvalidOperationException(
+                    $"No podés cancelar este pedido porque el pedido está {pedido.Estado}."
+                );
+            }
 
             return await _repository.DeleteAsync(id);
         }

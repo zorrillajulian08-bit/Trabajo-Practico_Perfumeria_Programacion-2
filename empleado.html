@@ -13,6 +13,9 @@
     <!-- SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     <!-- JavaScript del panel -->
     <script type="module" src="js/empleado.js"></script>
 </head>
@@ -375,11 +378,11 @@
 
             <div class="filtros-pedidos" style="margin-bottom: 20px; display: flex; gap: 10px; flex-wrap: wrap;">
 
-              <button class="filtro-btn" data-estado="todos">Todos</button>
-<button class="filtro-btn" data-estado="pendiente">Pendientes</button>
-<button class="filtro-btn" data-estado="confirmado">Confirmados</button>
-<button class="filtro-btn" data-estado="entregado">Entregados</button>
-<button class="filtro-btn" data-estado="cancelado">Cancelados</button>
+                <button class="filtro-btn" data-estado="todos">Todos</button>
+                <button class="filtro-btn" data-estado="pendiente">Pendientes</button>
+                <button class="filtro-btn" data-estado="confirmado">Confirmados</button>
+                <button class="filtro-btn" data-estado="entregado">Entregados</button>
+                <button class="filtro-btn" data-estado="cancelado">Cancelados</button>
 
             </div>
 
@@ -418,7 +421,7 @@
 
 
         <!-- ========================================
-             PRODUCTOS MÁS VENDIDOS
+             ESTADÍSTICAS DE VENTAS
         ======================================== -->
 
         <section class="seccion-listado">
@@ -428,41 +431,41 @@
                 <div>
                     <span class="etiqueta">ESTADÍSTICAS</span>
                     <h3>Productos más vendidos</h3>
-                    <p>Ranking basado en las ventas registradas.</p>
+                    <p>Visualizá el rendimiento de los perfumes de tu tienda.</p>
                 </div>
 
             </div>
 
 
-            <!-- TABLA DE PRODUCTOS MÁS VENDIDOS -->
+            <!-- DOS GRÁFICOS -->
 
-            <div class="contenedor-tabla">
+            <div class="contenedor-graficos">
 
-                <table>
+                <!-- GRÁFICO DE BARRAS -->
 
-                    <thead>
-                        <tr>
-                            <th>Perfume</th>
-                            <th>Cantidad vendida</th>
-                            <th>Recaudación total</th>
-                        </tr>
-                    </thead>
+                <div class="contenedor-grafico">
 
-                    <tbody id="lista-mas-vendidos">
+                    <h4>Unidades vendidas</h4>
 
-                        <tr>
-                            <td colspan="3">
-                                Cargando estadísticas...
-                            </td>
-                        </tr>
+                    <canvas id="grafico-mas-vendidos"></canvas>
 
-                    </tbody>
+                </div>
 
-                </table>
+
+                <!-- GRÁFICO DE TORTA -->
+
+                <div class="contenedor-grafico">
+
+                    <h4>Distribución de ventas</h4>
+
+                    <canvas id="grafico-torta-mas-vendidos"></canvas>
+
+                </div>
 
             </div>
 
         </section>
+
 
     </main>
 
@@ -591,6 +594,7 @@
     <footer>
         <p>EMPRENDIMIENTO MAY · PANEL DE ADMINISTRACIÓN</p>
     </footer>
+
 
 </body>
 

@@ -18,15 +18,15 @@ namespace perfumeriamay.Implementations
 
 
         public async Task<bool> AddAsync(CreatePedidoDTO pedido)
-        { 
+        {
             if (pedido == null || pedido.Detalles == null || !pedido.Detalles.Any())
-                return false;
+                throw new Exception("El pedido no contiene productos.");
 
             var usuarioExiste = await _context.Usuarios
                 .AnyAsync(u => u.UsuarioId == pedido.UsuarioId);
 
             if (!usuarioExiste)
-                return false;
+                throw new Exception("No se encontró el usuario que realiza el pedido.");
 
             var nuevoPedido = new Pedido
             {
@@ -39,13 +39,22 @@ namespace perfumeriamay.Implementations
             foreach (var detalle in pedido.Detalles)
             {
                 if (detalle.Cantidad <= 0)
-                    return false;
+                    throw new Exception("La cantidad solicitada debe ser mayor a cero.");
 
                 var producto = await _context.Productos
                     .FindAsync(detalle.ProductoId);
 
-                if (producto == null || producto.Stock < detalle.Cantidad)
-                    return false;
+                if (producto == null)
+                    throw new Exception($"No existe el producto con ID {detalle.ProductoId}.");
+
+                if (producto.Stock <= 0)
+                    throw new Exception($"El producto {producto.Nombre} se encuentra sin stock.");
+
+                if (producto.Stock < detalle.Cantidad)
+                    throw new Exception(
+                        $"Stock insuficiente para {producto.Nombre}. " +
+                        $"Solicitaste {detalle.Cantidad} unidades, pero solamente quedan {producto.Stock} disponibles."
+                    );
 
                 // Descontamos el stock
                 producto.Stock -= detalle.Cantidad;
@@ -64,20 +73,7 @@ namespace perfumeriamay.Implementations
 
             await _context.Pedidos.AddAsync(nuevoPedido);
 
-            Console.WriteLine("========== PRUEBA DE STOCK ==========");
-
-            foreach (var detalle in pedido.Detalles)
-            {
-                var productoGuardado = await _context.Productos
-                    .FindAsync(detalle.ProductoId);
-
-                Console.WriteLine($"Producto ID: {detalle.ProductoId}");
-                Console.WriteLine($"Stock antes de guardar: {productoGuardado?.Stock}");
-            }
-
             await _context.SaveChangesAsync();
-
-            Console.WriteLine("========== PEDIDO GUARDADO ==========");
 
             return true;
         }
@@ -293,8 +289,10 @@ namespace perfumeriamay.Implementations
 
         public async Task<Pedido?> GetByIdAsync(int id)
         {
-            return await _context.Pedidos.Include(p => p.DetallePedidos)
-                                         .FirstOrDefaultAsync(p => p.PedidoId == id);
+            return await _context.Pedidos
+         .Include(p => p.DetallePedidos)
+             .ThenInclude(d => d.Producto)
+         .FirstOrDefaultAsync(p => p.PedidoId == id);
         }
 
         public async Task<List<Marca>> GetMarcasAsync()

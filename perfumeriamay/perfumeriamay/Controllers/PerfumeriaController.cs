@@ -171,13 +171,19 @@ namespace perfumeriamay.Controllers
         public async Task<IActionResult> AddPedido(
             [FromBody] CreatePedidoDTO pedido)
         {
-            var resultado = await _service.AgregarPedidoAsync(pedido);
+            try
+            {
+                var resultado = await _service.AgregarPedidoAsync(pedido);
 
-            if (!resultado)
-                return BadRequest(
-                    "No se pudo crear el pedido. Verificá los datos.");
+                if (!resultado)
+                    return BadRequest("No se pudo crear el pedido.");
 
-            return Ok("Pedido creado correctamente.");
+                return Ok("Pedido creado correctamente.");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         // VENTAS
@@ -359,17 +365,26 @@ namespace perfumeriamay.Controllers
             return Ok("Marca eliminada correctamente.");
         }
 
-        // PEDIDOS
+
+        [Authorize]
         [HttpDelete("pedidos/{id}")]
         public async Task<IActionResult> DeletePedido(int id)
         {
-            var resultado = await _service.EliminarPedidoAsync(id);
+            try
+            {
+                var resultado = await _service.EliminarPedidoAsync(id);
 
-            if (!resultado)
-                return BadRequest("No se pudo eliminar el pedido.");
+                if (!resultado)
+                    return BadRequest("No se pudo cancelar el pedido.");
 
-            return Ok("Pedido eliminado correctamente.");
+                return Ok("Pedido cancelado correctamente.");
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
+
 
         // VENTAS
         [HttpDelete("ventas/{id}")]

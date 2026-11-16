@@ -1,4 +1,3 @@
-
 import { auth } from "./firebase.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-auth.js";
 
@@ -323,7 +322,9 @@ async function cargarDetallePerfume() {
         const seccion = document.createElement("section");
         seccion.className = "producto-detalle";
 
+        // ========================================
         // IMAGEN
+        // ========================================
 
         const foto = document.createElement("div");
         foto.className = "detalle-foto";
@@ -359,10 +360,17 @@ async function cargarDetallePerfume() {
 
         foto.append(imagen, ayuda);
 
+        // ========================================
         // INFORMACIÓN DEL PERFUME
+        // ========================================
 
         const panelDatos = document.createElement("div");
         panelDatos.className = "detalle-datos";
+
+        // BLOQUE DE INFORMACIÓN
+
+        const bloqueInformacion = document.createElement("div");
+        bloqueInformacion.className = "bloque-informacion";
 
         const marcaEl = document.createElement("p");
         marcaEl.className = "detalle-marca";
@@ -378,6 +386,20 @@ async function cargarDetallePerfume() {
         const descripcionEl = document.createElement("p");
         descripcionEl.className = "detalle-descripcion";
         descripcionEl.textContent = perfume.descripcion;
+
+        bloqueInformacion.append(
+            marcaEl,
+            titulo,
+            categoriaEl,
+            descripcionEl
+        );
+
+        // ========================================
+        // BLOQUE DE COMPRA
+        // ========================================
+
+        const bloqueCompra = document.createElement("div");
+        bloqueCompra.className = "bloque-compra";
 
         const separador = document.createElement("div");
         separador.className = "separador";
@@ -434,18 +456,19 @@ async function cargarDetallePerfume() {
         botones.append(volver, botonCarrito);
 
         // ========================================
-        // UNIR LOS ELEMENTOS
+        // UNIR LOS BLOQUES
         // ========================================
 
-        panelDatos.append(
-            marcaEl,
-            titulo,
-            categoriaEl,
-            descripcionEl,
+        bloqueCompra.append(
             separador,
             textoPrecio,
             precioEl,
             botones
+        );
+
+        panelDatos.append(
+            bloqueInformacion,
+            bloqueCompra
         );
 
         seccion.append(foto, panelDatos);
