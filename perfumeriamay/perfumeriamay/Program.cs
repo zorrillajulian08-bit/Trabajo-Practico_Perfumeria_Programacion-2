@@ -1,30 +1,17 @@
+
 using Microsoft.EntityFrameworkCore;
 using perfumeriamay.Implementations;
 using perfumeriamay.interfaces;
 using perfumeriamay.Models;
 using perfumeriamay.services.Implementations;
 using perfumeriamay.services.interfaces;
-using FirebaseAdmin;
-using Google.Apis.Auth.OAuth2;
-using Microsoft.AspNetCore.Authentication;
-using perfumeriamay.Security;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Configuración de Firebase
-var credentialPath = builder.Configuration["Firebase:CredentialPath"];
-
-if (string.IsNullOrWhiteSpace(credentialPath) || !File.Exists(credentialPath))
-{
-    throw new Exception("No se encontró el archivo de credenciales de Firebase.");
-}
-
-FirebaseApp.Create(new AppOptions
-{
-    Credential = CredentialFactory
-    .FromFile<ServiceAccountCredential>(credentialPath)
-    .ToGoogleCredential()
-});
+// Identificación del proyecto Firebase
+var firebaseProjectId = "emprendimiento-may";
 
 // CORS
 builder.Services.AddCors(options =>
@@ -38,15 +25,30 @@ builder.Services.AddCors(options =>
     });
 });
 
-// Autenticación con Firebase
+// Autenticación con Firebase sin credencial privada
 builder.Services
-    .AddAuthentication("Firebase")
-    .AddScheme<AuthenticationSchemeOptions, FirebaseAuthenticationHandler>(
-        "Firebase", options => { });
+    .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.Authority =
+            $"https://securetoken.google.com/{firebaseProjectId}";
+
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidIssuer =
+                $"https://securetoken.google.com/{firebaseProjectId}",
+
+            ValidateAudience = true,
+            ValidAudience = firebaseProjectId,
+
+            ValidateLifetime = true
+        };
+    });
 
 builder.Services.AddAuthorization();
 
-// Servicios
+// Controllers
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {
@@ -57,12 +59,14 @@ builder.Services.AddControllers()
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+// SQL Server
 builder.Services.AddDbContext<PerfumeriaEmprendimientoMayContext>(options =>
     options.UseSqlServer(
         builder.Configuration.GetConnectionString("defaultconnection")
     )
 );
 
+// Servicios
 builder.Services.AddScoped<IPerfumeriaRepository, PerfumeriaRepository>();
 builder.Services.AddScoped<IPerfumeriaService, PerfumeriaService>();
 

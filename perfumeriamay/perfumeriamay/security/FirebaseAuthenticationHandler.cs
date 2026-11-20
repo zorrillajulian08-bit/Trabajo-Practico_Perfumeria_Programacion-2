@@ -1,6 +1,8 @@
-﻿using FirebaseAdmin.Auth;
+﻿
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text.Encodings.Web;
 
@@ -9,65 +11,81 @@ namespace perfumeriamay.Security
     public class FirebaseAuthenticationHandler
         : AuthenticationHandler<AuthenticationSchemeOptions>
     {
+        private readonly IConfiguration _configuration;
+
         public FirebaseAuthenticationHandler(
             IOptionsMonitor<AuthenticationSchemeOptions> options,
             ILoggerFactory logger,
-            UrlEncoder encoder)
+            UrlEncoder encoder,
+            IConfiguration configuration)
             : base(options, logger, encoder)
         {
+            _configuration = configuration;
         }
 
         protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
         {
-            // Buscar el token en el encabezado Authorization
             if (!Request.Headers.TryGetValue("Authorization", out var authorizationHeader))
-            {
                 return AuthenticateResult.NoResult();
-            }
 
             var header = authorizationHeader.ToString();
 
             if (!header.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
-            {
                 return AuthenticateResult.NoResult();
-            }
 
             var token = header.Substring("Bearer ".Length).Trim();
 
             if (string.IsNullOrWhiteSpace(token))
-            {
                 return AuthenticateResult.Fail("El token está vacío.");
-            }
 
             try
             {
-                // Firebase comprueba que el token sea válido
-                var decodedToken = await FirebaseAuth.DefaultInstance
-                    .VerifyIdTokenAsync(token);
+                var projectId = "emprendimiento-may";
 
-                var claims = new List<Claim>
+                var metadataAddress =
+                    $"https://securetoken.google.com/{projectId}/.well-known/openid-configuration";
+
+                var configurationManager =
+                    new Microsoft.IdentityModel.Protocols.ConfigurationManager
+                    <Microsoft.IdentityModel.Protocols.OpenIdConnect.OpenIdConnectConfiguration>(
+                        metadataAddress,
+                        new Microsoft.IdentityModel.Protocols.OpenIdConnect.OpenIdConnectConfigurationRetriever()
+                    );
+
+                var config = await configurationManager.GetConfigurationAsync(
+                    Context.RequestAborted
+                );
+
+                var validationParameters = new TokenValidationParameters
                 {
-                    new Claim(ClaimTypes.NameIdentifier, decodedToken.Uid)
+                    ValidateIssuer = true,
+                    ValidIssuer = $"https://securetoken.google.com/{projectId}",
+
+                    ValidateAudience = true,
+                    ValidAudience = projectId,
+
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKeys = config.SigningKeys,
+
+                    ClockSkew = TimeSpan.FromMinutes(5)
                 };
 
-                if (decodedToken.Claims.TryGetValue("email", out var email))
-                {
-                    claims.Add(new Claim(ClaimTypes.Email, email.ToString()!));
-                }
+                var tokenHandler = new JwtSecurityTokenHandler();
 
-                var identity = new ClaimsIdentity(claims, Scheme.Name);
-                var principal = new ClaimsPrincipal(identity);
+                var principal = tokenHandler.ValidateToken(
+                    token,
+                    validationParameters,
+                    out _
+                );
+
                 var ticket = new AuthenticationTicket(principal, Scheme.Name);
 
                 return AuthenticateResult.Success(ticket);
             }
-            catch (FirebaseAuthException)
-            {
-                return AuthenticateResult.Fail("El token de Firebase no es válido.");
-            }
             catch (Exception)
             {
-                return AuthenticateResult.Fail("No se pudo verificar el token.");
+                return AuthenticateResult.Fail("El token de Firebase no es válido.");
             }
         }
     }
